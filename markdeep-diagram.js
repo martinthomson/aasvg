@@ -15,12 +15,8 @@
 
 // Mappings and constants used by markdeep.
 const STROKE_WIDTH = 2;
-const DEFAULT_STYLE = {
-    stroke: '#000',
-    'font-family': 'monospace',
-};
-const DEBUG_HIDE_PASSTHROUGH = false;
-const DEBUG_SHOW_GRID = true;
+const STROKE_COLOR = ' stroke="black"';
+const TEXT_COLOR = ' stroke="black"';
 const DEBUG_SHOW_SOURCE = false;
 ['min', 'max', 'abs', 'sign'].forEach(f => {
     global[f] = Math[f];
@@ -565,7 +561,7 @@ function diagramToSVG(diagramString, options) {
         } else {
             svg += 'L ' + this.B;
         }
-        svg += '" stroke="currentColor" fill="none"';
+        svg += STROKE_COLOR + ' fill="none"';
         if (this.dashed) {
             svg += ' stroke-dasharray="3,6"';
         }
@@ -665,7 +661,7 @@ function diagramToSVG(diagramString, options) {
                 var cup = Vec2(C.x + dx, C.y - 0.5);
                 var cdn = Vec2(C.x + dx, C.y + 0.5);
 
-                svg += '<path d="M ' + dn + ' C ' + cdn + cup + up + '" stroke="currentColor" fill="none"/>';
+                svg += '<path d="M ' + dn + ' C ' + cdn + cup + up + '"' + STROKE_COLOR + ' fill="none"/>';
 
             } else if (isPoint(decoration.type)) {
                 var cls = { '*': 'closed', 'o': 'open', '◌': 'dotted', '○': 'open', '◍': 'shaded', '●': 'closed' }[decoration.type];
@@ -1325,10 +1321,10 @@ function diagramToSVG(diagramString, options) {
             for (var x = 0; x < grid.width; ++x) {
                 var c = grid(x, y);
                 if (/[\u2B22\u2B21]/.test(c)) {
-                    svg += '<text x="' + (x * SCALE) + '" y="' + (4 + y * SCALE * ASPECT) + '" color="currentColor" font-size="20.5px">' + escapeHTMLEntities(c) + '</text>';
+                    svg += '<text x="' + (x * SCALE) + '" y="' + (4 + y * SCALE * ASPECT) + '"' + TEXT_COLOR + ' font-size="20.5px">' + escapeHTMLEntities(c) + '</text>';
                     grid.setUsed(x, y);
                 } else if (options.textGrid && (c !== ' ') && !grid.isUsed(x, y)) {
-                    svg += '<text x="' + (x * SCALE) + '" y="' + (4 + y * SCALE * ASPECT) + '" color="currentColor">' + escapeHTMLEntities(c) + '</text>';
+                    svg += '<text x="' + (x * SCALE) + '" y="' + (4 + y * SCALE * ASPECT) + '"' + TEXT_COLOR + '>' + escapeHTMLEntities(c) + '</text>';
                     grid.setUsed(x, y);
                 }
             } // x

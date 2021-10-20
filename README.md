@@ -16,6 +16,8 @@ Feed `aasvg` an image and it will write an SVG.  For example:
 $ aasvg < example.txt > example.svg
 ```
 
+![example](./example.svg)
+
 ## Significant Changes
 
 By default, this does not place text characters on a grid one-by-one.  This

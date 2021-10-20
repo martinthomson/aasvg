@@ -565,7 +565,7 @@ function diagramToSVG(diagramString, options) {
         } else {
             svg += 'L ' + this.B;
         }
-        svg += '" stroke="black" fill="none"';
+        svg += '" stroke="currentColor" fill="none"';
         if (this.dashed) {
             svg += ' stroke-dasharray="3,6"';
         }
@@ -665,7 +665,7 @@ function diagramToSVG(diagramString, options) {
                 var cup = Vec2(C.x + dx, C.y - 0.5);
                 var cdn = Vec2(C.x + dx, C.y + 0.5);
 
-                svg += '<path d="M ' + dn + ' C ' + cdn + cup + up + '" stroke="black" fill="none"/>';
+                svg += '<path d="M ' + dn + ' C ' + cdn + cup + up + '" stroke="currentColor" fill="none"/>';
 
             } else if (isPoint(decoration.type)) {
                 var cls = { '*': 'closed', 'o': 'open', '◌': 'dotted', '○': 'open', '◍': 'shaded', '●': 'closed' }[decoration.type];
@@ -1314,10 +1314,10 @@ function diagramToSVG(diagramString, options) {
             for (var x = 0; x < grid.width; ++x) {
                 var c = grid(x, y);
                 if (/[\u2B22\u2B21]/.test(c)) {
-                    svg += '<text x="' + (x * SCALE) + '" y="' + (4 + y * SCALE * ASPECT) + '" font-size="20.5px">' + escapeHTMLEntities(c) + '</text>';
+                    svg += '<text x="' + (x * SCALE) + '" y="' + (4 + y * SCALE * ASPECT) + '" color="currentColor" font-size="20.5px">' + escapeHTMLEntities(c) + '</text>';
                     grid.setUsed(x, y);
                 } else if (options.textGrid && (c !== ' ') && !grid.isUsed(x, y)) {
-                    svg += '<text x="' + (x * SCALE) + '" y="' + (4 + y * SCALE * ASPECT) + '">' + escapeHTMLEntities(c) + '</text>';
+                    svg += '<text x="' + (x * SCALE) + '" y="' + (4 + y * SCALE * ASPECT) + '" color="currentColor">' + escapeHTMLEntities(c) + '</text>';
                     grid.setUsed(x, y);
                 }
             } // x

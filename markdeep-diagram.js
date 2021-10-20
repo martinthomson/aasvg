@@ -1287,7 +1287,14 @@ function diagramToSVG(diagramString, options) {
     Object.keys(options.style)
         .filter(k => typeof options.style[k] === 'string')
         .forEach(k => svg += ' ' + k + '="' + escapeHTMLEntities(options.style[k]) + '"');
-    svg += '><g transform="translate(' + Vec2(1, 1) + ')">\n';
+    svg += '>\n';
+
+    if (options.backdrop) {
+        svg += '<rect x="0" y="0" width="' + ((grid.width + 1) * SCALE)
+            + '" height="' + ((grid.height + 1) * SCALE * ASPECT)
+            + '" rx="3px" ry="3px" stroke="none" fill="white" opacity="0.9"/>\n';
+    }
+    svg += '<g transform="translate(' + Vec2(1, 1) + ')">\n';
 
     if (options.showGrid) {
         svg += '<g opacity="0.1">\n';

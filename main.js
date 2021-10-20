@@ -10,6 +10,7 @@ function usage() {
     console.warn("    --disable-text     Disable simple text");
     console.warn("    --show-grid        Draw a grid (debugging)");
     console.warn("    --text-grid        Render text in a grid");
+    console.warn("    --backdrop         Draw a backdrop");
     console.warn("    --<style>=<value>  Set <style> to <value>");
     console.warn("    --version          Show the version and exit");
     process.exit(2);
@@ -44,6 +45,8 @@ async function read() {
             options.disableText = true;
         } else if (a === '--show-grid') {
             options.showGrid = true;
+        } else if (a === '--backdrop') {
+            options.backdrop = true;
         } else if (a === "--version") {
             console.log(VERSION);
             process.exit();

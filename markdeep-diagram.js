@@ -15,8 +15,8 @@
 
 // Mappings and constants used by markdeep.
 const STROKE_WIDTH = 2;
-const ARROW_COLOR = ' fill="black"';
-const STROKE_COLOR = ' stroke="black"';
+const ARROW_COLOR = ' fill="black" stroke="none"';
+const STROKE_COLOR = ' fill="none" stroke="black"';
 const TEXT_COLOR = ' stroke="black"';
 const DEBUG_SHOW_SOURCE = false;
 ['min', 'max', 'abs', 'sign'].forEach(f => {
@@ -679,12 +679,12 @@ function diagramToSVG(diagramString, options) {
             } else if (isPoint(decoration.type)) {
                 var cls = { '*': 'closed', 'o': 'open', '◌': 'dotted', '○': 'open', '◍': 'shaded', '●': 'closed' }[decoration.type];
                 svg += '<circle cx="' + (C.x * SCALE) + '" cy="' + (C.y * SCALE * ASPECT) +
-                    '" r="' + (SCALE - STROKE_WIDTH) + '" class="' + cls + 'dot"/>';
+                    '" r="' + (SCALE - STROKE_WIDTH) + '" class="' + cls + 'dot"/>\n';
             } else if (isGray(decoration.type)) {
                 var shade = Math.round((3 - GRAY_CHARACTERS.indexOf(decoration.type)) * 63.75);
                 svg += '<rect x="' + ((C.x - 0.5) * SCALE) + '" y="' + ((C.y - 0.5) * SCALE * ASPECT) +
                     '" width="' + SCALE + '" height="' + (SCALE * ASPECT) +
-                    '" fill="rgb(' + shade + ',' + shade + ',' + shade + ')"/>';
+                    '" fill="rgb(' + shade + ',' + shade + ',' + shade + ')"/>\n';
 
             } else if (isTri(decoration.type)) {
                 // 30-60-90 triangle

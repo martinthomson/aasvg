@@ -1,4 +1,6 @@
+#!/usr/bin/env node
 const { diagramToSVG } = require('./markdeep-diagram.js');
+const VERSION = "aasvg 0.1.0";
 
 async function read() {
     let input = '';
@@ -29,14 +31,18 @@ async function read() {
             options.disableText = true;
         } else if (a === '--show-grid') {
             options.showGrid = true;
+        } else if (a === "--version") {
+            console.log(VERSION);
+            process.exit();
         } else {
-            console.warn("Usage: " + process.argv[0] + " [options] < {text} > {svg}");
+            console.warn("Turn ASCII art into SVG");
             console.warn();
-            console.warn("Convert ASCII art to SVG");
+            console.warn("Usage: aasvg [options] < {text} > {svg}");
             console.warn();
             console.warn("    --disable-text  Disable simple text");
-            console.warn("    --text-grid     Render text in a grid");
             console.warn("    --show-grid     Draw a grid (debugging)");
+            console.warn("    --text-grid     Render text in a grid");
+            console.warn("    --version       Show the version and exit");
             process.exit(2);
         }
     })

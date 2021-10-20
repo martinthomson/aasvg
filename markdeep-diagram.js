@@ -567,7 +567,7 @@ function diagramToSVG(diagramString, options) {
         } else {
             svg += 'L ' + this.B;
         }
-        svg += STROKE_COLOR;
+        svg += '"' + STROKE_COLOR;
         if (this.dashed) {
             svg += ' stroke-dasharray="3,6"';
         }
@@ -1283,9 +1283,11 @@ function diagramToSVG(diagramString, options) {
     findReplacementCharacters(grid, pathSet);
     findDecorations(grid, pathSet, decorationSet);
 
-    let svg = '<svg class="diagram" xmlns="http://www.w3.org/2000/svg" version="1.1" height="' +
-        ((grid.height + 1) * SCALE * ASPECT) + '" width="' + ((grid.width + 1) * SCALE) +
-        '" text-anchor="middle" font-family="monospace" font-size="13px"'
+    let width = (grid.width + 1) * SCALE;
+    let height = (grid.height + 1) * SCALE * ASPECT;
+    let svg = '<svg class="diagram" xmlns="http://www.w3.org/2000/svg" version="1.1" ' +
+        'height="' + height + '" width="' + width + '" viewBox="0 0 ' + width + ' ' + height +
+        '" text-anchor="middle" font-family="monospace" font-size="13px"';
     Object.keys(options.style)
         .filter(k => typeof options.style[k] === 'string')
         .forEach(k => svg += ' ' + k + '="' + escapeHTMLEntities(options.style[k]) + '"');

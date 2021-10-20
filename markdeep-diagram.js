@@ -107,9 +107,14 @@ function isASCIILetter(c) {
 
     `options` is a dictionary with the following keys:
 
+    backdrop (default: false) will add a white <rect> element as a backdrop so that
+        the background of the image is not transparent
     disableText (default: false) will disable passing text
+    showGrid (default: false) will display a debug grid
+    spaces (default: 2) the number of spaces between different strings
+    style (default: {}) a dictionary of attributes to attach to the <svg> element
     textGrid (default: false) will place text precisely on a grid, at the cost of breaking
-             text into small pieces, which can hurt accessibility
+        text into small pieces, which can hurt accessibility
  */
 function diagramToSVG(diagramString, options) {
     // Clean up diagramString
@@ -270,7 +275,7 @@ function diagramToSVG(diagramString, options) {
                 }
                 if (this(end, y) === ' ') {
                     spaces++;
-                    if (spaces >= 2) { break; }
+                    if (spaces >= options.spaces) { break; }
                 } else {
                     spaces = 0;
                 }

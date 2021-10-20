@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const { diagramToSVG } = require('./markdeep-diagram.js');
-const VERSION = "aasvg 0.1.1";
+const VERSION = "aasvg 0.1.2";
 
 function usage() {
     console.warn("Turn ASCII art into SVG");
@@ -50,6 +50,8 @@ async function read() {
         } else if (a === "--version") {
             console.log(VERSION);
             process.exit();
+        } else if (a.startsWith("--spaces=")) {
+            options.spaces = parseInt(a.substring(9), 10);
         } else {
             let s = a.substring(2).split('=');
             if (a.substring(0, 2) === '--' && s.length === 2) {

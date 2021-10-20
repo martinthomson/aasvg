@@ -16,6 +16,8 @@ Feed `aasvg` an image and it will write an SVG.  For example:
 $ aasvg < example.txt > example.svg
 ```
 
+<!-- generate this with the ~~backdrop option to avoid it looking terrible
+     when shown on GitHub in dark mode -->
 ![example](./example.svg)
 
 ## Significant Changes

@@ -121,14 +121,21 @@ function diagramToSVG(diagramString, options) {
     diagramString = equalizeLineLengths(removeLeadingSpace(diagramString));
     options = options || {};
 
-    // Temporarily replace 'o' that is surrounded by other text
-    // with another character to avoid processing it as a point
-    // decoration. This will be replaced in the final svg and is
-    // faster than checking each neighborhood each time.
-    var HIDE_O = '\ue004';
-    diagramString = diagramString.rp(/([a-zA-Z]{2})o/g, '$1' + HIDE_O);
-    diagramString = diagramString.rp(/o([a-zA-Z]{2})/g, HIDE_O + '$1');
-    diagramString = diagramString.rp(/([a-zA-Z\ue004])o([a-zA-Z\ue004])/g, '$1' + HIDE_O + '$2');
+    // Temporarily replace 'o', 'v', and 'V' if they are surrounded by other
+    // text. Use another character to avoid processing them as decorations.
+    // These will be swapped back in the final SVG.
+    const HIDE = { 'o': '\ue004', 'v': '\ue005', 'V': '\ue006' };
+    function hideChar(s, i) {
+        let r = new Array(3);
+        r.fill('[a-zA-Z' + Object.keys(HIDE).map(k => HIDE[k]).join('') + ']');
+        r[i] = '[' + Object.keys(HIDE).join('') + ']';
+        return s.replace(new RegExp(r.join(''), 'g'), function(v) {
+            return v.substring(0, i) + HIDE[v.charAt(i)] + v.substring(i + 1);
+        });
+    }
+    diagramString = hideChar(diagramString, 0);
+    diagramString = hideChar(diagramString, 1);
+    diagramString = hideChar(diagramString, 2);
 
     /** Pixels per character */
     var SCALE = 8;
@@ -1364,8 +1371,9 @@ function diagramToSVG(diagramString, options) {
 
     svg += '</g></svg>';
 
-    svg = svg.rp(new RegExp(HIDE_O, 'g'), 'o');
-
+    Object.keys(HIDE).forEach(k => {
+        svg = svg.rp(new RegExp(HIDE[k], 'g'), k);
+    });
 
     return svg;
 }

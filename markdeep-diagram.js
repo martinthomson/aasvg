@@ -15,7 +15,7 @@
 
 // Mappings and constants used by markdeep.
 const STROKE_WIDTH = 2;
-const ARROW_COLOR = ' stroke="none" fill="black"';
+const ARROW_COLOR = ' fill="black"';
 const STROKE_COLOR = ' stroke="black"';
 const TEXT_COLOR = ' stroke="black"';
 const DEBUG_SHOW_SOURCE = false;
@@ -562,7 +562,7 @@ function diagramToSVG(diagramString, options) {
         } else {
             svg += 'L ' + this.B;
         }
-        svg += STROKE_COLOR + ' fill="none"';
+        svg += STROKE_COLOR;
         if (this.dashed) {
             svg += ' stroke-dasharray="3,6"';
         }
@@ -662,7 +662,7 @@ function diagramToSVG(diagramString, options) {
                 var cup = Vec2(C.x + dx, C.y - 0.5);
                 var cdn = Vec2(C.x + dx, C.y + 0.5);
 
-                svg += '<path d="M ' + dn + ' C ' + cdn + cup + up + '"' + STROKE_COLOR + ' fill="none"/>';
+                svg += '<path d="M ' + dn + ' C ' + cdn + cup + up + '"' + STROKE_COLOR + '/>';
 
             } else if (isPoint(decoration.type)) {
                 var cls = { '*': 'closed', 'o': 'open', '◌': 'dotted', '○': 'open', '◍': 'shaded', '●': 'closed' }[decoration.type];
@@ -672,7 +672,7 @@ function diagramToSVG(diagramString, options) {
                 var shade = Math.round((3 - GRAY_CHARACTERS.indexOf(decoration.type)) * 63.75);
                 svg += '<rect x="' + ((C.x - 0.5) * SCALE) + '" y="' + ((C.y - 0.5) * SCALE * ASPECT) +
                     '" width="' + SCALE + '" height="' + (SCALE * ASPECT) +
-                    '" stroke="none" fill="rgb(' + shade + ',' + shade + ',' + shade + ')"/>';
+                    '" fill="rgb(' + shade + ',' + shade + ',' + shade + ')"/>';
 
             } else if (isTri(decoration.type)) {
                 // 30-60-90 triangle
@@ -683,7 +683,7 @@ function diagramToSVG(diagramString, options) {
                 var tip = Vec2(C.x + xs, C.y - ys);
                 var up = Vec2(C.x + xs, C.y + ys);
                 var dn = Vec2(C.x - xs, C.y + ys);
-                svg += '<polygon points="' + tip + up + dn + '" stroke="none"/>\n';
+                svg += '<polygon points="' + tip + up + dn + '"' + ARROW_COLOR + '/>\n';
             } else { // Arrow head
                 var tip = Vec2(C.x + 1, C.y);
                 var up = Vec2(C.x - 0.5, C.y - 0.35);
@@ -1289,7 +1289,7 @@ function diagramToSVG(diagramString, options) {
     if (options.backdrop) {
         svg += '<rect x="0" y="0" width="' + ((grid.width + 1) * SCALE)
             + '" height="' + ((grid.height + 1) * SCALE * ASPECT)
-            + '" rx="3px" ry="3px" stroke="none" fill="white" opacity="0.9"/>\n';
+            + '" rx="3px" ry="3px" fill="white" opacity="0.9"/>\n';
     }
     svg += '<g transform="translate(' + Vec2(1, 1) + ')">\n';
 

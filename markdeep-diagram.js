@@ -282,7 +282,7 @@ function diagramToSVG(diagramString, options) {
                 }
                 if (this(end, y) === ' ') {
                     spaces++;
-                    if (spaces >= options.spaces) { break; }
+                    if (spaces >= (options.spaces || 2)) { break; }
                 } else {
                     spaces = 0;
                 }

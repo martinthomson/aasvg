@@ -15,6 +15,7 @@
 
 // Mappings and constants used by markdeep.
 const STROKE_WIDTH = 2;
+const ARROW_COLOR = ' stroke="none" fill="black"';
 const STROKE_COLOR = ' stroke="black"';
 const TEXT_COLOR = ' stroke="black"';
 const DEBUG_SHOW_SOURCE = false;
@@ -687,8 +688,8 @@ function diagramToSVG(diagramString, options) {
                 var tip = Vec2(C.x + 1, C.y);
                 var up = Vec2(C.x - 0.5, C.y - 0.35);
                 var dn = Vec2(C.x - 0.5, C.y + 0.35);
-                svg += '<polygon points="' + tip + up + dn +
-                    '" stroke="none" transform="rotate(' + decoration.angle + ',' + C + ')"/>\n';
+                svg += '<polygon points="' + tip + up + dn + '"' + ARROW_COLOR +
+                    ' transform="rotate(' + decoration.angle + ',' + C + ')"/>\n';
             }
         }
         return svg;

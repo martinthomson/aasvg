@@ -1283,7 +1283,11 @@ function diagramToSVG(diagramString, options) {
 
     let svg = '<svg class="diagram" xmlns="http://www.w3.org/2000/svg" version="1.1" height="' +
         ((grid.height + 1) * SCALE * ASPECT) + '" width="' + ((grid.width + 1) * SCALE) +
-        '" text-anchor="middle" font-family="monospace" font-size="13px"><g transform="translate(' + Vec2(1, 1) + ')">\n';
+        '" text-anchor="middle" font-family="monospace" font-size="13px"'
+    Object.keys(options.style)
+        .filter(k => typeof options.style[k] === 'string')
+        .forEach(k => svg += ' ' + k + '="' + escapeHTMLEntities(options.style[k]) + '"');
+    svg += '><g transform="translate(' + Vec2(1, 1) + ')">\n';
 
     if (options.showGrid) {
         svg += '<g opacity="0.1">\n';

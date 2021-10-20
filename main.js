@@ -2,6 +2,19 @@
 const { diagramToSVG } = require('./markdeep-diagram.js');
 const VERSION = "aasvg 0.1.0";
 
+function usage() {
+    console.warn("Turn ASCII art into SVG");
+    console.warn();
+    console.warn("Usage: aasvg [options] < <text> > <svg>");
+    console.warn();
+    console.warn("    --disable-text     Disable simple text");
+    console.warn("    --show-grid        Draw a grid (debugging)");
+    console.warn("    --text-grid        Render text in a grid");
+    console.warn("    --<style>=<value>  Set <style> to <value>");
+    console.warn("    --version          Show the version and exit");
+    process.exit(2);
+}
+
 async function read() {
     let input = '';
     process.stdin.setEncoding('utf8');
@@ -23,7 +36,7 @@ async function read() {
 }
 
 (async function main() {
-    let options = {};
+    let options = { style: {} };
     process.argv.slice(2).forEach(a => {
         if (a === '--text-grid') {
             options.textGrid = true;
@@ -35,15 +48,12 @@ async function read() {
             console.log(VERSION);
             process.exit();
         } else {
-            console.warn("Turn ASCII art into SVG");
-            console.warn();
-            console.warn("Usage: aasvg [options] < {text} > {svg}");
-            console.warn();
-            console.warn("    --disable-text  Disable simple text");
-            console.warn("    --show-grid     Draw a grid (debugging)");
-            console.warn("    --text-grid     Render text in a grid");
-            console.warn("    --version       Show the version and exit");
-            process.exit(2);
+            let s = a.substring(2).split('=');
+            if (a.substring(0, 2) === '--' && s.length === 2) {
+                options.style[s[0]] = s[1];
+            } else {
+                usage();
+            }
         }
     })
     const txt = await read();

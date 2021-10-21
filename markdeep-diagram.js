@@ -28,7 +28,6 @@ function escapeHTMLEntities(str) {
     return String(str).rp(/&/g, '&amp;').rp(/</g, '&lt;').rp(/>/g, '&gt;').rp(/"/g, '&quot;');
 }
 
-/** Workaround for IE11 */
 function strToArray(s) {
     return Array.from(s);
 }
@@ -291,7 +290,7 @@ function diagramToSVG(diagramString, options) {
             for (let i = x; i < end; ++i) {
                 this._used[y * (this.width + 1) + i] = true;
             }
-            return str.slice(y * (this.width + 1) + x, y * (this.width + 1) + end).join('');
+            return str.slice(y * (this.width + 1) + x, y * (this.width + 1) + end);
         }
 
         /** Returns true if there is a solid vertical line passing through (x, y) */
@@ -1358,12 +1357,15 @@ function diagramToSVG(diagramString, options) {
             let x = grid.textStart(0, y);
             while (x < grid.width) {
                 let t = grid.text(x, y);
-                svg += `<!-- "${escapeHTMLEntities(t)}" -->`;
+                let s = t.join('');
                 svg += '<text x="' + ((x + (t.length / 2) - 0.5) * SCALE) + '" y="' + (4 + y * SCALE * ASPECT);
+                if (options.spaces > 2 && s.indexOf('  ') >= 0) {
+                    svg += '" xml:space="preserve'
+                }
                 if (options.stretch) {
                     svg += '" textLength="' + (t.length * SCALE) + '" lengthAdjust="spacingAndGlyphs';
                 }
-                svg += '">' + escapeHTMLEntities(t) + '</text>\n';
+                svg += '">' + escapeHTMLEntities(s) + '</text>\n';
                 x = grid.textStart(x + t.length, y);
             }
         } // y

@@ -38,3 +38,12 @@ have to worry about this unless you are using an [insane
 profile](https://datatracker.ietf.org/doc/html/rfc7996)) and might distort the
 text a tiny bit because the metrics for the font used (the generic "monospace")
 cannot be exactly controlled.
+
+## Dark Backgrounds
+
+This tool draws black lines and text on a transparent background.  In certain settings (such as GitHub when
+a dark mode is enabled), this produces unfortunate results.  If you inline the
+resulting SVG, you can perform [tricks with
+CSS](https://github.com/martinthomson/i-d-template/blob/3c960b652a0708a291c01f186511fd0b39eeb8b4/v3.css#L982-L993),
+but if you are using `<img>`, that isn't possible.  Use the `--backdrop`
+switch to generate a mostly-white backdrop for the image.

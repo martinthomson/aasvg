@@ -152,7 +152,7 @@ function diagramToSVG(diagramString, options) {
     var POINT_CHARACTERS = 'o*◌○◍●';
     var JUMP_CHARACTERS = '()';
     var UNDIRECTED_VERTEX_CHARACTERS = "+";
-    var VERTEX_CHARACTERS = UNDIRECTED_VERTEX_CHARACTERS + ".'";
+    var VERTEX_CHARACTERS = UNDIRECTED_VERTEX_CHARACTERS + ".',`";
 
     // GRAY[i] is the Unicode block character for (i+1)/4 level gray
     var GRAY_CHARACTERS = '\u2591\u2592\u2593\u2588';
@@ -164,8 +164,8 @@ function diagramToSVG(diagramString, options) {
 
     function isUndirectedVertex(c) { return UNDIRECTED_VERTEX_CHARACTERS.indexOf(c) + 1; }
     function isVertex(c) { return VERTEX_CHARACTERS.indexOf(c) !== -1; }
-    function isTopVertex(c) { return isUndirectedVertex(c) || (c === '.'); }
-    function isBottomVertex(c) { return isUndirectedVertex(c) || (c === "'"); }
+    function isTopVertex(c) { return isUndirectedVertex(c) || (c === '.') || (c === ','); }
+    function isBottomVertex(c) { return isUndirectedVertex(c) || (c === "'") || (c === '`'); }
     function isVertexOrLeftDecoration(c) { return isVertex(c) || (c === '<') || isPoint(c); }
     function isVertexOrRightDecoration(c) { return isVertex(c) || (c === '>') || isPoint(c); }
     function isArrowHead(c) { return ARROW_HEAD_CHARACTERS.indexOf(c) + 1; }
@@ -406,7 +406,7 @@ function diagramToSVG(diagramString, options) {
                 // Looks like a diagonal line...does it continue? We need two in a row.
                 return (isSolidDLine(rt) || isTopVertex(rt) || isPoint(rt) || (rt === '^') || (rt === '_') ||
                     isSolidDLine(lt) || isBottomVertex(lt) || isPoint(lt) || (lt === 'v') || (lt === '_'));
-            } else if (c === '.') {
+            } else if (c === '.' || c === ',') {
                 return (lt === '/');
             } else if (c === "'") {
                 return (rt === '/');

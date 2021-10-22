@@ -1,5 +1,5 @@
-<svg class="diagram" xmlns="http://www.w3.org/2000/svg" version="1.1" height="400" width="752" viewBox="0 0 752 400" text-anchor="middle" font-family="monospace" font-size="13px">
-<rect x="0" y="0" width="752" height="400" rx="3px" ry="3px" fill="white" opacity="0.9"/>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="400" width="752" viewBox="0 0 752 400" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px">
+<rect class="backdrop" x="0" y="0" width="752" height="400" rx="3px" ry="3px" fill="white" opacity="0.9"/>
 <g transform="translate(8,16 )">
 <path d="M 0,0 L 0,48 " fill="none" stroke="black"/>
 <path d="M 8,96 L 8,128 " fill="none" stroke="black"/>
@@ -170,24 +170,53 @@
 <path d="M 160,24 L 184,24 " fill="none" stroke="black"/>
 <path d="M 208,24 L 232,24 " fill="none" stroke="black"/>
 <path d="M 256,24 L 280,24 " fill="none" stroke="black"/>
-<polygon points="720,152 708,146.4 708,157.6 " fill="black" stroke="none" transform="rotate(270,712,152 )"/>
-<polygon points="712,328 700,322.4 700,333.6 " fill="black" stroke="none" transform="rotate(270,704,328 )"/>
-<polygon points="672,184 660,178.4 660,189.6 " fill="black" stroke="none" transform="rotate(90,664,184 )"/>
-<polygon points="640,360 628,354.4 628,365.6 " fill="black" stroke="none" transform="rotate(90,632,360 )"/>
-<path d="M 584,120  C 590,120 590,104 584,104 " fill="none" stroke="black"/><path d="M 568,72  C 562,72 562,56 568,56 " fill="none" stroke="black"/><polygon points="480,32 468,26.4 468,37.6 " fill="black" stroke="none" transform="rotate(180,472,32 )"/>
-<polygon points="400,224 388,218.4 388,229.6 " fill="black" stroke="none" transform="rotate(180,392,224 )"/>
-<polygon points="392,32 380,26.4 380,37.6 " fill="black" stroke="none" transform="rotate(90,384,32 )"/>
-<polygon points="392,0 380,-5.6 380,5.6 " fill="black" stroke="none" transform="rotate(270,384,0 )"/>
-<polygon points="384,352 372,346.4 372,357.6 " fill="black" stroke="none" transform="rotate(180,376,352 )"/>
-<polygon points="352,248 340,242.4 340,253.6 " fill="black" stroke="none" transform="rotate(270,344,248 )"/>
-<polygon points="336,168 324,162.4 324,173.6 " fill="black" stroke="none" transform="rotate(90,328,168 )"/>
-<polygon points="320,352 308,346.4 308,357.6 " fill="black" stroke="none" transform="rotate(180,312,352 )"/>
-<polygon points="312,16 300,10.4 300,21.6 " fill="black" stroke="none" transform="rotate(0,304,16 )"/>
-<polygon points="288,208 276,202.4 276,213.6 " fill="black" stroke="none" transform="rotate(0,280,208 )"/>
-<polygon points="184,328 172,322.4 172,333.6 " fill="black" stroke="none" transform="rotate(90,176,328 )"/>
-<polygon points="160,288 148,282.4 148,293.6 " fill="black" stroke="none" transform="rotate(0,152,288 )"/>
-<polygon points="136,176 124,170.4 124,181.6 " fill="black" stroke="none" transform="rotate(180,128,176 )"/>
-<polygon points="136,160 124,154.4 124,165.6 " fill="black" stroke="none" transform="rotate(0,128,160 )"/>
-<polygon points="48,160 36,154.4 36,165.6 " fill="black" stroke="none" transform="rotate(180,40,160 )"/>
-<polygon points="16,304 4,298.4 4,309.6 " fill="black" stroke="none" transform="rotate(180,8,304 )"/>
-<circle cx="176" cy="288" r="6" class="opendot"/><circle cx="232" cy="288" r="6" class="opendot"/><circle cx="448" cy="32" r="6" class="closeddot"/><circle cx="536" cy="64" r="6" class="closeddot"/><g><text x="56" y="20">A Box</text><text x="200" y="68">Round</text><text x="88" y="100">Mixed Rounded</text><text x="328" y="100">Diagonals</text><text x="84" y="116">&amp; Square Corners</text><text x="692" y="132">Search</text><text x="492" y="164">Interior</text><text x="216" y="196">Diag line</text><text x="76" y="212">if (a &gt; b)</text><text x="480" y="212">Curved line</text><text x="76" y="228">obj-&gt;fcn()</text><text x="664" y="244">Done?</text><text x="140" y="276">Join</text><text x="380" y="276">Curved</text><text x="388" y="292">Vertical</text><text x="704" y="308">3</text><text x="444" y="324">not:line</text><text x="540" y="324">'quotes'</text><text x="476" y="340">A || B</text><text x="548" y="340">*bold*</text><text x="200" y="356">Not a dot</text><text x="512" y="356">A dash--is not a line</text><text x="476" y="372">Nor/is this.</text></g></g></svg>
+<polygon class="arrowhead" points="720,152 708,146.4 708,157.6 " fill="black" transform="rotate(270,712,152 )"/>
+<polygon class="arrowhead" points="712,328 700,322.4 700,333.6 " fill="black" transform="rotate(270,704,328 )"/>
+<polygon class="arrowhead" points="672,184 660,178.4 660,189.6 " fill="black" transform="rotate(90,664,184 )"/>
+<polygon class="arrowhead" points="640,360 628,354.4 628,365.6 " fill="black" transform="rotate(90,632,360 )"/>
+<path class="jump" d="M 584,120  C 590,120 590,104 584,104 " fill="none" stroke="black"/><path class="jump" d="M 568,72  C 562,72 562,56 568,56 " fill="none" stroke="black"/><polygon class="arrowhead" points="480,32 468,26.4 468,37.6 " fill="black" transform="rotate(180,472,32 )"/>
+<polygon class="arrowhead" points="400,224 388,218.4 388,229.6 " fill="black" transform="rotate(180,392,224 )"/>
+<polygon class="arrowhead" points="392,32 380,26.4 380,37.6 " fill="black" transform="rotate(90,384,32 )"/>
+<polygon class="arrowhead" points="392,0 380,-5.6 380,5.6 " fill="black" transform="rotate(270,384,0 )"/>
+<polygon class="arrowhead" points="384,352 372,346.4 372,357.6 " fill="black" transform="rotate(180,376,352 )"/>
+<polygon class="arrowhead" points="352,248 340,242.4 340,253.6 " fill="black" transform="rotate(270,344,248 )"/>
+<polygon class="arrowhead" points="336,168 324,162.4 324,173.6 " fill="black" transform="rotate(90,328,168 )"/>
+<polygon class="arrowhead" points="320,352 308,346.4 308,357.6 " fill="black" transform="rotate(180,312,352 )"/>
+<polygon class="arrowhead" points="312,16 300,10.4 300,21.6 " fill="black" transform="rotate(0,304,16 )"/>
+<polygon class="arrowhead" points="288,208 276,202.4 276,213.6 " fill="black" transform="rotate(0,280,208 )"/>
+<polygon class="arrowhead" points="184,328 172,322.4 172,333.6 " fill="black" transform="rotate(90,176,328 )"/>
+<polygon class="arrowhead" points="160,288 148,282.4 148,293.6 " fill="black" transform="rotate(0,152,288 )"/>
+<polygon class="arrowhead" points="136,176 124,170.4 124,181.6 " fill="black" transform="rotate(180,128,176 )"/>
+<polygon class="arrowhead" points="136,160 124,154.4 124,165.6 " fill="black" transform="rotate(0,128,160 )"/>
+<polygon class="arrowhead" points="48,160 36,154.4 36,165.6 " fill="black" transform="rotate(180,40,160 )"/>
+<polygon class="arrowhead" points="16,304 4,298.4 4,309.6 " fill="black" transform="rotate(180,8,304 )"/>
+<circle cx="176" cy="288" r="6" class="opendot"/>
+<circle cx="232" cy="288" r="6" class="opendot"/>
+<circle cx="448" cy="32" r="6" class="closeddot"/>
+<circle cx="536" cy="64" r="6" class="closeddot"/>
+<g class="text">
+<text x="56" y="20">A Box</text>
+<text x="200" y="68">Round</text>
+<text x="88" y="100">Mixed Rounded</text>
+<text x="328" y="100">Diagonals</text>
+<text x="84" y="116">&amp; Square Corners</text>
+<text x="692" y="132">Search</text>
+<text x="492" y="164">Interior</text>
+<text x="216" y="196">Diag line</text>
+<text x="76" y="212">if (a &gt; b)</text>
+<text x="480" y="212">Curved line</text>
+<text x="76" y="228">obj-&gt;fcn()</text>
+<text x="664" y="244">Done?</text>
+<text x="140" y="276">Join</text>
+<text x="380" y="276">Curved</text>
+<text x="388" y="292">Vertical</text>
+<text x="704" y="308">3</text>
+<text x="444" y="324">not:line</text>
+<text x="540" y="324">'quotes'</text>
+<text x="476" y="340">A || B</text>
+<text x="548" y="340">*bold*</text>
+<text x="200" y="356">Not a dot</text>
+<text x="512" y="356">A dash--is not a line</text>
+<text x="476" y="372">Nor/is this.</text>
+</g>
+</g></svg>

@@ -15,7 +15,7 @@
 
 // Mappings and constants used by markdeep.
 const STROKE_WIDTH = 2;
-const ARROW_COLOR = ' fill="black" stroke="none"';
+const ARROW_COLOR = ' fill="black"'; // + ' stroke="none"', but xml2rfc doesn't like that.
 const STROKE_COLOR = ' fill="none" stroke="black"';
 const TEXT_COLOR = ' stroke="black"';
 ['min', 'max', 'abs', 'sign'].forEach(f => {
@@ -678,7 +678,7 @@ function diagramToSVG(diagramString, options) {
 
             } else if (isPoint(decoration.type)) {
                 var cls = { '*': 'closed', 'o': 'open', '◌': 'dotted', '○': 'open', '◍': 'shaded', '●': 'closed' }[decoration.type];
-                svg += '<circle class="point" cx="' + (C.x * SCALE) + '" cy="' + (C.y * SCALE * ASPECT) +
+                svg += '<circle cx="' + (C.x * SCALE) + '" cy="' + (C.y * SCALE * ASPECT) +
                     '" r="' + (SCALE - STROKE_WIDTH) + '" class="' + cls + 'dot"/>\n';
             } else if (isGray(decoration.type)) {
                 var shade = Math.round((3 - GRAY_CHARACTERS.indexOf(decoration.type)) * 63.75);

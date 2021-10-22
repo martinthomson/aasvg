@@ -20,8 +20,21 @@ $ aasvg < example.txt > example.svg
      when shown on GitHub in dark mode -->
 ![example](./example.svg)
 
-## Significant Changes
+## Character Placement
 
-By default, this does not place text characters on a grid one-by-one.  This
-improves accessibility at the cost of having characters less precisely placed.
-The `--text-grid` option can be used to enable precise placement.
+By default, this does not place text characters on a grid one-by-one as the
+original markdeep code did.
+
+The `--spaces` command-line argument controls how text is combined.  Use either
+`--spaces=0` or `--stretch` to provide precise text placement.
+
+`--spaces=0`
+ensures that every character is placed separately; which is precise and avoids
+text distortion, but makes for a larger SVG that is harder to search.
+
+`--stretch` can be used with `--spaces` set to any value.  `--stretch` stretches
+text to fit, which is less widely implemented in viewers (generally you don't
+have to worry about this unless you are using an [insane
+profile](https://datatracker.ietf.org/doc/html/rfc7996)) and might distort the
+text a tiny bit because the metrics for the font used (the generic "monospace")
+cannot be exactly controlled.

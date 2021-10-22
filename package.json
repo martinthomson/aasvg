@@ -1,6 +1,6 @@
 {
   "name": "aasvg",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Turn ASCII art diagrams into SVG",
   "bin": "./main.js",
   "repository": {
@@ -21,5 +21,6 @@
   "homepage": "https://github.com/martinthomson/aasvg#readme",
   "engines": {
     "node": ">=10"
-  }
+  },
+  "files": [ "*.js", "README.md" ]
 }

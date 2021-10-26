@@ -204,7 +204,7 @@ function diagramToSVG(diagramString, options) {
     }
 
     /** Returns coordinates */
-    Vec2.prototype.coords = function() {
+    Vec2.prototype.coords = function () {
         return '' + (this.x * SCALE) + ',' + (this.y * SCALE * ASPECT);
     }
     /** Returns an SVG representation, with a trailing space */
@@ -981,6 +981,7 @@ function diagramToSVG(diagramString, options) {
         // horizontally-adjacent characters.
         for (var y = 0; y < grid.height; ++y) {
             for (var x = 0; x < grid.width; ++x) {
+                const CURVE = 0.551915024494; // https://spencermortensen.com/articles/bezier-circle/
                 var c = grid(x, y);
 
                 // Note that because of undirected vertices, the
@@ -991,7 +992,7 @@ function diagramToSVG(diagramString, options) {
                     if (isSolidHLine(grid(x - 1, y)) && isSolidVLine(grid(x + 1, y + 1))) {
                         grid.setUsed(x - 1, y); grid.setUsed(x, y); grid.setUsed(x + 1, y + 1);
                         pathSet.insert(new Path(Vec2(x - 1, y), Vec2(x + 1, y + 1),
-                            Vec2(x + 1.1, y), Vec2(x + 1, y + 1)));
+                            Vec2(x - 1 + CURVE * ASPECT, y), Vec2(x + 1, y + 1 - CURVE)));
                     }
 
                     //  .-
@@ -999,7 +1000,7 @@ function diagramToSVG(diagramString, options) {
                     if (isSolidHLine(grid(x + 1, y)) && isSolidVLine(grid(x - 1, y + 1))) {
                         grid.setUsed(x - 1, y + 1); grid.setUsed(x, y); grid.setUsed(x + 1, y);
                         pathSet.insert(new Path(Vec2(x + 1, y), Vec2(x - 1, y + 1),
-                            Vec2(x - 1.1, y), Vec2(x - 1, y + 1)));
+                            Vec2(x + 1 - CURVE * ASPECT, y), Vec2(x - 1, y + 1 - CURVE)));
                     }
                 }
 
@@ -1025,7 +1026,7 @@ function diagramToSVG(diagramString, options) {
                     if (isSolidHLine(grid(x - 1, y)) && isSolidVLine(grid(x + 1, y - 1))) {
                         grid.setUsed(x - 1, y); grid.setUsed(x, y); grid.setUsed(x + 1, y - 1);
                         pathSet.insert(new Path(Vec2(x - 1, y), Vec2(x + 1, y - 1),
-                            Vec2(x + 1.1, y), Vec2(x + 1, y - 1)));
+                            Vec2(x - 1 + CURVE * ASPECT, y), Vec2(x + 1, y - 1 + CURVE)));
                     }
 
                     // |
@@ -1033,7 +1034,7 @@ function diagramToSVG(diagramString, options) {
                     if (isSolidHLine(grid(x + 1, y)) && isSolidVLine(grid(x - 1, y - 1))) {
                         grid.setUsed(x - 1, y - 1); grid.setUsed(x, y); grid.setUsed(x + 1, y);
                         pathSet.insert(new Path(Vec2(x + 1, y), Vec2(x - 1, y - 1),
-                            Vec2(x - 1.1, y), Vec2(x - 1, y - 1)));
+                            Vec2(x + 1 - CURVE * ASPECT, y), Vec2(x - 1, y - 1 + CURVE)));
                     }
                 }
 

@@ -1407,12 +1407,12 @@ function diagramToSVG(diagramString, options) {
     }
 
     if (options.source) {
-        // Offset the characters a little for easier viewing
         svg += '<g class="source" fill="red" font-size="12px">\n';
         for (var y = 0; y < grid.height; ++y) {
             for (var x = 0; x < grid.width; ++x) {
                 var c = grid(x, y);
                 if (c !== ' ') {
+                    // Offset the characters by 2 for easier viewing
                     svg += '<text x="' + ((x + 1) * SCALE + 2) +
                         '" y="' + (6 + (y + 1) * SCALE * ASPECT) +
                         '">' + escapeHTMLEntities(c) + '</text>';

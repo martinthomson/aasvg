@@ -14,6 +14,7 @@ function usage() {
     console.warn("    --stretch         Stretch text to better fit it")
     console.warn("                      (use with --spaces > 0; uses advanced SVG)");
     console.warn("    --backdrop        Draw a backdrop");
+    console.warn("    --source          Draw an overlay with source text");
     console.warn("    --<attr>=<value>  Set SVG attribute <attr> to <value>");
     console.warn("    --version         Show the version and exit");
     process.exit(2);
@@ -50,6 +51,8 @@ async function read() {
             options.stretch = true;
         } else if (a === '--backdrop') {
             options.backdrop = true;
+        } else if (a === '--source') {
+            options.source = true;
         } else if (a === "--version") {
             console.log(VERSION);
             process.exit();

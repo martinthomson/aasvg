@@ -205,7 +205,8 @@ function diagramToSVG(diagramString, options) {
 
     /** Returns coordinates */
     Vec2.prototype.coords = function () {
-        return '' + (this.x * SCALE) + ',' + (this.y * SCALE * ASPECT);
+        function s(x) { return x.toFixed(5).replace(/\.?0*$/, ''); }
+        return s(this.x * SCALE) + ',' + s(this.y * SCALE * ASPECT);
     }
     /** Returns an SVG representation, with a trailing space */
     Vec2.prototype.toString = Vec2.prototype.toSVG =
@@ -678,7 +679,7 @@ function diagramToSVG(diagramString, options) {
                 var cup = Vec2(C.x + dx, C.y - 0.5);
                 var cdn = Vec2(C.x + dx, C.y + 0.5);
 
-                svg += '<path class="jump" d="M ' + dn + ' C ' + cdn + cup + up.coords() + '"' + STROKE_COLOR + '/>';
+                svg += '<path class="jump" d="M ' + dn + 'C ' + cdn + cup + up.coords() + '"' + STROKE_COLOR + '/>';
 
             } else if (isPoint(decoration.type)) {
                 var cls = { '*': 'closed', 'o': 'open', '◌': 'dotted', '○': 'open', '◍': 'shaded', '●': 'closed' }[decoration.type];
@@ -699,12 +700,12 @@ function diagramToSVG(diagramString, options) {
                 var tip = Vec2(C.x + xs, C.y - ys);
                 var up = Vec2(C.x + xs, C.y + ys);
                 var dn = Vec2(C.x - xs, C.y + ys);
-                svg += '<polygon class="triangle" points="' + tip + up + dn.coords() + '"' + ARROW_COLOR + '/>\n';
+                svg += '<polygon class="triangle" points="' + tip + up + dn.coords(4) + '"' + ARROW_COLOR + '/>\n';
             } else { // Arrow head
                 var tip = Vec2(C.x + 1, C.y);
                 var up = Vec2(C.x - 0.5, C.y - 0.35);
                 var dn = Vec2(C.x - 0.5, C.y + 0.35);
-                svg += '<polygon class="arrowhead" points="' + tip + up + dn.coords() + '"' + ARROW_COLOR +
+                svg += '<polygon class="arrowhead" points="' + tip + up + dn + '"' + ARROW_COLOR +
                     ' transform="rotate(' + decoration.angle + ',' + C.coords() + ')"/>\n';
             }
         }

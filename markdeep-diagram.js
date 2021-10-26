@@ -168,7 +168,6 @@ function diagramToSVG(diagramString, options) {
     function isBottomVertex(c) { return isUndirectedVertex(c) || (c === "'") || (c === '`'); }
     function isVertexOrLeftDecoration(c) { return isVertex(c) || (c === '<') || isPoint(c); }
     function isVertexOrRightDecoration(c) { return isVertex(c) || (c === '>') || isPoint(c); }
-    function isArrowHead(c) { return ARROW_HEAD_CHARACTERS.indexOf(c) + 1; }
     function isGray(c) { return GRAY_CHARACTERS.indexOf(c) + 1; }
     function isTri(c) { return TRI_CHARACTERS.indexOf(c) + 1; }
 
@@ -182,7 +181,6 @@ function diagramToSVG(diagramString, options) {
     function isJump(c) { return JUMP_CHARACTERS.indexOf(c) + 1; }
     function isPoint(c) { return POINT_CHARACTERS.indexOf(c) + 1; }
     function isDecoration(c) { return DECORATION_CHARACTERS.indexOf(c) + 1; }
-    function isEmpty(c) { return c === ' '; }
 
     ///////////////////////////////////////////////////////////////////////////////
     // Math library
@@ -682,9 +680,16 @@ function diagramToSVG(diagramString, options) {
                 svg += '<path class="jump" d="M ' + dn + 'C ' + cdn + cup + up.coords() + '"' + STROKE_COLOR + '/>';
 
             } else if (isPoint(decoration.type)) {
-                var cls = { '*': 'closed', 'o': 'open', '◌': 'dotted', '○': 'open', '◍': 'shaded', '●': 'closed' }[decoration.type];
+                const CLASSES = { '*': 'closed', 'o': 'open', '◌': 'dotted', '○': 'open', '◍': 'shaded', '●': 'closed' };
+                const FILL = { 'closed': 'black', 'open': 'white', 'dotted': 'white', 'shaded': '#666' };
+                const STROKE = {
+                    'closed': '', 'open': ' stroke="black"',
+                    'dotted': ' stroke="black" stroke-dasharray="1,1"', 'shaded': ' stroke="black"'
+                };
+                var cls = CLASSES[decoration.type];
                 svg += '<circle cx="' + (C.x * SCALE) + '" cy="' + (C.y * SCALE * ASPECT) +
-                    '" r="' + (SCALE - STROKE_WIDTH) + '" class="' + cls + 'dot"/>\n';
+                    '" r="' + (SCALE - STROKE_WIDTH) + '" class="' + cls + 'dot"' +
+                    ' fill="' + FILL[cls] + '"' + STROKE[cls] + '/>\n';
             } else if (isGray(decoration.type)) {
                 var shade = Math.round((3 - GRAY_CHARACTERS.indexOf(decoration.type)) * 63.75);
                 svg += '<rect class="gray" x="' + ((C.x - 0.5) * SCALE) + '" y="' + ((C.y - 0.5) * SCALE * ASPECT) +

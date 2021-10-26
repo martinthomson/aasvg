@@ -190,10 +190,10 @@
 <polygon class="arrowhead" points="136,160 124,154.4 124,165.6 " fill="black" transform="rotate(0,128,160)"/>
 <polygon class="arrowhead" points="48,160 36,154.4 36,165.6 " fill="black" transform="rotate(180,40,160)"/>
 <polygon class="arrowhead" points="16,304 4,298.4 4,309.6 " fill="black" transform="rotate(180,8,304)"/>
-<circle cx="176" cy="288" r="6" class="opendot"/>
-<circle cx="232" cy="288" r="6" class="opendot"/>
-<circle cx="448" cy="32" r="6" class="closeddot"/>
-<circle cx="536" cy="64" r="6" class="closeddot"/>
+<circle cx="176" cy="288" r="6" class="dotteddot" fill="white" stroke="black" stroke-dasharray="1,1"/>
+<circle cx="232" cy="288" r="6" class="shadeddot" fill="#666" stroke="black"/>
+<circle cx="448" cy="32" r="6" class="closeddot" fill="black"/>
+<circle cx="536" cy="64" r="6" class="closeddot" fill="black"/>
 <g class="text">
 <text x="56" y="20">A Box</text>
 <text x="200" y="68">Round</text>

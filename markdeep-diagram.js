@@ -902,13 +902,11 @@ function diagramToSVG(diagramString, options) {
                             //   ^
                             //    \
                             A.x -= 0.25; A.y -= 0.25;
-                        } else {
-                            if (/* top === '\\' &&  */ grid.isSolidDLineAt(A.x - 1, A.y)) {
-                                // Cap a sharp vertex:
-                                //   \  /   \  _
-                                //    \/     \/
-                                A.x -= 0.5; A.y -= 0.5;
-                            }
+                        } else if (top === '\\' && grid.isSolidDLineAt(A.x - 1, A.y)) {
+                            // Cap a sharp vertex:
+                            //   \  /   \  _
+                            //    \/     \/
+                            A.x -= 0.5; A.y -= 0.5;
                         }
 
                         var bottom = grid(B);
@@ -931,7 +929,7 @@ function diagramToSVG(diagramString, options) {
                             //      o
 
                             B.x += 0.25; B.y += 0.25;
-                        } else if (grid.isSolidDLineAt(B.x + 1, B.y)) {
+                        } else if (bottom === '\\' && grid.isSolidDLineAt(B.x + 1, B.y)) {
                             // Cap a sharp vertex:
                             //     /\   _/\
                             //    /  \     \
@@ -983,7 +981,7 @@ function diagramToSVG(diagramString, options) {
                             //     /
 
                             B.x += 0.25; B.y -= 0.25;
-                        } if (grid.isSolidBLineAt(B.x + 1, B.y)) {
+                        } if (bottom === '/' && grid.isSolidBLineAt(B.x + 1, B.y)) {
                             // Cap a sharp vertex:
                             //   \  /   \  _
                             //    \/     \/
@@ -1011,7 +1009,7 @@ function diagramToSVG(diagramString, options) {
                             //     o
 
                             A.x -= 0.25; A.y += 0.25;
-                        } else if (grid.isSolidBLineAt(A.x - 1, A.y)) {
+                        } else if (top === '/' && grid.isSolidBLineAt(A.x - 1, A.y)) {
                             // Cap a sharp vertex:
                             //    \  /    _  /
                             //     \/      \/

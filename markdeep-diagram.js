@@ -395,7 +395,9 @@ function diagramToSVG(diagramString, options) {
                 // Looks like a diagonal line...does it continue? We need two in a row.
                 return (isSolidBLine(rt) || isBottomVertex(rt) || isPoint(rt) || (rt === 'v' || rt === 'V') ||
                     isSolidBLine(lt) || isTopVertex(lt) || isPoint(lt) || (lt === '^') ||
-                    (grid(x, y - 1) === '/') || (grid(x, y + 1) === '/') || (rt === '_') || (lt === '_'));
+                    (grid(x, y - 1) === '/') || (grid(x, y + 1) === '/') || (rt === '_') || (lt === '_') ||
+                    (grid(x + 1, y) === '/' && grid(x - 1, y - 1) === '_') ||
+                    (grid(x - 1, y) === '/' && grid(x + 1, y) === '_'));
             } else if (c === '.') {
                 return (rt === '\\');
             } else if (c === "'") {
@@ -420,6 +422,11 @@ function diagramToSVG(diagramString, options) {
 
             if (c === '/' && ((grid(x, y - 1) === '\\') || (grid(x, y + 1) === '\\'))) {
                 // Special case of tiny hexagon corner
+                return true;
+            } else if (c === '/' && ((grid(x + 1, y) === '\\' && grid(x - 1, y) === '_') ||
+                (grid(x - 1, y) === '\\' && grid(x + 1, y - 1) === '_'))) {
+                // _/\ or   _
+                //        \/
                 return true;
             } else if (isSolidDLine(c)) {
                 // Looks like a diagonal line...does it continue? We need two in a row.
@@ -895,6 +902,13 @@ function diagramToSVG(diagramString, options) {
                             //   ^
                             //    \
                             A.x -= 0.25; A.y -= 0.25;
+                        } else {
+                            if (/* top === '\\' &&  */ grid.isSolidDLineAt(A.x - 1, A.y)) {
+                                // Cap a sharp vertex:
+                                //   \  /   \  _
+                                //    \/     \/
+                                A.x -= 0.5; A.y -= 0.5;
+                            }
                         }
 
                         var bottom = grid(B);
@@ -917,6 +931,11 @@ function diagramToSVG(diagramString, options) {
                             //      o
 
                             B.x += 0.25; B.y += 0.25;
+                        } else if (grid.isSolidDLineAt(B.x + 1, B.y)) {
+                            // Cap a sharp vertex:
+                            //     /\   _/\
+                            //    /  \     \
+                            B.x += 0.5; B.y += 0.5;
                         }
 
                         pathSet.insert(new Path(A, B));
@@ -964,6 +983,11 @@ function diagramToSVG(diagramString, options) {
                             //     /
 
                             B.x += 0.25; B.y -= 0.25;
+                        } if (grid.isSolidBLineAt(B.x + 1, B.y)) {
+                            // Cap a sharp vertex:
+                            //   \  /   \  _
+                            //    \/     \/
+                            B.x += 0.5; B.y -= 0.5;
                         }
 
                         var dnlt = grid(A.x - 1, A.y + 1);
@@ -987,6 +1011,11 @@ function diagramToSVG(diagramString, options) {
                             //     o
 
                             A.x -= 0.25; A.y += 0.25;
+                        } else if (grid.isSolidBLineAt(A.x - 1, A.y)) {
+                            // Cap a sharp vertex:
+                            //    \  /    _  /
+                            //     \/      \/
+                            A.x -= 0.5; A.y += 0.5;
                         }
                         pathSet.insert(new Path(A, B));
 

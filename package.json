@@ -22,5 +22,8 @@
   "engines": {
     "node": ">=10"
   },
-  "files": [ "*.js", "README.md" ]
+  "files": [ "*.js", "README.md" ],
+  "scripts": {
+    "test": "svg=$(mktemp); trap \"rm $svg\" EXIT;./main.js --backdrop <example.txt >\"$svg\"; diff -u example.svg \"$svg\""
+  }
 }

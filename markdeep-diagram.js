@@ -189,9 +189,11 @@ function diagramToSVG(diagramString, options) {
 
     // "D" = Diagonal slash (/), "B" = diagonal Backslash (\)
     // Characters that may appear anywhere on a solid line
-    function isSolidHLine(c) { return (c === '-') || isUndirectedVertex(c) || isJump(c); }
+    function isSolidHLine(c) { return (c === '-') || (c === '\u2501') || isUndirectedVertex(c) || isJump(c); }
+    function isDoubleHLine(c) { return (c === '=') || (c === '\u2550') || isUndirectedVertex(c) || isJump(c); }
     function isSolidVLineOrJumpOrPoint(c) { return isSolidVLine(c) || isJump(c) || isPoint(c); }
-    function isSolidVLine(c) { return (c === '|') || isUndirectedVertex(c); }
+    function isSolidVLine(c) { return (c === '|') || (c === '\u2503') || isUndirectedVertex(c); }
+    function isDoubleVLine(c) { return (c === '\u2551') || isUndirectedVertex(c); }
     function isSolidDLine(c) { return (c === '/') || isUndirectedVertex(c) }
     function isSolidBLine(c) { return (c === '\\') || isUndirectedVertex(c); }
     function isJump(c) { return JUMP_CHARACTERS.indexOf(c) + 1; }
@@ -225,6 +227,8 @@ function diagramToSVG(diagramString, options) {
     /** Returns an SVG representation, with a trailing space */
     Vec2.prototype.toString = Vec2.prototype.toSVG =
         function () { return this.coords() + ' '; };
+    /** Return an offset Vec2 */
+    Vec2.prototype.offset = function (dx, dy) { return Vec2(this.x + dx, this.y + dy); }
 
     /** Converts a "rectangular" string defined by newlines into 2D
         array of characters. Grids are immutable. */
@@ -313,7 +317,7 @@ function diagramToSVG(diagramString, options) {
         }
 
         /** Returns true if there is a solid vertical line passing through (x, y) */
-        grid.isSolidVLineAt = function (x, y) {
+        grid.isVLineAt = function (x, y, f, short) {
             if (y === undefined) { y = x.x; x = x.x; }
 
             var up = grid(x, y - 1);
@@ -323,33 +327,37 @@ function diagramToSVG(diagramString, options) {
             var uprt = grid(x + 1, y - 1);
             var uplt = grid(x - 1, y - 1);
 
-            if (isSolidVLine(c)) {
+            if (f(c)) {
                 // Looks like a vertical line...does it continue?
-                return (isTopVertex(up) || (up === '^') || isSolidVLine(up) || isJump(up) ||
-                    isBottomVertex(dn) || (dn === 'v') || isSolidVLine(dn) || isJump(dn) ||
+                return (isTopVertex(up) || (up === '^') || f(up) || isJump(up) ||
+                    isBottomVertex(dn) || (dn === 'v') || f(dn) || isJump(dn) ||
                     isPoint(up) || isPoint(dn) || (grid(x, y - 1) === '_') || (uplt === '_') ||
                     (uprt === '_') ||
-
                     // Special case of 1-high vertical on two curved corners
                     ((isTopVertex(uplt) || isTopVertex(uprt)) &&
                         (isBottomVertex(grid(x - 1, y + 1)) || isBottomVertex(grid(x + 1, y + 1)))));
 
             } else if (isTopVertex(c) || (c === '^')) {
                 // May be the top of a vertical line
-                return isSolidVLine(dn) || (isJump(dn) && (c !== '.'));
+                return f(dn) || (isJump(dn) && (c !== '.'));
             } else if (isBottomVertex(c) || (c === 'v' || c === 'V')) {
-                return isSolidVLine(up) || (isJump(up) && (c !== "'"));
+                return f(up) || (isJump(up) && (c !== "'"));
             } else if (isPoint(c)) {
-                return isSolidVLine(up) || isSolidVLine(dn);
+                return f(up) || f(dn);
             }
 
             return false;
         };
-
+        grid.isSolidVLineAt = function (x, y) {
+            return grid.isVLineAt(x, y, isSolidVLine, true);
+        };
+        grid.isDoubleVLineAt = function (x, y) {
+            return grid.isVLineAt(x, y, isDoubleVLine, false);
+        };
 
         /** Returns true if there is a solid middle (---) horizontal line
             passing through (x, y). Ignores underscores. */
-        grid.isSolidHLineAt = function (x, y) {
+        grid.isHLineAt = function (x, y, f) {
             if (y === undefined) { y = x.x; x = x.x; }
 
             var ltlt = grid(x - 2, y);
@@ -358,29 +366,33 @@ function diagramToSVG(diagramString, options) {
             var rt = grid(x + 1, y);
             var rtrt = grid(x + 2, y);
 
-            if (isSolidHLine(c) || (isSolidHLine(lt) && isJump(c))) {
+            if (f(c) || (f(lt) && isJump(c))) {
                 // Looks like a horizontal line...does it continue? We need three in a row.
-                if (isSolidHLine(lt)) {
-                    return isSolidHLine(rt) || isVertexOrRightDecoration(rt) ||
-                        isSolidHLine(ltlt) || isVertexOrLeftDecoration(ltlt);
+                if (f(lt)) {
+                    return f(rt) || isVertexOrRightDecoration(rt) || f(ltlt) || isVertexOrLeftDecoration(ltlt);
                 } else if (isVertexOrLeftDecoration(lt)) {
-                    return isSolidHLine(rt);
+                    return f(rt);
                 } else {
-                    return isSolidHLine(rt) && (isSolidHLine(rtrt) || isVertexOrRightDecoration(rtrt));
+                    return f(rt) && (f(rtrt) || isVertexOrRightDecoration(rtrt));
                 }
 
             } else if (c === '<') {
-                return isSolidHLine(rt) && isSolidHLine(rtrt)
+                return f(rt) && f(rtrt)
 
             } else if (c === '>') {
-                return isSolidHLine(lt) && isSolidHLine(ltlt);
+                return f(lt) && f(ltlt);
 
             } else if (isVertex(c)) {
-                return ((isSolidHLine(lt) && isSolidHLine(ltlt)) ||
-                    (isSolidHLine(rt) && isSolidHLine(rtrt)));
+                return ((f(lt) && f(ltlt)) || (f(rt) && f(rtrt)));
             }
 
             return false;
+        };
+        grid.isSolidHLineAt = function (x, y) {
+            return this.isHLineAt(x, y, isSolidHLine);
+        };
+        grid.isDoubleHLineAt = function (x, y) {
+            return this.isHLineAt(x, y, isDoubleHLine);
         };
 
 
@@ -454,7 +466,7 @@ function diagramToSVG(diagramString, options) {
 
     /** A 1D curve. If C is specified, the result is a bezier with
         that as the tangent control point */
-    function Path(A, B, C, D, dashed) {
+    function Path(A, B, C, D, style) {
         if (!((A instanceof Vec2) && (B instanceof Vec2))) {
             throw new Error('Path constructor requires at least two Vec2s');
         }
@@ -469,7 +481,8 @@ function diagramToSVG(diagramString, options) {
             }
         }
 
-        this.dashed = dashed || false;
+        this.dashed = style === 'dashed' || false;
+        this.double = style === 'double' || false;
 
         Object.freeze(this);
     }
@@ -591,20 +604,37 @@ function diagramToSVG(diagramString, options) {
             (max(this.A.x, this.B.x) >= x);
     }
 
-    /** Returns a string suitable for inclusion in an SVG tag */
-    _.toSVG = function () {
-        var svg = '<path d="M ' + this.A;
-
+    _.offsetLine = function (dx, dy) {
+        let svg = '<path d="M ' + this.A.offset(dx, dy);
         if (this.isCurved()) {
-            svg += 'C ' + this.C + this.D + this.B.coords();
+            let c =
+                svg += 'C ' + this.C.offset(dx, dy) + this.D.offset(dx, dy);
         } else {
-            svg += 'L ' + this.B.coords();
+            svg += 'L ';
         }
-        svg += '"' + STROKE_COLOR;
+        svg += this.B.offset(dx, dy).coords() + '"' + STROKE_COLOR;
         if (this.dashed) {
             svg += ' stroke-dasharray="3,6"';
         }
         svg += '/>';
+        return svg;
+    }
+
+    /** Returns a string suitable for inclusion in an SVG tag */
+    _.toSVG = function () {
+        let svg = '';
+        if (this.double) {
+            let vx = this.B.x - this.A.x;
+            let vy = this.B.y - this.A.y;
+            let s = Math.sqrt(vx * vx + vy * vy);
+            vx /= s * SCALE;
+            vy /= s * SCALE / ASPECT;
+            svg += this.offsetLine(vy, -vx);
+            svg += this.offsetLine(-vy, vx);
+        } else {
+            svg = this.offsetLine(0, 0);
+        }
+
         return svg;
     };
 
@@ -760,46 +790,52 @@ function diagramToSVG(diagramString, options) {
         // so that we never hit the same line twice
         for (var x = 0; x < grid.width; ++x) {
             for (var y = 0; y < grid.height; ++y) {
-                if (grid.isSolidVLineAt(x, y)) {
-                    // This character begins a vertical line...now, find the end
-                    var A = Vec2(x, y);
-                    do { grid.setUsed(x, y); ++y; } while (grid.isSolidVLineAt(x, y));
-                    var B = Vec2(x, y - 1);
+                function vline(p, boxt, boxb, style) {
+                    if (grid[p](x, y)) {
+                        // This character begins a vertical line...now, find the end
+                        var A = Vec2(x, y);
+                        do { grid.setUsed(x, y); ++y; } while (grid[p](x, y));
+                        var B = Vec2(x, y - 1);
 
-                    var up = grid(A);
-                    var upup = grid(A.x, A.y - 1);
+                        var up = grid(A);
+                        var upup = grid(A.x, A.y - 1);
 
-                    if (!isVertex(up) && ((upup === '-') || (upup === '_') ||
-                        (upup === '┳') ||
-                        (grid(A.x - 1, A.y - 1) === '_') ||
-                        (grid(A.x + 1, A.y - 1) === '_') ||
-                        isBottomVertex(upup)) || isJump(upup)) {
-                        // Stretch up to almost reach the line above (if there is a decoration,
-                        // it will finish the gap)
-                        A.y -= 0.5;
+                        if (!isVertex(up) && ((upup === '-') || (upup === '_') ||
+                            (boxt.indexOf(upup) >= 0) ||
+                            (grid(A.x - 1, A.y - 1) === '_') ||
+                            (grid(A.x + 1, A.y - 1) === '_') ||
+                            isBottomVertex(upup)) || isJump(upup)) {
+                            // Stretch up to almost reach the line above (if there is a decoration,
+                            // it will finish the gap)
+                            A.y -= 0.5;
+                        }
+
+                        var dn = grid(B);
+                        var dndn = grid(B.x, B.y + 1);
+                        if (!isVertex(dn) && ((dndn === '-') || (boxb.indexOf(dndn) >= 0) || isTopVertex(dndn)) || isJump(dndn) ||
+                            (grid(B.x - 1, B.y) === '_') || (grid(B.x + 1, B.y) === '_')) {
+                            // Stretch down to almost reach the line below
+                            B.y += 0.5;
+                        }
+
+                        // Don't insert degenerate lines
+                        if ((A.x !== B.x) || (A.y !== B.y)) {
+                            pathSet.insert(new Path(A, B, null, null, style));
+                            return true;
+                        }
+                        // Continue the search from the end value y+1
                     }
-
-                    var dn = grid(B);
-                    var dndn = grid(B.x, B.y + 1);
-                    if (!isVertex(dn) && ((dndn === '-') || (dndn === '┻') || isTopVertex(dndn)) || isJump(dndn) ||
-                        (grid(B.x - 1, B.y) === '_') || (grid(B.x + 1, B.y) === '_')) {
-                        // Stretch down to almost reach the line below
-                        B.y += 0.5;
-                    }
-
-                    // Don't insert degenerate lines
-                    if ((A.x !== B.x) || (A.y !== B.y)) {
-                        pathSet.insert(new Path(A, B));
-                    }
-
-                    // Continue the search from the end value y+1
+                    return false;
                 }
+
+                if (vline("isSolidVLineAt", '\u2564', '\u2567') ||
+                    vline("isDoubleVLineAt", '\u2565\u2566', '\u2568\u2569', "double")) { continue; }
 
                 // Some very special patterns for the short lines needed on
                 // circuit diagrams. Only invoke these if not also on a curve
                 //      _  _
                 //    -'    '-   -'
-                else if ((grid(x, y) === "'") &&
+                if ((grid(x, y) === "'") &&
                     (((grid(x - 1, y) === '-') && (grid(x + 1, y - 1) === '_') &&
                         !isSolidVLineOrJumpOrPoint(grid(x - 1, y - 1))) ||
                         ((grid(x - 1, y - 1) === '_') && (grid(x + 1, y) === '-') &&
@@ -819,53 +855,61 @@ function diagramToSVG(diagramString, options) {
                 // For drawing resistors: -.╱
                 else if ((grid(x, y) === '.') &&
                     (grid(x - 1, y) === '-') &&
-                    (grid(x + 1, y) === '╱')) {
+                    (grid(x + 1, y) === '\u2571')) {
                     pathSet.insert(new Path(Vec2(x, y), Vec2(x + 0.5, y + 0.5)));
                 }
 
                 // For drawing resistors: ╱'-
                 else if ((grid(x, y) === "'") &&
                     (grid(x + 1, y) === '-') &&
-                    (grid(x - 1, y) === '╱')) {
+                    (grid(x - 1, y) === '\u2571')) {
                     pathSet.insert(new Path(Vec2(x, y), Vec2(x - 0.5, y - 0.5)));
                 }
 
             } // y
         } // x
 
+
         // Find all solid horizontal lines
         for (var y = 0; y < grid.height; ++y) {
             for (var x = 0; x < grid.width; ++x) {
-                if (grid.isSolidHLineAt(x, y)) {
-                    // Begins a line...find the end
-                    var A = Vec2(x, y);
-                    do { grid.setUsed(x, y); ++x; } while (grid.isSolidHLineAt(x, y));
-                    var B = Vec2(x - 1, y);
+                function hline(p, boxl, boxr, style) {
+                    if (grid[p](x, y)) {
+                        // Begins a line...find the end
+                        var A = Vec2(x, y);
+                        do { grid.setUsed(x, y); ++x; } while (grid[p](x, y));
+                        var B = Vec2(x - 1, y);
 
-                    // Detect adjacent box-drawing characters and lengthen the edge
-                    if (grid(B.x + 1, B.y) === '┫') { B.x += 0.5; }
-                    if (grid(A.x - 1, A.y) === '┣') { A.x -= 0.5; }
+                        // Detect adjacent box-drawing characters and lengthen the edge
+                        if (boxr.indexOf(grid(B.x + 1, B.y)) >= 0) { B.x += 0.5; }
+                        if (boxl.indexOf(grid(A.x - 1, A.y)) >= 0) { A.x -= 0.5; }
 
-                    // Detect curves and shorten the edge
-                    if (!isVertex(grid(A.x - 1, A.y)) &&
-                        ((isTopVertex(grid(A)) && isSolidVLineOrJumpOrPoint(grid(A.x - 1, A.y + 1))) ||
-                            (isBottomVertex(grid(A)) && isSolidVLineOrJumpOrPoint(grid(A.x - 1, A.y - 1))))) {
-                        ++A.x;
+                        // Detect curves and shorten the edge
+                        if (!isVertex(grid(A.x - 1, A.y)) &&
+                            ((isTopVertex(grid(A)) && isSolidVLineOrJumpOrPoint(grid(A.x - 1, A.y + 1))) ||
+                                (isBottomVertex(grid(A)) && isSolidVLineOrJumpOrPoint(grid(A.x - 1, A.y - 1))))) {
+                            ++A.x;
+                        }
+
+                        if (!isVertex(grid(B.x + 1, B.y)) &&
+                            ((isTopVertex(grid(B)) && isSolidVLineOrJumpOrPoint(grid(B.x + 1, B.y + 1))) ||
+                                (isBottomVertex(grid(B)) && isSolidVLineOrJumpOrPoint(grid(B.x + 1, B.y - 1))))) {
+                            --B.x;
+                        }
+
+                        // Only insert non-degenerate lines
+                        if ((A.x !== B.x) || (A.y !== B.y)) {
+                            pathSet.insert(new Path(A, B, null, null, style));
+                            return true;
+                        }
+
+                        // Continue the search from the end x+1
                     }
-
-                    if (!isVertex(grid(B.x + 1, B.y)) &&
-                        ((isTopVertex(grid(B)) && isSolidVLineOrJumpOrPoint(grid(B.x + 1, B.y + 1))) ||
-                            (isBottomVertex(grid(B)) && isSolidVLineOrJumpOrPoint(grid(B.x + 1, B.y - 1))))) {
-                        --B.x;
-                    }
-
-                    // Only insert non-degenerate lines
-                    if ((A.x !== B.x) || (A.y !== B.y)) {
-                        pathSet.insert(new Path(A, B));
-                    }
-
-                    // Continue the search from the end x+1
+                    return false;
                 }
+
+                hline("isSolidHLineAt", '\u2523', '\u252b', null) ||
+                    hline("isDoubleHLineAt", '\u255E', '\u2561', "double");
             }
         } // y
 

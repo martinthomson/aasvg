@@ -1389,13 +1389,18 @@ function diagramToSVG(diagramString, options) {
     findReplacementCharacters(grid, pathSet);
     findDecorations(grid, pathSet, decorationSet);
 
-    let width = (grid.width + 1) * SCALE;
-    let height = (grid.height + 1) * SCALE * ASPECT;
+    let width = ((options.width || grid.width) + 1) * SCALE;
+    let height = ((options.height || grid.height) + 1) * SCALE * ASPECT;
+    if (options.width > grid.width || options.height > grid.height) {
+        console.warn("warning: diagram overflows viewbox set by width/height option");
+    }
     let attrs = options.style;
     attrs.xmlns = 'http://www.w3.org/2000/svg';
     attrs.version = '1.1';
-    attrs.height = height.toString();
-    attrs.width = width.toString();
+    if (!options.fill) {
+        attrs.height = height.toString();
+        attrs.width = width.toString();
+    }
     attrs.viewBox = '0 0 ' + width + ' ' + height;
     // These attributes can be overridden:
     const DEFAULT_ATTRS = {

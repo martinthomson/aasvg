@@ -1,6 +1,6 @@
 {
   "name": "aasvg",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Turn ASCII art diagrams into SVG",
   "bin": "./main.js",
   "repository": {

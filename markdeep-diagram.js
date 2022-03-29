@@ -1391,7 +1391,8 @@ function diagramToSVG(diagramString, options) {
 
     let width = ((options.width || grid.width) + 1) * SCALE;
     let height = ((options.height || grid.height) + 1) * SCALE * ASPECT;
-    if (options.width > grid.width || options.height > grid.height) {
+    if ((options.width && options.width < grid.width) ||
+        (options.height && options.height < grid.height)) {
         console.warn("warning: diagram overflows viewbox set by width/height option");
     }
     let attrs = options.style;

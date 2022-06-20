@@ -762,7 +762,7 @@ function diagramToSVG(diagramString, options) {
                 var tip = Vec2(C.x + 1, C.y);
                 var up = Vec2(C.x - 0.5, C.y - 0.35);
                 var dn = Vec2(C.x - 0.5, C.y + 0.35);
-                svg += '<polygon class="arrowhead" points="' + tip + up + dn + '"' + ARROW_COLOR +
+                svg += '<polygon class="arrowhead" points="' + tip + up + dn.coords() + '"' + ARROW_COLOR +
                     ' transform="rotate(' + decoration.angle + ',' + C.coords() + ')"/>\n';
             }
         }

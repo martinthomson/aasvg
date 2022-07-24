@@ -872,7 +872,7 @@ function diagramToSVG(diagramString, options) {
 
         // Find all solid horizontal lines
         for (var y = 0; y < grid.height; ++y) {
-            for (var x = 0; x < grid.width; ++x) {
+            for (var x = 0; x < grid.width;) {
                 function hline(p, boxl, boxr, style) {
                     if (grid[p](x, y)) {
                         // Begins a line...find the end
@@ -908,8 +908,10 @@ function diagramToSVG(diagramString, options) {
                     return false;
                 }
 
-                hline("isSolidHLineAt", '\u2523', '\u252b', null) ||
-                    hline("isDoubleHLineAt", '\u255E', '\u2561', "double");
+                if (!hline("isSolidHLineAt", '\u2523', '\u252b', null) &&
+                    !hline("isDoubleHLineAt", '\u255E', '\u2561', "double")) {
+                    ++x;
+                }
             }
         } // y
 

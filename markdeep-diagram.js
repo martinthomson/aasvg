@@ -165,7 +165,7 @@ function diagramToSVG(diagramString, options) {
     // The order of the following is based on rotation angles
     // and is used for ArrowSet.toSVG
     var ARROW_HEAD_CHARACTERS = '>v<^';
-    var POINT_CHARACTERS = 'o*◌○◍●';
+    var POINT_CHARACTERS = 'o*◌○◍●⊕';
     var JUMP_CHARACTERS = '()';
     var UNDIRECTED_VERTEX_CHARACTERS = "+";
     var VERTEX_CHARACTERS = UNDIRECTED_VERTEX_CHARACTERS + ".',`";
@@ -707,7 +707,6 @@ function diagramToSVG(diagramString, options) {
 
         // Put arrows at the front and points at the back so that
         // arrows always draw under points
-
         if (isPoint(type)) {
             this._decorationArray.push(d);
         } else {
@@ -733,16 +732,31 @@ function diagramToSVG(diagramString, options) {
                 svg += '<path class="jump" d="M ' + dn + 'C ' + cdn + cup + up.coords() + '"' + STROKE_COLOR + '/>';
 
             } else if (isPoint(decoration.type)) {
-                const CLASSES = { '*': 'closed', 'o': 'open', '◌': 'dotted', '○': 'open', '◍': 'shaded', '●': 'closed' };
-                const FILL = { 'closed': 'black', 'open': 'white', 'dotted': 'white', 'shaded': '#666' };
+                const CLASSES = { '*': 'closed', 'o': 'open', '◌': 'dotted', '○': 'open', '◍': 'shaded', '●': 'closed', '⊕': 'xor' };
+                const FILL = { 'closed': 'black', 'open': 'white', 'dotted': 'white', 'shaded': '#666', 'xor': 'white' };
                 const STROKE = {
-                    'closed': '', 'open': ' stroke="black"',
-                    'dotted': ' stroke="black" stroke-dasharray="1,1"', 'shaded': ' stroke="black"'
+                    'closed': '',
+                    'open': ' stroke="black"',
+                    'dotted': ' stroke="black" stroke-dasharray="1,1"',
+                    'shaded': ' stroke="black"',
+                    'xor': ' stroke="black"',
                 };
                 var cls = CLASSES[decoration.type];
                 svg += '<circle cx="' + ((C.x + 1) * SCALE) + '" cy="' + ((C.y + 1) * SCALE * ASPECT) +
                     '" r="' + (SCALE - STROKE_WIDTH) + '" class="' + cls + 'dot"' +
                     ' fill="' + FILL[cls] + '"' + STROKE[cls] + '/>\n';
+                if (decoration.type === '⊕') {
+                    svg += '<line x1="' + ((C.x) * SCALE + STROKE_WIDTH) +
+                        '" y1="' + ((C.y + 1) * SCALE * ASPECT) +
+                        '" x2="' + ((C.x + 2) * SCALE - STROKE_WIDTH) +
+                        '" y2="' + ((C.y + 1) * SCALE * ASPECT) +
+                        '" stroke="black"/>';
+                    svg += '<line x1="' + ((C.x + 1) * SCALE) +
+                        '" y1="' + ((C.y + 1) * SCALE * ASPECT - SCALE + STROKE_WIDTH) +
+                        '" x2="' + ((C.x + 1) * SCALE) +
+                        '" y2="' + ((C.y + 1) * SCALE * ASPECT + SCALE - STROKE_WIDTH) +
+                        '" stroke="black"/>';
+                }
             } else if (isGray(decoration.type)) {
                 var shade = Math.round((3 - GRAY_CHARACTERS.indexOf(decoration.type)) * 63.75);
                 svg += '<rect class="gray" x="' + ((C.x + 0.5) * SCALE) + '" y="' + ((C.y + 0.5) * SCALE * ASPECT) +
@@ -1244,8 +1258,6 @@ function diagramToSVG(diagramString, options) {
                     var dn = grid(x, y + 1);
                     var lt = grid(x - 1, y);
                     var rt = grid(x + 1, y);
-                    var llt = grid(x - 2, y);
-                    var rrt = grid(x + 2, y);
 
                     if (pathSet.rightEndsAt(x - 1, y) ||   // Must be at the end of a line...
                         pathSet.leftEndsAt(x + 1, y) ||    // or completely isolated NSEW
@@ -1271,13 +1283,16 @@ function diagramToSVG(diagramString, options) {
                     // If we find one, ensure that it is really an
                     // arrow head and not a stray character by looking
                     // for a connecting line.
+                    const BACKOFF_X = 0.5;
+                    const BACKOFF_Y = 0.5 / ASPECT;
                     var dx = 0;
+                    var dy = 0;
                     if ((c === '>') && (pathSet.rightEndsAt(x, y) ||
                         pathSet.horizontalPassesThrough(x, y))) {
                         if (isPoint(grid(x + 1, y))) {
                             // Back up if connecting to a point so as to not
                             // overlap it
-                            dx = -0.5;
+                            dx = -BACKOFF_X;
                         }
                         decorationSet.insert(x + dx, y, '>', 0);
                         grid.setUsed(x, y);
@@ -1286,7 +1301,7 @@ function diagramToSVG(diagramString, options) {
                         if (isPoint(grid(x - 1, y))) {
                             // Back up if connecting to a point so as to not
                             // overlap it
-                            dx = 0.5;
+                            dx = BACKOFF_X;
                         }
                         decorationSet.insert(x + dx, y, '>', 180);
                         grid.setUsed(x, y);
@@ -1319,7 +1334,10 @@ function diagramToSVG(diagramString, options) {
                             grid.setUsed(x, y);
                         } else if (pathSet.verticalPassesThrough(x, y)) {
                             // Only try this if all others failed
-                            decorationSet.insert(x, y - 0.5, '>', 270);
+                            if (isPoint(grid(x, y - 1))) {
+                                dy = BACKOFF_Y; // Back up if connecting to a point
+                            }
+                            decorationSet.insert(x, y - 0.5 + dy, '>', 270);
                             grid.setUsed(x, y);
                         }
                     } else if (c === 'v' || c === 'V') {
@@ -1349,7 +1367,10 @@ function diagramToSVG(diagramString, options) {
                             grid.setUsed(x, y);
                         } else if (pathSet.verticalPassesThrough(x, y)) {
                             // Only try this if all others failed
-                            decorationSet.insert(x, y + 0.5, '>', 90);
+                            if (isPoint(grid(x, y + 1))) {
+                                dy = -BACKOFF_Y; // Back up if connecting to a point
+                            }
+                            decorationSet.insert(x, y + 0.5 + dy, '>', 90);
                             grid.setUsed(x, y);
                         }
                     } // arrow heads

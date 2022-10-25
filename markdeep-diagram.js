@@ -746,16 +746,16 @@ function diagramToSVG(diagramString, options) {
                     '" r="' + (SCALE - STROKE_WIDTH) + '" class="' + cls + 'dot"' +
                     ' fill="' + FILL[cls] + '"' + STROKE[cls] + '/>\n';
                 if (decoration.type === '⊕') {
-                    svg += '<line x1="' + ((C.x) * SCALE + STROKE_WIDTH) +
+                    svg += '<line class="xorbar" x1="' + ((C.x) * SCALE + STROKE_WIDTH) +
                         '" y1="' + ((C.y + 1) * SCALE * ASPECT) +
                         '" x2="' + ((C.x + 2) * SCALE - STROKE_WIDTH) +
                         '" y2="' + ((C.y + 1) * SCALE * ASPECT) +
-                        '" stroke="black"/>';
-                    svg += '<line x1="' + ((C.x + 1) * SCALE) +
+                        '" stroke="black"/>\n';
+                    svg += '<line class="xorbar" x1="' + ((C.x + 1) * SCALE) +
                         '" y1="' + ((C.y + 1) * SCALE * ASPECT - SCALE + STROKE_WIDTH) +
                         '" x2="' + ((C.x + 1) * SCALE) +
                         '" y2="' + ((C.y + 1) * SCALE * ASPECT + SCALE - STROKE_WIDTH) +
-                        '" stroke="black"/>';
+                        '" stroke="black"/>\n';
                 }
             } else if (isGray(decoration.type)) {
                 var shade = Math.round((3 - GRAY_CHARACTERS.indexOf(decoration.type)) * 63.75);

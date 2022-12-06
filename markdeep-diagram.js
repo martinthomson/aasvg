@@ -803,7 +803,7 @@ function diagramToSVG(diagramString, options) {
         // Find all solid vertical lines. Iterate horizontally
         // so that we never hit the same line twice
         for (var x = 0; x < grid.width; ++x) {
-            for (var y = 0; y < grid.height; ++y) {
+            for (var y = 0; y < grid.height;) {
                 function vline(p, boxt, boxb, style) {
                     if (grid[p](x, y)) {
                         // This character begins a vertical line...now, find the end
@@ -837,13 +837,15 @@ function diagramToSVG(diagramString, options) {
                             pathSet.insert(new Path(A, B, null, null, style));
                             return true;
                         }
-                        // Continue the search from the end value y+1
+                        // Continue the search from the end value y
                     }
                     return false;
                 }
 
                 if (vline("isSolidVLineAt", '\u2564', '\u2567') ||
-                    vline("isDoubleVLineAt", '\u2565\u2566', '\u2568\u2569', "double")) { continue; }
+                    vline("isDoubleVLineAt", '\u2565\u2566', '\u2568\u2569', "double")) {
+                    continue;
+                }
 
                 // Some very special patterns for the short lines needed on
                 // circuit diagrams. Only invoke these if not also on a curve
@@ -880,13 +882,14 @@ function diagramToSVG(diagramString, options) {
                     pathSet.insert(new Path(Vec2(x, y), Vec2(x - 0.5, y - 0.5)));
                 }
 
+                ++y;
             } // y
         } // x
 
 
         // Find all solid horizontal lines
         for (var y = 0; y < grid.height; ++y) {
-            for (var x = 0; x < grid.width; ++x) {
+            for (var x = 0; x < grid.width;) {
                 function hline(p, boxl, boxr, style) {
                     if (grid[p](x, y)) {
                         // Begins a line...find the end
@@ -917,13 +920,16 @@ function diagramToSVG(diagramString, options) {
                             return true;
                         }
 
-                        // Continue the search from the end x+1
+                        // Continue the search at x
                     }
                     return false;
                 }
 
-                hline("isSolidHLineAt", '\u2523', '\u252b', null) ||
+                let line = hline("isSolidHLineAt", '\u2523', '\u252b', null) ||
                     hline("isDoubleHLineAt", '\u255E', '\u2561', "double");
+                if (!line) {
+                    ++x;
+                }
             }
         } // y
 

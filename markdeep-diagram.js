@@ -1430,6 +1430,7 @@ function diagramToSVG(diagramString, options) {
         'text-anchor': 'middle',
         'font-family': 'monospace',
         'font-size': (SCALE * 13 / 8).toString() + 'px',
+        'stroke-linecap': 'round',
     };
     Object.keys(DEFAULT_ATTRS).forEach(k => {
         if (!attrs[k]) { attrs[k] = DEFAULT_ATTRS[k]; }

@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="400" width="752" viewBox="0 0 752 400" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+<rect class="backdrop" x="0" y="0" width="752" height="400" rx="3px" ry="3px" fill="white" opacity="0.9"/>
 <path d="M 8,16 L 8,64" fill="none" stroke="black"/>
 <path d="M 16,112 L 16,144" fill="none" stroke="black"/>
 <path d="M 16,208 L 16,256" fill="none" stroke="black"/>
@@ -188,7 +189,7 @@
 <polygon class="arrowhead" points="144,176 132,170.4 132,181.6" fill="black" transform="rotate(0,136,176)"/>
 <polygon class="arrowhead" points="56,176 44,170.4 44,181.6" fill="black" transform="rotate(180,48,176)"/>
 <polygon class="arrowhead" points="24,320 12,314.4 12,325.6" fill="black" transform="rotate(180,16,320)"/>
-<circle cx="184" cy="304" r="6" class="dotteddot" fill="white" stroke="black" stroke-dasharray="0.1,1.7"/>
+<circle cx="184" cy="304" r="6" class="dotteddot" fill="white" stroke="black" stroke-dasharray="0,1.8"/>
 <circle cx="240" cy="304" r="6" class="shadeddot" fill="#666" stroke="black"/>
 <circle cx="456" cy="48" r="6" class="closeddot" fill="black"/>
 <circle cx="544" cy="80" r="6" class="closeddot" fill="black"/>

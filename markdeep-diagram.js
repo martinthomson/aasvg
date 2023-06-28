@@ -737,7 +737,7 @@ function diagramToSVG(diagramString, options) {
                 const STROKE = {
                     'closed': '',
                     'open': ' stroke="black"',
-                    'dotted': ' stroke="black" stroke-dasharray="1,1"',
+                    'dotted': ' stroke="black" stroke-dasharray="0.1,1.7"',
                     'shaded': ' stroke="black"',
                     'xor': ' stroke="black"',
                 };

@@ -28,7 +28,7 @@
   ],
   "scripts": {
     "test": "set -e;[ \"aasvg $(jq -r .version <package.json)\" = \"$(./main.js --version)\" ];svg=$(mktemp); trap \"rm $svg\" EXIT;./main.js --backdrop <example.txt >\"$svg\"; diff -u example.svg \"$svg\"",
-    "release": "set -e;t=\"v$(jq -r .version <package.json)\"; git tag \"$t\"; git push origin \"$t\";npm publish"
+    "release": "set -e;npm run test;t=\"v$(jq -r .version <package.json)\"; git tag \"$t\"; git push origin \"$t\";npm publish"
   },
   "dependencies": {}
 }

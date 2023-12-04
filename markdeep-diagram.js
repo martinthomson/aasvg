@@ -377,11 +377,9 @@ function diagramToSVG(diagramString, options) {
                 }
 
             } else if (c === '<') {
-                return f(rt) && f(rtrt)
-
+                return f(rt) && f(rtrt);
             } else if (c === '>') {
                 return f(lt) && f(ltlt);
-
             } else if (isVertex(c)) {
                 return ((f(lt) && f(ltlt)) || (f(rt) && f(rtrt)));
             }
@@ -835,15 +833,19 @@ function diagramToSVG(diagramString, options) {
                         // Don't insert degenerate lines
                         if ((A.x !== B.x) || (A.y !== B.y)) {
                             pathSet.insert(new Path(A, B, null, null, style));
+                            --y;  // Continue searching from y.
                             return true;
                         }
-                        // Continue the search from the end value y+1
+
+                        // Continue the search from y+1.
                     }
                     return false;
                 }
 
                 if (vline("isSolidVLineAt", '\u2564', '\u2567') ||
-                    vline("isDoubleVLineAt", '\u2565\u2566', '\u2568\u2569', "double")) { continue; }
+                    vline("isDoubleVLineAt", '\u2565\u2566', '\u2568\u2569', "double")) {
+                    continue;
+                }
 
                 // Some very special patterns for the short lines needed on
                 // circuit diagrams. Only invoke these if not also on a curve
@@ -914,10 +916,11 @@ function diagramToSVG(diagramString, options) {
                         // Only insert non-degenerate lines
                         if ((A.x !== B.x) || (A.y !== B.y)) {
                             pathSet.insert(new Path(A, B, null, null, style));
+                            --x; // continue from this character
                             return true;
                         }
 
-                        // Continue the search from the end x+1
+                        // Continue the search from x+1
                     }
                     return false;
                 }

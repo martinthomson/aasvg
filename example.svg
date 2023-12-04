@@ -43,6 +43,8 @@
 <path d="M 608,16 L 608,128" fill="none" stroke="black"/>
 <path d="M 608,272 L 608,288" fill="none" stroke="black"/>
 <path d="M 640,352 L 640,376" fill="none" stroke="black"/>
+<path d="M 650,16 L 650,64" fill="none" stroke="black"/><path d="M 646,16 L 646,64" fill="none" stroke="black"/>
+<path d="M 648,72 L 648,112" fill="none" stroke="black"/>
 <path d="M 672,160 L 672,200" fill="none" stroke="black"/>
 <path d="M 672,304 L 672,320" fill="none" stroke="black"/>
 <path d="M 696,304 L 696,336" fill="none" stroke="black"/>
@@ -56,6 +58,8 @@
 <path d="M 240,48 L 264,48" fill="none" stroke="black"/>
 <path d="M 480,48 L 504,48" fill="none" stroke="black"/>
 <path d="M 8,64 L 168,64" fill="none" stroke="black"/>
+<path d="M 616,64 L 648,64" fill="none" stroke="black"/>
+<path d="M 656,62 L 688,62" fill="none" stroke="black"/><path d="M 656,66 L 688,66" fill="none" stroke="black"/>
 <path d="M 552,80 L 592,80" fill="none" stroke="black"/>
 <path d="M 32,96 L 168,96" fill="none" stroke="black"/>
 <path d="M 200,96 L 248,96" fill="none" stroke="black"/>
@@ -172,7 +176,11 @@
 <polygon class="arrowhead" points="728,168 716,162.4 716,173.6" fill="black" transform="rotate(270,720,168)"/>
 <polygon class="arrowhead" points="720,344 708,338.4 708,349.6" fill="black" transform="rotate(270,712,344)"/>
 <polygon class="arrowhead" points="680,200 668,194.4 668,205.6" fill="black" transform="rotate(90,672,200)"/>
+<polygon class="arrowhead" points="664,64 652,58.4 652,69.6" fill="black" transform="rotate(180,656,64)"/>
+<polygon class="arrowhead" points="656,72 644,66.4 644,77.6" fill="black" transform="rotate(270,648,72)"/>
+<polygon class="arrowhead" points="656,16 644,10.4 644,21.6" fill="black" transform="rotate(270,648,16)"/>
 <polygon class="arrowhead" points="648,376 636,370.4 636,381.6" fill="black" transform="rotate(90,640,376)"/>
+<polygon class="arrowhead" points="624,64 612,58.4 612,69.6" fill="black" transform="rotate(180,616,64)"/>
 <path class="jump" d="M 592,136 C 598,136 598,120 592,120" fill="none" stroke="black"/><path class="jump" d="M 576,88 C 570,88 570,72 576,72" fill="none" stroke="black"/><polygon class="arrowhead" points="488,48 476,42.4 476,53.6" fill="black" transform="rotate(180,480,48)"/>
 <polygon class="arrowhead" points="408,240 396,234.4 396,245.6" fill="black" transform="rotate(180,400,240)"/>
 <polygon class="arrowhead" points="400,48 388,42.4 388,53.6" fill="black" transform="rotate(90,392,48)"/>

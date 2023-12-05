@@ -914,7 +914,9 @@ function diagramToSVG(diagramString, options) {
                             grid[alt](A.x - 2, A.y)) {
                             // Line continuation, changing type.
                             --A.x;
-                        } else if (grid[alt](A.x - 1, A.y) && !isVertex(grid(A.x - 1, A.y))) {
+                        } else if (grid[alt](A.x - 1, A.y) &&
+                            !isVertexOrRightDecoration(grid(A.x - 1, A.y)) &&
+                            !isVertex(grid(A))) {
                             A.x -= 0.5;
                         }
 
@@ -922,7 +924,9 @@ function diagramToSVG(diagramString, options) {
                             ((isTopVertex(grid(B)) && isSolidVLineOrJumpOrPoint(grid(B.x + 1, B.y + 1))) ||
                                 (isBottomVertex(grid(B)) && isSolidVLineOrJumpOrPoint(grid(B.x + 1, B.y - 1))))) {
                             --B.x;
-                        } else if (grid[alt](B.x + 1, B.y) && !isVertex(grid(B.x + 1, B.y))) {
+                        } else if (grid[alt](B.x + 1, B.y) &&
+                            !isVertexOrLeftDecoration(grid(B.x + 1, B.y)) &&
+                            !isVertex(grid(B))) {
                             B.x += 0.5;
                         }
 

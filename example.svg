@@ -73,8 +73,8 @@
 <path d="M 240,48 L 264,48" fill="none" stroke="black"/>
 <path d="M 480,48 L 504,48" fill="none" stroke="black"/>
 <path d="M 8,64 L 168,64" fill="none" stroke="black"/>
-<path d="M 608,64 L 644,64" fill="none" stroke="black"/>
-<path d="M 648,62 L 708,62" fill="none" stroke="black"/><path d="M 648,66 L 708,66" fill="none" stroke="black"/>
+<path d="M 608,64 L 640,64" fill="none" stroke="black"/>
+<path d="M 648,62 L 704,62" fill="none" stroke="black"/><path d="M 648,66 L 704,66" fill="none" stroke="black"/>
 <path d="M 704,64 L 752,64" fill="none" stroke="black"/>
 <path d="M 552,80 L 592,80" fill="none" stroke="black"/>
 <path d="M 32,96 L 168,96" fill="none" stroke="black"/>
@@ -124,8 +124,8 @@
 <path d="M 16,320 L 120,320" fill="none" stroke="black"/>
 <path d="M 696,336 L 728,336" fill="none" stroke="black"/>
 <path d="M 160,352 L 248,352" fill="none" stroke="black"/>
-<path d="M 320,368 L 356,368" fill="none" stroke="black"/>
-<path d="M 352,366 L 380,366" fill="none" stroke="black"/><path d="M 352,370 L 380,370" fill="none" stroke="black"/>
+<path d="M 320,368 L 352,368" fill="none" stroke="black"/>
+<path d="M 352,366 L 376,366" fill="none" stroke="black"/><path d="M 352,370 L 376,370" fill="none" stroke="black"/>
 <path d="M 380,368 L 400,368" fill="none" stroke="black"/>
 <path d="M 160,384 L 248,384" fill="none" stroke="black"/>
 <path d="M 632,384 L 648,384" fill="none" stroke="black"/>

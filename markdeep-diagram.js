@@ -191,6 +191,7 @@ function diagramToSVG(diagramString, options) {
     // "D" = Diagonal slash (/), "B" = diagonal Backslash (\)
     // Characters that may appear anywhere on a solid line
     function isSolidHLine(c) { return (c === '-') || (c === '\u2501') || isUndirectedVertex(c) || isJump(c); }
+    function isSquiggleHLine(c) { return (c === '~') || isUndirectedVertex(c) || isJump(c); }
     function isDoubleHLine(c) { return (c === '=') || (c === '\u2550') || isUndirectedVertex(c) || isJump(c); }
     function isSolidVLineOrJumpOrPoint(c) { return isSolidVLine(c) || isJump(c) || isPoint(c); }
     function isSolidVLine(c) { return (c === '|') || (c === '\u2503') || isUndirectedVertex(c); }
@@ -390,6 +391,9 @@ function diagramToSVG(diagramString, options) {
         grid.isSolidHLineAt = function (x, y) {
             return this.isHLineAt(x, y, isSolidHLine);
         };
+        grid.isSquiggleHLineAt = function (x, y) {
+            return this.isHLineAt(x, y, isSquiggleHLine);
+        };
         grid.isDoubleHLineAt = function (x, y) {
             return this.isHLineAt(x, y, isDoubleHLine);
         };
@@ -482,6 +486,7 @@ function diagramToSVG(diagramString, options) {
 
         this.dashed = style === 'dashed' || false;
         this.double = style === 'double' || false;
+        this.squiggle = style === 'squiggle' || false;
 
         Object.freeze(this);
     }
@@ -619,6 +624,25 @@ function diagramToSVG(diagramString, options) {
         return svg;
     }
 
+    _.horizontalSquiggle = function(x0, x1, y) {
+        const SQUIGGLE_AMPLITUDE = 0.25;
+
+        let svg = '<path d="M ' + this.A.coords() + ' ';
+        let start = this.A.offset(0, 0);
+        for (let x = x0; x < x1; x++) {
+            // Up squiggle
+            let up = start.offset(0.25, -SQUIGGLE_AMPLITUDE);
+            let mid = up.offset(0.25, SQUIGGLE_AMPLITUDE);
+            let down = mid.offset(0.25, SQUIGGLE_AMPLITUDE);
+            start = down.offset(0.25, -SQUIGGLE_AMPLITUDE);
+
+            svg += 'Q ' + up + mid;
+            svg += 'Q ' + down + start;
+        }
+        svg += '"' + STROKE_COLOR + '/>';
+        return svg;
+    }
+
     /** Returns a string suitable for inclusion in an SVG tag */
     _.toSVG = function () {
         let svg = '';
@@ -630,6 +654,11 @@ function diagramToSVG(diagramString, options) {
             vy /= s * SCALE / ASPECT;
             svg += this.offsetLine(vy, -vx);
             svg += this.offsetLine(-vy, vx);
+        } else if (this.squiggle) {
+            if (this.B.y !== this.A.y) {
+                console.warn("warning: squiggle requested for non-horizontal line");
+            }
+            svg = this.horizontalSquiggle(this.A.x, this.B.x, this.A.y);
         } else {
             svg = this.offsetLine(0, 0);
         }
@@ -944,6 +973,7 @@ function diagramToSVG(diagramString, options) {
                 }
 
                 hline("isSolidHLineAt", "isDoubleHLineAt", '\u2523', '\u252b', null) ||
+                    hline("isSquiggleHLineAt", "isSolidHLineAt", '\u255E', '\u2561', "squiggle") ||
                     hline("isDoubleHLineAt", "isSolidHLineAt", '\u255E', '\u2561', "double");
             }
         } // y

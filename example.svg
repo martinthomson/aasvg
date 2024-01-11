@@ -1,5 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="432" width="760" viewBox="0 0 760 432" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
-<rect class="backdrop" x="0" y="0" width="760" height="432" rx="3px" ry="3px" fill="white" opacity="0.9"/>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="464" width="760" viewBox="0 0 760 464" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
 <path d="M 8,16 L 8,64" fill="none" stroke="black"/>
 <path d="M 16,112 L 16,144" fill="none" stroke="black"/>
 <path d="M 16,208 L 16,256" fill="none" stroke="black"/>
@@ -24,20 +23,20 @@
 <path d="M 290,312 L 290,344" fill="none" stroke="black"/><path d="M 286,312 L 286,344" fill="none" stroke="black"/>
 <path d="M 288,344 L 288,368" fill="none" stroke="black"/>
 <path d="M 296,192 L 296,256" fill="none" stroke="black"/>
-<path d="M 296,416 L 296,424" fill="none" stroke="black"/>
+<path d="M 296,448 L 296,456" fill="none" stroke="black"/>
 <path d="M 312,208 L 312,240" fill="none" stroke="black"/>
 <path d="M 320,256 L 320,288" fill="none" stroke="black"/>
-<path d="M 320,416 L 320,424" fill="none" stroke="black"/>
+<path d="M 320,448 L 320,456" fill="none" stroke="black"/>
 <path d="M 336,144 L 336,184" fill="none" stroke="black"/>
 <path d="M 352,264 L 352,288" fill="none" stroke="black"/>
-<path d="M 360,416 L 360,424" fill="none" stroke="black"/>
+<path d="M 360,448 L 360,456" fill="none" stroke="black"/>
 <path d="M 376,208 L 376,240" fill="none" stroke="black"/>
-<path d="M 384,416 L 384,424" fill="none" stroke="black"/>
+<path d="M 384,448 L 384,456" fill="none" stroke="black"/>
 <path d="M 394,16 L 394,48" fill="none" stroke="black"/><path d="M 390,16 L 390,48" fill="none" stroke="black"/>
 <path d="M 392,192 L 392,256" fill="none" stroke="black"/>
-<path d="M 424,416 L 424,424" fill="none" stroke="black"/>
+<path d="M 424,448 L 424,456" fill="none" stroke="black"/>
 <path d="M 448,256 L 448,304" fill="none" stroke="black"/>
-<path d="M 448,416 L 448,424" fill="none" stroke="black"/>
+<path d="M 448,448 L 448,456" fill="none" stroke="black"/>
 <path d="M 464,96 L 464,160" fill="none" stroke="black"/>
 <path d="M 472,256 L 472,304" fill="none" stroke="black"/>
 <path d="M 488,256 L 488,304" fill="none" stroke="black"/>
@@ -58,10 +57,11 @@
 <path d="M 672,72 L 672,96" fill="none" stroke="black"/>
 <path d="M 672,160 L 672,200" fill="none" stroke="black"/>
 <path d="M 672,304 L 672,320" fill="none" stroke="black"/>
+<path d="M 680,384 L 680,416" fill="none" stroke="black"/>
 <path d="M 696,304 L 696,336" fill="none" stroke="black"/>
 <path d="M 704,32 L 704,56" fill="none" stroke="black"/>
 <path d="M 706,56 L 706,96" fill="none" stroke="black"/><path d="M 702,56 L 702,96" fill="none" stroke="black"/>
-<path d="M 712,344 L 712,368" fill="none" stroke="black"/>
+<path d="M 712,344 L 712,384" fill="none" stroke="black"/>
 <path d="M 720,168 L 720,240" fill="none" stroke="black"/>
 <path d="M 728,304 L 728,336" fill="none" stroke="black"/>
 <path d="M 736,32 L 736,64" fill="none" stroke="black"/>
@@ -129,26 +129,32 @@
 <path d="M 380,368 L 400,368" fill="none" stroke="black"/>
 <path d="M 160,384 L 248,384" fill="none" stroke="black"/>
 <path d="M 632,384 L 648,384" fill="none" stroke="black"/>
-<path d="M 8,416 L 36,416" fill="none" stroke="black"/>
-<path d="M 36,414 L 68,414" fill="none" stroke="black"/><path d="M 36,418 L 68,418" fill="none" stroke="black"/>
-<path d="M 68,416 L 100,416" fill="none" stroke="black"/>
-<path d="M 100,414 L 132,414" fill="none" stroke="black"/><path d="M 100,418 L 132,418" fill="none" stroke="black"/>
-<path d="M 132,416 L 164,416" fill="none" stroke="black"/>
-<path d="M 164,414 L 196,414" fill="none" stroke="black"/><path d="M 164,418 L 196,418" fill="none" stroke="black"/>
-<path d="M 196,416 L 228,416" fill="none" stroke="black"/>
-<path d="M 228,414 L 260,414" fill="none" stroke="black"/><path d="M 228,418 L 260,418" fill="none" stroke="black"/>
-<path d="M 260,416 L 296,416" fill="none" stroke="black"/>
-<path d="M 320,416 L 360,416" fill="none" stroke="black"/>
-<path d="M 384,416 L 424,416" fill="none" stroke="black"/>
-<path d="M 448,416 L 484,416" fill="none" stroke="black"/>
-<path d="M 484,414 L 516,414" fill="none" stroke="black"/><path d="M 484,418 L 516,418" fill="none" stroke="black"/>
-<path d="M 516,416 L 548,416" fill="none" stroke="black"/>
-<path d="M 548,414 L 580,414" fill="none" stroke="black"/><path d="M 548,418 L 580,418" fill="none" stroke="black"/>
-<path d="M 580,416 L 612,416" fill="none" stroke="black"/>
-<path d="M 612,414 L 644,414" fill="none" stroke="black"/><path d="M 612,418 L 644,418" fill="none" stroke="black"/>
-<path d="M 644,416 L 676,416" fill="none" stroke="black"/>
-<path d="M 676,414 L 708,414" fill="none" stroke="black"/><path d="M 676,418 L 708,418" fill="none" stroke="black"/>
-<path d="M 708,416 L 736,416" fill="none" stroke="black"/>
+<path d="M 680,382 L 712,382" fill="none" stroke="black"/><path d="M 680,386 L 712,386" fill="none" stroke="black"/>
+<path d="M 80,416 Q 82,412 84,416 Q 86,420 88,416 Q 90,412 92,416 Q 94,420 96,416 Q 98,412 100,416 Q 102,420 104,416 " fill="none" stroke="black"/>
+<path d="M 192,416 Q 194,412 196,416 Q 198,420 200,416 Q 202,412 204,416 Q 206,420 208,416 Q 210,412 212,416 Q 214,420 216,416 " fill="none" stroke="black"/>
+<path d="M 304,416 Q 306,412 308,416 Q 310,420 312,416 Q 314,412 316,416 Q 318,420 320,416 Q 322,412 324,416 Q 326,420 328,416 " fill="none" stroke="black"/>
+<path d="M 416,416 Q 418,412 420,416 Q 422,420 424,416 Q 426,412 428,416 Q 430,420 432,416 Q 434,412 436,416 Q 438,420 440,416 Q 442,412 444,416 Q 446,420 448,416 " fill="none" stroke="black"/>
+<path d="M 536,416 Q 538,412 540,416 Q 542,420 544,416 Q 546,412 548,416 Q 550,420 552,416 Q 554,412 556,416 Q 558,420 560,416 Q 562,412 564,416 Q 566,420 568,416 Q 570,412 572,416 Q 574,420 576,416 Q 578,412 580,416 Q 582,420 584,416 Q 586,412 588,416 Q 590,420 592,416 Q 594,412 596,416 Q 598,420 600,416 Q 602,412 604,416 Q 606,420 608,416 Q 610,412 612,416 Q 614,420 616,416 Q 618,412 620,416 Q 622,420 624,416 Q 626,412 628,416 Q 630,420 632,416 Q 634,412 636,416 Q 638,420 640,416 Q 642,412 644,416 Q 646,420 648,416 Q 650,412 652,416 Q 654,420 656,416 Q 658,412 660,416 Q 662,420 664,416 Q 666,412 668,416 Q 670,420 672,416 Q 674,412 676,416 Q 678,420 680,416 " fill="none" stroke="black"/>
+<path d="M 8,448 L 36,448" fill="none" stroke="black"/>
+<path d="M 36,446 L 68,446" fill="none" stroke="black"/><path d="M 36,450 L 68,450" fill="none" stroke="black"/>
+<path d="M 68,448 L 100,448" fill="none" stroke="black"/>
+<path d="M 100,446 L 132,446" fill="none" stroke="black"/><path d="M 100,450 L 132,450" fill="none" stroke="black"/>
+<path d="M 132,448 L 164,448" fill="none" stroke="black"/>
+<path d="M 164,446 L 196,446" fill="none" stroke="black"/><path d="M 164,450 L 196,450" fill="none" stroke="black"/>
+<path d="M 196,448 L 228,448" fill="none" stroke="black"/>
+<path d="M 228,446 L 260,446" fill="none" stroke="black"/><path d="M 228,450 L 260,450" fill="none" stroke="black"/>
+<path d="M 260,448 L 296,448" fill="none" stroke="black"/>
+<path d="M 320,448 L 360,448" fill="none" stroke="black"/>
+<path d="M 384,448 L 424,448" fill="none" stroke="black"/>
+<path d="M 448,448 L 484,448" fill="none" stroke="black"/>
+<path d="M 484,446 L 516,446" fill="none" stroke="black"/><path d="M 484,450 L 516,450" fill="none" stroke="black"/>
+<path d="M 516,448 L 548,448" fill="none" stroke="black"/>
+<path d="M 548,446 L 580,446" fill="none" stroke="black"/><path d="M 548,450 L 580,450" fill="none" stroke="black"/>
+<path d="M 580,448 L 612,448" fill="none" stroke="black"/>
+<path d="M 612,446 L 644,446" fill="none" stroke="black"/><path d="M 612,450 L 644,450" fill="none" stroke="black"/>
+<path d="M 644,448 L 676,448" fill="none" stroke="black"/>
+<path d="M 676,446 L 708,446" fill="none" stroke="black"/><path d="M 676,450 L 708,450" fill="none" stroke="black"/>
+<path d="M 708,448 L 736,448" fill="none" stroke="black"/>
 <path d="M 200,224 L 216,256" fill="none" stroke="black"/>
 <path d="M 232,288 L 248,320" fill="none" stroke="black"/>
 <path d="M 448,256 L 472,304" fill="none" stroke="black"/>
@@ -211,9 +217,9 @@
 <path d="M 168,40 L 192,40" fill="none" stroke="black"/>
 <path d="M 216,40 L 240,40" fill="none" stroke="black"/>
 <path d="M 264,40 L 288,40" fill="none" stroke="black"/>
-<path d="M 296,424 L 320,424" fill="none" stroke="black"/>
-<path d="M 360,424 L 384,424" fill="none" stroke="black"/>
-<path d="M 424,424 L 448,424" fill="none" stroke="black"/>
+<path d="M 296,456 L 320,456" fill="none" stroke="black"/>
+<path d="M 360,456 L 384,456" fill="none" stroke="black"/>
+<path d="M 424,456 L 448,456" fill="none" stroke="black"/>
 <polygon class="arrowhead" points="760,64 748,58.4 748,69.6" fill="black" transform="rotate(0,752,64)"/>
 <polygon class="arrowhead" points="744,72 732,66.4 732,77.6" fill="black" transform="rotate(270,736,72)"/>
 <polygon class="arrowhead" points="728,168 716,162.4 716,173.6" fill="black" transform="rotate(270,720,168)"/>
@@ -225,15 +231,19 @@
 <polygon class="arrowhead" points="656,64 644,58.4 644,69.6" fill="black" transform="rotate(180,648,64)"/>
 <polygon class="arrowhead" points="648,376 636,370.4 636,381.6" fill="black" transform="rotate(90,640,376)"/>
 <path class="jump" d="M 592,136 C 598,136 598,120 592,120" fill="none" stroke="black"/><path class="jump" d="M 576,88 C 570,88 570,72 576,72" fill="none" stroke="black"/><polygon class="arrowhead" points="488,48 476,42.4 476,53.6" fill="black" transform="rotate(180,480,48)"/>
+<polygon class="arrowhead" points="456,416 444,410.4 444,421.6" fill="black" transform="rotate(0,448,416)"/>
+<polygon class="arrowhead" points="424,416 412,410.4 412,421.6" fill="black" transform="rotate(180,416,416)"/>
 <polygon class="arrowhead" points="408,240 396,234.4 396,245.6" fill="black" transform="rotate(180,400,240)"/>
 <polygon class="arrowhead" points="400,48 388,42.4 388,53.6" fill="black" transform="rotate(90,392,48)"/>
 <polygon class="arrowhead" points="400,16 388,10.4 388,21.6" fill="black" transform="rotate(270,392,16)"/>
 <polygon class="arrowhead" points="392,368 380,362.4 380,373.6" fill="black" transform="rotate(180,384,368)"/>
 <polygon class="arrowhead" points="360,264 348,258.4 348,269.6" fill="black" transform="rotate(270,352,264)"/>
 <polygon class="arrowhead" points="344,184 332,178.4 332,189.6" fill="black" transform="rotate(90,336,184)"/>
+<polygon class="arrowhead" points="336,416 324,410.4 324,421.6" fill="black" transform="rotate(0,328,416)"/>
 <polygon class="arrowhead" points="328,368 316,362.4 316,373.6" fill="black" transform="rotate(180,320,368)"/>
 <polygon class="arrowhead" points="320,32 308,26.4 308,37.6" fill="black" transform="rotate(0,312,32)"/>
 <polygon class="arrowhead" points="296,224 284,218.4 284,229.6" fill="black" transform="rotate(0,288,224)"/>
+<polygon class="arrowhead" points="200,416 188,410.4 188,421.6" fill="black" transform="rotate(180,192,416)"/>
 <polygon class="arrowhead" points="192,344 180,338.4 180,349.6" fill="black" transform="rotate(90,184,344)"/>
 <polygon class="arrowhead" points="168,304 156,298.4 156,309.6" fill="black" transform="rotate(0,160,304)"/>
 <polygon class="arrowhead" points="144,192 132,186.4 132,197.6" fill="black" transform="rotate(180,136,192)"/>
@@ -268,5 +278,10 @@
 <text x="208" y="372">Not a dot</text>
 <text x="520" y="372">A dash--is not a line</text>
 <text x="484" y="388">Nor/is this.</text>
+<text x="36" y="420">squiggle</text>
+<text x="148" y="420">squiggle</text>
+<text x="260" y="420">squiggle</text>
+<text x="372" y="420">squiggle</text>
+<text x="492" y="420">squiggle</text>
 </g>
 </svg>

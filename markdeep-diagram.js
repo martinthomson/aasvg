@@ -397,6 +397,9 @@ function diagramToSVG(diagramString, options) {
         grid.isDoubleHLineAt = function (x, y) {
             return this.isHLineAt(x, y, isDoubleHLine);
         };
+        grid.isAnyHLineAt = function (x, y) {
+            return this.isHLineAt(x, y, isSolidHLine) || this.isHLineAt(x, y, isSquiggleHLine) || this.isHLineAt(x, y, isDoubleHLine);
+        };
 
 
         /** Returns true if there is a solid backslash line passing through (x, y) */
@@ -624,13 +627,12 @@ function diagramToSVG(diagramString, options) {
         return svg;
     }
 
-    _.horizontalSquiggle = function(x0, x1, y) {
-        const SQUIGGLE_AMPLITUDE = 0.25;
+    _.horizontalSquiggle = function (x0, x1, y) {
+        const SQUIGGLE_AMPLITUDE = 0.2;
 
         let svg = '<path d="M ' + this.A.coords() + ' ';
         let start = this.A.offset(0, 0);
         for (let x = x0; x < x1; x++) {
-            // Up squiggle
             let up = start.offset(0.25, -SQUIGGLE_AMPLITUDE);
             let mid = up.offset(0.25, SQUIGGLE_AMPLITUDE);
             let down = mid.offset(0.25, SQUIGGLE_AMPLITUDE);
@@ -922,7 +924,7 @@ function diagramToSVG(diagramString, options) {
         // Find all solid horizontal lines
         for (var y = 0; y < grid.height; ++y) {
             for (var x = 0; x < grid.width; ++x) {
-                function hline(p, alt, boxl, boxr, style) {
+                function hline(p, boxl, boxr, style) {
                     if (grid[p](x, y)) {
                         // Begins a line...find the end
                         var A = Vec2(x, y);
@@ -940,10 +942,10 @@ function diagramToSVG(diagramString, options) {
                             ++A.x;
                         } else if (!isVertexOrLeftDecoration(grid(A)) &&
                             isVertex(grid(A.x - 1, A.y)) &&
-                            grid[alt](A.x - 2, A.y)) {
+                            grid.isAnyHLineAt(A.x - 2, A.y)) {
                             // Line continuation, changing type.
                             --A.x;
-                        } else if (grid[alt](A.x - 1, A.y) &&
+                        } else if (grid.isAnyHLineAt(A.x - 1, A.y) &&
                             !isVertexOrRightDecoration(grid(A.x - 1, A.y)) &&
                             !isVertex(grid(A))) {
                             A.x -= 0.5;
@@ -953,7 +955,7 @@ function diagramToSVG(diagramString, options) {
                             ((isTopVertex(grid(B)) && isSolidVLineOrJumpOrPoint(grid(B.x + 1, B.y + 1))) ||
                                 (isBottomVertex(grid(B)) && isSolidVLineOrJumpOrPoint(grid(B.x + 1, B.y - 1))))) {
                             --B.x;
-                        } else if (grid[alt](B.x + 1, B.y) &&
+                        } else if (grid.isAnyHLineAt(B.x + 1, B.y) &&
                             !isVertexOrLeftDecoration(grid(B.x + 1, B.y)) &&
                             !isVertex(grid(B))) {
                             B.x += 0.5;
@@ -972,9 +974,9 @@ function diagramToSVG(diagramString, options) {
                     return false;
                 }
 
-                hline("isSolidHLineAt", "isDoubleHLineAt", '\u2523', '\u252b', null) ||
-                    hline("isSquiggleHLineAt", "isSolidHLineAt", '\u255E', '\u2561', "squiggle") ||
-                    hline("isDoubleHLineAt", "isSolidHLineAt", '\u255E', '\u2561', "double");
+                hline("isSolidHLineAt", '\u2523', '\u252b', null) ||
+                    hline("isSquiggleHLineAt", '\u2523', '\u252b', "squiggle") ||
+                    hline("isDoubleHLineAt", '\u255E', '\u2561', "double");
             }
         } // y
 

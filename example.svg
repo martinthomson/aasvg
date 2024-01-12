@@ -24,20 +24,18 @@
 <path d="M 290,312 L 290,344" fill="none" stroke="black"/><path d="M 286,312 L 286,344" fill="none" stroke="black"/>
 <path d="M 288,344 L 288,368" fill="none" stroke="black"/>
 <path d="M 296,192 L 296,256" fill="none" stroke="black"/>
-<path d="M 296,416 L 296,424" fill="none" stroke="black"/>
 <path d="M 312,208 L 312,240" fill="none" stroke="black"/>
 <path d="M 320,256 L 320,288" fill="none" stroke="black"/>
-<path d="M 320,416 L 320,424" fill="none" stroke="black"/>
+<path d="M 328,416 L 328,424" fill="none" stroke="black"/>
 <path d="M 336,144 L 336,184" fill="none" stroke="black"/>
 <path d="M 352,264 L 352,288" fill="none" stroke="black"/>
-<path d="M 360,416 L 360,424" fill="none" stroke="black"/>
+<path d="M 352,416 L 352,424" fill="none" stroke="black"/>
 <path d="M 376,208 L 376,240" fill="none" stroke="black"/>
-<path d="M 384,416 L 384,424" fill="none" stroke="black"/>
 <path d="M 394,16 L 394,48" fill="none" stroke="black"/><path d="M 390,16 L 390,48" fill="none" stroke="black"/>
 <path d="M 392,192 L 392,256" fill="none" stroke="black"/>
-<path d="M 424,416 L 424,424" fill="none" stroke="black"/>
+<path d="M 392,416 L 392,424" fill="none" stroke="black"/>
+<path d="M 416,416 L 416,424" fill="none" stroke="black"/>
 <path d="M 448,256 L 448,304" fill="none" stroke="black"/>
-<path d="M 448,416 L 448,424" fill="none" stroke="black"/>
 <path d="M 464,96 L 464,160" fill="none" stroke="black"/>
 <path d="M 472,256 L 472,304" fill="none" stroke="black"/>
 <path d="M 488,256 L 488,304" fill="none" stroke="black"/>
@@ -61,7 +59,7 @@
 <path d="M 696,304 L 696,336" fill="none" stroke="black"/>
 <path d="M 704,32 L 704,56" fill="none" stroke="black"/>
 <path d="M 706,56 L 706,96" fill="none" stroke="black"/><path d="M 702,56 L 702,96" fill="none" stroke="black"/>
-<path d="M 712,344 L 712,368" fill="none" stroke="black"/>
+<path d="M 712,344 L 712,384" fill="none" stroke="black"/>
 <path d="M 720,168 L 720,240" fill="none" stroke="black"/>
 <path d="M 728,304 L 728,336" fill="none" stroke="black"/>
 <path d="M 736,32 L 736,64" fill="none" stroke="black"/>
@@ -130,24 +128,25 @@
 <path d="M 160,384 L 248,384" fill="none" stroke="black"/>
 <path d="M 632,384 L 648,384" fill="none" stroke="black"/>
 <path d="M 8,416 L 36,416" fill="none" stroke="black"/>
-<path d="M 36,414 L 68,414" fill="none" stroke="black"/><path d="M 36,418 L 68,418" fill="none" stroke="black"/>
-<path d="M 68,416 L 100,416" fill="none" stroke="black"/>
-<path d="M 100,414 L 132,414" fill="none" stroke="black"/><path d="M 100,418 L 132,418" fill="none" stroke="black"/>
-<path d="M 132,416 L 164,416" fill="none" stroke="black"/>
-<path d="M 164,414 L 196,414" fill="none" stroke="black"/><path d="M 164,418 L 196,418" fill="none" stroke="black"/>
+<path d="M 40,416 Q 42,412.8 44,416 Q 46,419.2 48,416 Q 50,412.8 52,416 Q 54,419.2 56,416 Q 58,412.8 60,416 Q 62,419.2 64,416 Q 66,412.8 68,416 Q 70,419.2 72,416 " fill="none" stroke="black"/>
+<path d="M 72,416 L 100,416" fill="none" stroke="black"/>
+<path d="M 104,414 L 132,414" fill="none" stroke="black"/><path d="M 104,418 L 132,418" fill="none" stroke="black"/>
+<path d="M 136,416 Q 138,412.8 140,416 Q 142,419.2 144,416 Q 146,412.8 148,416 Q 150,419.2 152,416 Q 154,412.8 156,416 Q 158,419.2 160,416 Q 162,412.8 164,416 Q 166,419.2 168,416 " fill="none" stroke="black"/>
+<path d="M 168,414 L 196,414" fill="none" stroke="black"/><path d="M 168,418 L 196,418" fill="none" stroke="black"/>
 <path d="M 196,416 L 228,416" fill="none" stroke="black"/>
 <path d="M 228,414 L 260,414" fill="none" stroke="black"/><path d="M 228,418 L 260,418" fill="none" stroke="black"/>
-<path d="M 260,416 L 296,416" fill="none" stroke="black"/>
-<path d="M 320,416 L 360,416" fill="none" stroke="black"/>
-<path d="M 384,416 L 424,416" fill="none" stroke="black"/>
-<path d="M 448,416 L 484,416" fill="none" stroke="black"/>
+<path d="M 260,416 Q 262,412.8 264,416 Q 266,419.2 268,416 Q 270,412.8 272,416 Q 274,419.2 276,416 Q 278,412.8 280,416 Q 282,419.2 284,416 Q 286,412.8 288,416 Q 290,419.2 292,416 " fill="none" stroke="black"/>
+<path d="M 292,416 L 328,416" fill="none" stroke="black"/>
+<path d="M 352,416 L 392,416" fill="none" stroke="black"/>
+<path d="M 416,416 L 452,416" fill="none" stroke="black"/>
+<path d="M 452,416 Q 454,412.8 456,416 Q 458,419.2 460,416 Q 462,412.8 464,416 Q 466,419.2 468,416 Q 470,412.8 472,416 Q 474,419.2 476,416 Q 478,412.8 480,416 Q 482,419.2 484,416 " fill="none" stroke="black"/>
 <path d="M 484,414 L 516,414" fill="none" stroke="black"/><path d="M 484,418 L 516,418" fill="none" stroke="black"/>
 <path d="M 516,416 L 548,416" fill="none" stroke="black"/>
-<path d="M 548,414 L 580,414" fill="none" stroke="black"/><path d="M 548,418 L 580,418" fill="none" stroke="black"/>
-<path d="M 580,416 L 612,416" fill="none" stroke="black"/>
-<path d="M 612,414 L 644,414" fill="none" stroke="black"/><path d="M 612,418 L 644,418" fill="none" stroke="black"/>
-<path d="M 644,416 L 676,416" fill="none" stroke="black"/>
-<path d="M 676,414 L 708,414" fill="none" stroke="black"/><path d="M 676,418 L 708,418" fill="none" stroke="black"/>
+<path d="M 548,414 L 576,414" fill="none" stroke="black"/><path d="M 548,418 L 576,418" fill="none" stroke="black"/>
+<path d="M 580,416 Q 582,412.8 584,416 Q 586,419.2 588,416 Q 590,412.8 592,416 Q 594,419.2 596,416 Q 598,412.8 600,416 Q 602,419.2 604,416 Q 606,412.8 608,416 Q 610,419.2 612,416 " fill="none" stroke="black"/>
+<path d="M 612,414 L 640,414" fill="none" stroke="black"/><path d="M 612,418 L 640,418" fill="none" stroke="black"/>
+<path d="M 644,416 L 672,416" fill="none" stroke="black"/>
+<path d="M 676,416 Q 678,412.8 680,416 Q 682,419.2 684,416 Q 686,412.8 688,416 Q 690,419.2 692,416 Q 694,412.8 696,416 Q 698,419.2 700,416 Q 702,412.8 704,416 Q 706,419.2 708,416 " fill="none" stroke="black"/>
 <path d="M 708,416 L 736,416" fill="none" stroke="black"/>
 <path d="M 200,224 L 216,256" fill="none" stroke="black"/>
 <path d="M 232,288 L 248,320" fill="none" stroke="black"/>
@@ -211,20 +210,24 @@
 <path d="M 168,40 L 192,40" fill="none" stroke="black"/>
 <path d="M 216,40 L 240,40" fill="none" stroke="black"/>
 <path d="M 264,40 L 288,40" fill="none" stroke="black"/>
-<path d="M 296,424 L 320,424" fill="none" stroke="black"/>
-<path d="M 360,424 L 384,424" fill="none" stroke="black"/>
-<path d="M 424,424 L 448,424" fill="none" stroke="black"/>
+<path d="M 328,424 L 352,424" fill="none" stroke="black"/>
+<path d="M 392,424 L 416,424" fill="none" stroke="black"/>
 <polygon class="arrowhead" points="760,64 748,58.4 748,69.6" fill="black" transform="rotate(0,752,64)"/>
 <polygon class="arrowhead" points="744,72 732,66.4 732,77.6" fill="black" transform="rotate(270,736,72)"/>
 <polygon class="arrowhead" points="728,168 716,162.4 716,173.6" fill="black" transform="rotate(270,720,168)"/>
+<polygon class="arrowhead" points="720,416 708,410.4 708,421.6" fill="black" transform="rotate(180,712,416)"/>
 <polygon class="arrowhead" points="720,344 708,338.4 708,349.6" fill="black" transform="rotate(270,712,344)"/>
 <polygon class="arrowhead" points="712,56 700,50.4 700,61.6" fill="black" transform="rotate(90,704,56)"/>
+<polygon class="arrowhead" points="688,416 676,410.4 676,421.6" fill="black" transform="rotate(180,680,416)"/>
 <polygon class="arrowhead" points="680,200 668,194.4 668,205.6" fill="black" transform="rotate(90,672,200)"/>
 <polygon class="arrowhead" points="680,72 668,66.4 668,77.6" fill="black" transform="rotate(270,672,72)"/>
 <polygon class="arrowhead" points="680,56 668,50.4 668,61.6" fill="black" transform="rotate(90,672,56)"/>
+<polygon class="arrowhead" points="656,416 644,410.4 644,421.6" fill="black" transform="rotate(180,648,416)"/>
 <polygon class="arrowhead" points="656,64 644,58.4 644,69.6" fill="black" transform="rotate(180,648,64)"/>
 <polygon class="arrowhead" points="648,376 636,370.4 636,381.6" fill="black" transform="rotate(90,640,376)"/>
-<path class="jump" d="M 592,136 C 598,136 598,120 592,120" fill="none" stroke="black"/><path class="jump" d="M 576,88 C 570,88 570,72 576,72" fill="none" stroke="black"/><polygon class="arrowhead" points="488,48 476,42.4 476,53.6" fill="black" transform="rotate(180,480,48)"/>
+<polygon class="arrowhead" points="624,416 612,410.4 612,421.6" fill="black" transform="rotate(180,616,416)"/>
+<path class="jump" d="M 592,136 C 598,136 598,120 592,120" fill="none" stroke="black"/><polygon class="arrowhead" points="592,416 580,410.4 580,421.6" fill="black" transform="rotate(180,584,416)"/>
+<path class="jump" d="M 576,88 C 570,88 570,72 576,72" fill="none" stroke="black"/><polygon class="arrowhead" points="488,48 476,42.4 476,53.6" fill="black" transform="rotate(180,480,48)"/>
 <polygon class="arrowhead" points="408,240 396,234.4 396,245.6" fill="black" transform="rotate(180,400,240)"/>
 <polygon class="arrowhead" points="400,48 388,42.4 388,53.6" fill="black" transform="rotate(90,392,48)"/>
 <polygon class="arrowhead" points="400,16 388,10.4 388,21.6" fill="black" transform="rotate(270,392,16)"/>
@@ -235,10 +238,15 @@
 <polygon class="arrowhead" points="320,32 308,26.4 308,37.6" fill="black" transform="rotate(0,312,32)"/>
 <polygon class="arrowhead" points="296,224 284,218.4 284,229.6" fill="black" transform="rotate(0,288,224)"/>
 <polygon class="arrowhead" points="192,344 180,338.4 180,349.6" fill="black" transform="rotate(90,184,344)"/>
+<polygon class="arrowhead" points="168,416 156,410.4 156,421.6" fill="black" transform="rotate(0,160,416)"/>
 <polygon class="arrowhead" points="168,304 156,298.4 156,309.6" fill="black" transform="rotate(0,160,304)"/>
 <polygon class="arrowhead" points="144,192 132,186.4 132,197.6" fill="black" transform="rotate(180,136,192)"/>
 <polygon class="arrowhead" points="144,176 132,170.4 132,181.6" fill="black" transform="rotate(0,136,176)"/>
+<polygon class="arrowhead" points="136,416 124,410.4 124,421.6" fill="black" transform="rotate(0,128,416)"/>
+<polygon class="arrowhead" points="104,416 92,410.4 92,421.6" fill="black" transform="rotate(0,96,416)"/>
+<polygon class="arrowhead" points="72,416 60,410.4 60,421.6" fill="black" transform="rotate(0,64,416)"/>
 <polygon class="arrowhead" points="56,176 44,170.4 44,181.6" fill="black" transform="rotate(180,48,176)"/>
+<polygon class="arrowhead" points="40,416 28,410.4 28,421.6" fill="black" transform="rotate(0,32,416)"/>
 <polygon class="arrowhead" points="24,320 12,314.4 12,325.6" fill="black" transform="rotate(180,16,320)"/>
 <circle cx="184" cy="304" r="6" class="dotteddot" fill="white" stroke="black" stroke-dasharray="0,1.8"/>
 <circle cx="240" cy="304" r="6" class="shadeddot" fill="#666" stroke="black"/>

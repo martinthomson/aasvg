@@ -191,6 +191,7 @@ function diagramToSVG(diagramString, options) {
     // "D" = Diagonal slash (/), "B" = diagonal Backslash (\)
     // Characters that may appear anywhere on a solid line
     function isSolidHLine(c) { return (c === '-') || (c === '\u2501') || isUndirectedVertex(c) || isJump(c); }
+    function isSquiggleHLine(c) { return (c === '~') || isUndirectedVertex(c) || isJump(c); }
     function isDoubleHLine(c) { return (c === '=') || (c === '\u2550') || isUndirectedVertex(c) || isJump(c); }
     function isSolidVLineOrJumpOrPoint(c) { return isSolidVLine(c) || isJump(c) || isPoint(c); }
     function isSolidVLine(c) { return (c === '|') || (c === '\u2503') || isUndirectedVertex(c); }
@@ -390,8 +391,14 @@ function diagramToSVG(diagramString, options) {
         grid.isSolidHLineAt = function (x, y) {
             return this.isHLineAt(x, y, isSolidHLine);
         };
+        grid.isSquiggleHLineAt = function (x, y) {
+            return this.isHLineAt(x, y, isSquiggleHLine);
+        };
         grid.isDoubleHLineAt = function (x, y) {
             return this.isHLineAt(x, y, isDoubleHLine);
+        };
+        grid.isAnyHLineAt = function (x, y) {
+            return this.isHLineAt(x, y, isSolidHLine) || this.isHLineAt(x, y, isSquiggleHLine) || this.isHLineAt(x, y, isDoubleHLine);
         };
 
 
@@ -482,6 +489,7 @@ function diagramToSVG(diagramString, options) {
 
         this.dashed = style === 'dashed' || false;
         this.double = style === 'double' || false;
+        this.squiggle = style === 'squiggle' || false;
 
         Object.freeze(this);
     }
@@ -619,6 +627,24 @@ function diagramToSVG(diagramString, options) {
         return svg;
     }
 
+    _.horizontalSquiggle = function (x0, x1, y) {
+        const SQUIGGLE_AMPLITUDE = 0.2;
+
+        let svg = '<path d="M ' + this.A.coords() + ' ';
+        let start = this.A.offset(0, 0);
+        for (let x = x0; x < x1; x++) {
+            let up = start.offset(0.25, -SQUIGGLE_AMPLITUDE);
+            let mid = up.offset(0.25, SQUIGGLE_AMPLITUDE);
+            let down = mid.offset(0.25, SQUIGGLE_AMPLITUDE);
+            start = down.offset(0.25, -SQUIGGLE_AMPLITUDE);
+
+            svg += 'Q ' + up + mid;
+            svg += 'Q ' + down + start;
+        }
+        svg += '"' + STROKE_COLOR + '/>';
+        return svg;
+    }
+
     /** Returns a string suitable for inclusion in an SVG tag */
     _.toSVG = function () {
         let svg = '';
@@ -630,6 +656,11 @@ function diagramToSVG(diagramString, options) {
             vy /= s * SCALE / ASPECT;
             svg += this.offsetLine(vy, -vx);
             svg += this.offsetLine(-vy, vx);
+        } else if (this.squiggle) {
+            if (this.B.y !== this.A.y) {
+                console.warn("warning: squiggle requested for non-horizontal line");
+            }
+            svg = this.horizontalSquiggle(this.A.x, this.B.x, this.A.y);
         } else {
             svg = this.offsetLine(0, 0);
         }
@@ -893,7 +924,7 @@ function diagramToSVG(diagramString, options) {
         // Find all solid horizontal lines
         for (var y = 0; y < grid.height; ++y) {
             for (var x = 0; x < grid.width; ++x) {
-                function hline(p, alt, boxl, boxr, style) {
+                function hline(p, boxl, boxr, style) {
                     if (grid[p](x, y)) {
                         // Begins a line...find the end
                         var A = Vec2(x, y);
@@ -911,10 +942,10 @@ function diagramToSVG(diagramString, options) {
                             ++A.x;
                         } else if (!isVertexOrLeftDecoration(grid(A)) &&
                             isVertex(grid(A.x - 1, A.y)) &&
-                            grid[alt](A.x - 2, A.y)) {
+                            grid.isAnyHLineAt(A.x - 2, A.y)) {
                             // Line continuation, changing type.
                             --A.x;
-                        } else if (grid[alt](A.x - 1, A.y) &&
+                        } else if (grid.isAnyHLineAt(A.x - 1, A.y) &&
                             !isVertexOrRightDecoration(grid(A.x - 1, A.y)) &&
                             !isVertex(grid(A))) {
                             A.x -= 0.5;
@@ -924,7 +955,7 @@ function diagramToSVG(diagramString, options) {
                             ((isTopVertex(grid(B)) && isSolidVLineOrJumpOrPoint(grid(B.x + 1, B.y + 1))) ||
                                 (isBottomVertex(grid(B)) && isSolidVLineOrJumpOrPoint(grid(B.x + 1, B.y - 1))))) {
                             --B.x;
-                        } else if (grid[alt](B.x + 1, B.y) &&
+                        } else if (grid.isAnyHLineAt(B.x + 1, B.y) &&
                             !isVertexOrLeftDecoration(grid(B.x + 1, B.y)) &&
                             !isVertex(grid(B))) {
                             B.x += 0.5;
@@ -943,8 +974,9 @@ function diagramToSVG(diagramString, options) {
                     return false;
                 }
 
-                hline("isSolidHLineAt", "isDoubleHLineAt", '\u2523', '\u252b', null) ||
-                    hline("isDoubleHLineAt", "isSolidHLineAt", '\u255E', '\u2561', "double");
+                hline("isSolidHLineAt", '\u2523', '\u252b', null) ||
+                    hline("isSquiggleHLineAt", '\u2523', '\u252b', "squiggle") ||
+                    hline("isDoubleHLineAt", '\u255E', '\u2561', "double");
             }
         } // y
 

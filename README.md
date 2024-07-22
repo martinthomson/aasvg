@@ -30,7 +30,8 @@ The `--spaces` command-line argument controls how text is combined.  Use either
 
 `--spaces=0`
 ensures that every character is placed separately; which is precise and avoids
-text distortion, but makes for a larger SVG that is harder to search.
+text distortion, but makes for a larger SVG that is harder to search and
+less accessible to screen readers.
 
 `--stretch` can be used with `--spaces` set to any value.  `--stretch` stretches
 text to fit, which is less widely implemented in viewers (generally you don't

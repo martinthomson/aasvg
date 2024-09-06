@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const { diagramToSVG } = require("./markdeep-diagram.js");
-const VERSION = "aasvg 0.4.1";
+const VERSION = "aasvg 0.4.2";
 
 function usage() {
     console.warn("Turn ASCII art into SVG");
@@ -51,7 +51,7 @@ function extract(txt) {
     // Rely on the fact that the code has a specific form for embeds.
     let keep = false;
     return txt.split("\n").filter(line => {
-        if (/^<text id="aa"[^>]*><!\[CDATA\[$/.test(line)) {
+        if (/^<text class="ascii"[^>]*><!\[CDATA\[$/.test(line)) {
             keep = true;
             return false;
         } else if (/^\]\]><\/text>$/.test(line)) {

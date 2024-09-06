@@ -143,6 +143,7 @@ function hideMarkers(s) {
 function diagramToSVG(diagramString, options) {
     // Clean up diagramString
     diagramString = equalizeLineLengths(removeLeadingSpace(diagramString));
+    const originalString = diagramString;
     options = options || {};
     if (!Number.isInteger(options.spaces)) { options.spaces = 2; } // 0 is valid so falsy tests fail.
 
@@ -1491,6 +1492,12 @@ function diagramToSVG(diagramString, options) {
     let svg = '<svg ' + Object.keys(attrs)
         .filter(k => typeof attrs[k] === 'string')
         .map(k => k + '="' + escapeHTMLEntities(attrs[k]) + '"').join(' ') + '>\n';
+
+    if (options.embed) {
+        svg += '<text id="aa" display="none"><![CDATA[\n'
+            + originalString.split("\n").map(line => line.trimEnd()).join("\n")
+            + ']]></text>\n';
+    }
 
     if (options.backdrop) {
         svg += '<rect class="backdrop" x="0" y="0" width="' + ((grid.width + 1) * SCALE)

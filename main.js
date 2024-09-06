@@ -18,6 +18,8 @@ function usage() {
     console.warn("    --height=<n>      Set the viewbox height to <n> characters");
     console.warn("    --backdrop        Draw a backdrop");
     console.warn("    --source          Draw an overlay with source text");
+    console.warn("    --embed           Embed input in the SVG");
+    console.warn("    --extract         Extract embedded input from the SVG (requires xmllint)");
     console.warn("    --<attr>=<value>  Set SVG attribute <attr> to <value>");
     console.warn("    --version         Show the version and exit");
     process.exit(2);
@@ -25,8 +27,10 @@ function usage() {
 
 async function read() {
     let input = "";
-    process.stdin.setEncoding("utf8");
-    process.stdin.on("readable", () => {
+    let src = process.stdin;
+
+    src.setEncoding("utf8");
+    src.on("readable", () => {
         let chunk;
         // Use a loop to make sure we read all available data.
         while ((chunk = process.stdin.read()) !== null) {
@@ -34,13 +38,27 @@ async function read() {
         }
     });
     return await new Promise((resolve, reject) => {
-        process.stdin.on("end", () => {
+        src.on("end", () => {
             resolve(input);
         });
-        process.stdin.on("error", e => {
+        src.on("error", e => {
             reject(e);
         });
     });
+}
+
+function extract(txt) {
+    // Rely on the fact that the code has a specific form for embeds.
+    let keep = false;
+    return txt.split("\n").filter(line => {
+        if (/^<text id="aa"[^>]*><!\[CDATA\[$/.test(line)) {
+            keep = true;
+            return false;
+        } else if (/^\]\]><\/text>$/.test(line)) {
+            keep = false;
+        }
+        return keep;
+    }).join("\n");
 }
 
 function i(o, a) {
@@ -67,6 +85,10 @@ function i(o, a) {
             options.source = true;
         } else if (a === "--fill") {
             options.fill = true;
+        } else if (a === "--embed") {
+            options.embed = true;
+        } else if (a === "--extract") {
+            options.extract = true;
         } else if (a.startsWith("--width=")) {
             options.width = i("width", a);
         } else if (a.startsWith("--height=")) {
@@ -85,7 +107,7 @@ function i(o, a) {
             }
         }
     })
-    const txt = await read();
-    const svg = diagramToSVG(txt, options);
+    const txt = await read(options);
+    const svg = diagramToSVG((options.extract) ? extract(txt) : txt, options);
     console.log(svg);
 })();

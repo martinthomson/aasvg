@@ -1494,7 +1494,7 @@ function diagramToSVG(diagramString, options) {
         .map(k => k + '="' + escapeHTMLEntities(attrs[k]) + '"').join(' ') + '>\n';
 
     if (options.embed) {
-        svg += '<text id="aa" display="none"><![CDATA[\n'
+        svg += '<text class="ascii" display="none"><![CDATA[\n'
             + originalString.split("\n").map(line => line.trimEnd()).join("\n")
             + ']]></text>\n';
     }

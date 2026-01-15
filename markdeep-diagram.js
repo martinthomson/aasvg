@@ -196,7 +196,7 @@ function diagramToSVG(diagramString, options) {
     function isDoubleHLine(c) { return (c === '=') || (c === '\u2550') || isUndirectedVertex(c) || isJump(c); }
     function isSolidVLineOrJumpOrPoint(c) { return isSolidVLine(c) || isJump(c) || isPoint(c); }
     function isSolidVLine(c) { return (c === '|') || (c === '\u2503') || isUndirectedVertex(c); }
-    function isDoubleVLine(c) { return (c === '\u2551') || isUndirectedVertex(c); }
+    function isDoubleVLine(c) { return (c === '\u2551') || (c === '\u2016') || isUndirectedVertex(c); }
     function isSolidDLine(c) { return (c === '/') || isUndirectedVertex(c) }
     function isSolidBLine(c) { return (c === '\\') || isUndirectedVertex(c); }
     function isJump(c) { return JUMP_CHARACTERS.indexOf(c) + 1; }

@@ -1407,13 +1407,21 @@ function diagramToSVG(diagramString, options) {
 
         /** Insert an arrowhead at (px, py) if pathSet[methodName] finds a path there.
             Marks that endpoint and records setUsed at the current grid (x, y).
+            If companionMethod is provided, also marks the path on the other side of the
+            arrowhead (the path whose endpoint at (px, py) is the departure end, not the
+            arrival end) so its line endpoint is also adjusted to stop at the arrowhead tip.
             Returns true if successful. */
-        function tryArrow(methodName, px, py, angle) {
+        function tryArrow(methodName, px, py, angle, companionMethod) {
             var p = pathSet[methodName](px, py);
             if (p) {
                 decorationSet.insert(px, py, '>', angle);
                 grid.setUsed(x, y);
-                p.markArrowAt(px, py, 'end', arrowTip(px, py, angle));
+                const tip = arrowTip(px, py, angle);
+                p.markArrowAt(px, py, 'end', tip);
+                if (companionMethod) {
+                    var q = pathSet[companionMethod](px, py);
+                    if (q) q.markArrowAt(px, py, 'end', tip);
+                }
             }
             return !!p;
         }
@@ -1496,8 +1504,8 @@ function diagramToSVG(diagramString, options) {
                     } else if (c === '^') {
                         // Because of the aspect ratio, we need to look
                         // in two slots for the end of the previous line
-                        if (!tryArrow('findUpEndsAt', x, y - 0.5, 270) &&
-                            !tryArrow('findUpEndsAt', x, y, 270) &&
+                        if (!tryArrow('findUpEndsAt', x, y - 0.5, 270, 'findDownEndsAt') &&
+                            !tryArrow('findUpEndsAt', x, y, 270, 'findDownEndsAt') &&
                             !tryArrow('findDiagonalUpEndsAt', x + 0.5, y - 0.5, 270 + DIAGONAL_ANGLE) &&
                             !tryArrow('findDiagonalUpEndsAt', x + 0.25, y - 0.25, 270 + DIAGONAL_ANGLE) &&
                             !tryArrow('findDiagonalUpEndsAt', x, y, 270 + DIAGONAL_ANGLE) &&
@@ -1513,8 +1521,8 @@ function diagramToSVG(diagramString, options) {
                             if (q) { q.markArrowContUp(arrowTip(x, y - 0.5 + dy, 270)); }
                         }
                     } else if (c === 'v' || c === 'V') {
-                        if (!tryArrow('findDownEndsAt', x, y + 0.5, 90) &&
-                            !tryArrow('findDownEndsAt', x, y, 90) &&
+                        if (!tryArrow('findDownEndsAt', x, y + 0.5, 90, 'findUpEndsAt') &&
+                            !tryArrow('findDownEndsAt', x, y, 90, 'findUpEndsAt') &&
                             !tryArrow('findDiagonalDownEndsAt', x, y, 90 + DIAGONAL_ANGLE) &&
                             !tryArrow('findDiagonalDownEndsAt', x - 0.5, y + 0.5, 90 + DIAGONAL_ANGLE) &&
                             !tryArrow('findDiagonalDownEndsAt', x - 0.25, y + 0.25, 90 + DIAGONAL_ANGLE) &&

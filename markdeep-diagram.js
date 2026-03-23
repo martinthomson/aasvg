@@ -14,7 +14,7 @@
 'use strict';
 
 // Mappings and constants used by markdeep.
-const STROKE_WIDTH = 2;
+const STROKE_WIDTH = 1; // SVG default
 const ARROW_COLOR = ' fill="black"'; // + ' stroke="none"', but xml2rfc doesn't like that.
 const STROKE_COLOR = ' fill="none" stroke="black"';
 const TEXT_COLOR = ' stroke="black"';
@@ -642,15 +642,53 @@ function diagramToSVG(diagramString, options) {
         if (this.A.y >= this.B.y) { this.arrowAtA = 'cont'; } else { this.arrowAtB = 'cont'; }
     };
 
+    // 1.5 is the length, 0.35 is the offset from the central line for an the arrowhead.
+    // Rather than drawa the line to the end of the arrow, we need to pull it back slightly
+    // to account for its width.  Otherwise, we get a round blob on the end.
+    //  ---    .
+    //   ^     | `-._
+    //  0.35   |     `-._
+    //   v  ---+---------`-._ 
+    //  ---      line  •  )  _>
+    //      ---+---------.-' 
+    //         |      .-'
+    //         :
+    //         |<---- 1.5 ---->|
+    // That means moving the dot back from the end by STROKE_WIDTH/2.
+    // Plus the extra needed to account for the curvature of the round end.
+    // The stroke end is a circle that is tangential to the arrowhead.
+    const ARROWHEAD_HALF_BASE = 0.35;
+    const ARROWHEAD_LENGTH = 1.5;
+    const LINE_WIDTH_ADJUST = STROKE_WIDTH / 2 * (1 + Math.sqrt(1 + (ARROWHEAD_HALF_BASE * ASPECT / ARROWHEAD_LENGTH) ** 2));
+
     _.offsetLine = function (dx, dy) {
-        let svg = '<path d="M ' + this.A.offset(dx, dy);
+        let vx = this.B.x - this.A.x;
+        let vy = this.B.y - this.A.y;
+        let s = Math.sqrt(vx * vx + vy * vy);
+        vx /= s * SCALE;
+        vy /= s * SCALE;
+        let adjust = LINE_WIDTH_ADJUST;
+        if (this.double) {
+            // The sizeways adjustment is two pixels, with no accounting for aspect.
+            adjust += 2 * ARROWHEAD_LENGTH / ARROWHEAD_HALF_BASE;
+        }
+        let a = this.A.offset(dx, dy);
+        if (this.arrowAtA) {
+            let extend = (this.arrowAtA === 'end') ? ARROWHEAD_LENGTH : 0;
+            a = a.offset(vx * (adjust - extend), vy * (adjust - extend));
+        }
+        let svg = '<path d="M ' + a.coords();
         if (this.isCurved()) {
-            let c =
-                svg += 'C ' + this.C.offset(dx, dy) + this.D.offset(dx, dy);
+            svg += 'C ' + this.C.offset(dx, dy) + this.D.offset(dx, dy);
         } else {
             svg += 'L ';
         }
-        svg += this.B.offset(dx, dy).coords() + '"' + STROKE_COLOR;
+        let b = this.B.offset(dx, dy);
+        if (this.arrowAtB) {
+            let extend = (this.arrowAtA === 'end') ? ARROWHEAD_LENGTH : 0;
+            b = b.offset(-vx * (adjust + extend), -vy * (adjust + extend));
+        }
+        svg += b.coords() + '"' + STROKE_COLOR;
         if (this.dashed) {
             svg += ' stroke-dasharray="3,6"';
         }
@@ -660,17 +698,35 @@ function diagramToSVG(diagramString, options) {
 
     _.horizontalSquiggle = function (x0, x1, y) {
         const SQUIGGLE_AMPLITUDE = 0.2;
+        const H_LEN = 0.5 * SCALE - LINE_WIDTH_ADJUST;
 
-        let svg = '<path d="M ' + this.A.coords() + ' ';
+        let svg = '<path d="M '
+        let skip = false;
         let start = this.A.offset(0, 0);
+        if (this.arrowAtA) {
+            let a_prime = this.A.offset(LINE_WIDTH_ADJUST / SCALE, 0);
+            svg += a_prime.coords() + ' h ' + H_LEN + ' ';
+            skip = true;
+        } else {
+            svg += this.A.coords() + ' ';
+        }
         for (let x = x0; x < x1; x++) {
             let up = start.offset(0.25, -SQUIGGLE_AMPLITUDE);
             let mid = up.offset(0.25, SQUIGGLE_AMPLITUDE);
             let down = mid.offset(0.25, SQUIGGLE_AMPLITUDE);
-            start = down.offset(0.25, -SQUIGGLE_AMPLITUDE);
+            let end = down.offset(0.25, -SQUIGGLE_AMPLITUDE);
 
-            svg += 'Q ' + up + mid;
-            svg += 'Q ' + down + start;
+            if (skip) {
+                skip = false;
+            } else {
+                svg += 'Q ' + up + mid;
+            }
+            if (end.x >= this.B.x && this.arrowAtB) {
+                svg += 'h ' + H_LEN;
+            } else {
+                svg += 'Q ' + down + end;
+            }
+            start = end;
         }
         svg += '"' + STROKE_COLOR + '/>';
         return svg;
@@ -680,13 +736,13 @@ function diagramToSVG(diagramString, options) {
     _.toSVG = function () {
         let svg = '';
         if (this.double) {
-            let vx = this.B.x - this.A.x;
-            let vy = this.B.y - this.A.y;
-            let s = Math.sqrt(vx * vx + vy * vy);
-            vx /= s * SCALE;
-            vy /= s * SCALE / ASPECT;
-            svg += this.offsetLine(vy, -vx);
-            svg += this.offsetLine(-vy, vx);
+            let dx = this.B.x - this.A.x;
+            let dy = this.B.y - this.A.y;
+            let s = Math.sqrt(dx * dx + dy * dy);
+            dx /= s * SCALE;
+            dy /= s * SCALE / ASPECT;
+            svg += this.offsetLine(dy, -dx);
+            svg += this.offsetLine(-dy, dx);
         } else if (this.squiggle) {
             if (this.B.y !== this.A.y) {
                 console.warn("warning: squiggle requested for non-horizontal line");
@@ -695,21 +751,6 @@ function diagramToSVG(diagramString, options) {
         } else {
             svg = this.offsetLine(0, 0);
         }
-
-        if (options.grid) {
-            if (this.arrowAtA) {
-                svg += '<circle cx="' + ((this.A.x + 1) * SCALE) + '" cy="' + ((this.A.y + 1) * SCALE * ASPECT) +
-                    '" r="' + ((SCALE - STROKE_WIDTH) / 2) + '" class="end"' +
-                    ' fill="red"/>\n';
-            }
-
-            if (this.arrowAtB) {
-                svg += '<circle cx="' + ((this.B.x + 1) * SCALE) + '" cy="' + ((this.B.y + 1) * SCALE * ASPECT) +
-                    '" r="' + ((SCALE - STROKE_WIDTH) / 2) + '" class="end"' +
-                    ' fill="red"/>\n';
-            }
-        }
-
         return svg;
     };
 
@@ -1551,6 +1592,7 @@ function diagramToSVG(diagramString, options) {
             + '" rx="3px" ry="3px" fill="white" opacity="0.9"/>\n';
     }
     if (options.grid) {
+        svg += '<style>* { opacity: 0.7; }</style>'; // TODO - remove
         svg += '<g class="grid" opacity="0.1">\n';
         for (var x = 0; x < grid.width; ++x) {
             for (var y = 0; y < grid.height; ++y) {

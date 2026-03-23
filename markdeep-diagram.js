@@ -492,7 +492,8 @@ function diagramToSVG(diagramString, options) {
         this.double = style === 'double' || false;
         this.squiggle = style === 'squiggle' || false;
 
-        Object.freeze(this);
+        this.arrowAtA = false;
+        this.arrowAtB = false;
     }
 
     var _ = Path.prototype;
@@ -612,6 +613,15 @@ function diagramToSVG(diagramString, options) {
             (max(this.A.x, this.B.x) >= x);
     }
 
+    /** Mark that there is an arrowhead at endpoint A or B matching (x, y) */
+    _.markArrowAt = function (x, y) {
+        if (this.A.x === x && this.A.y === y) {
+            this.arrowAtA = true;
+        } else if (this.B.x === x && this.B.y === y) {
+            this.arrowAtB = true;
+        }
+    };
+
     _.offsetLine = function (dx, dy) {
         let svg = '<path d="M ' + this.A.offset(dx, dy);
         if (this.isCurved()) {
@@ -707,6 +717,25 @@ function diagramToSVG(diagramString, options) {
     PS.endsAt = makeFilterAny(_.endsAt);
     PS.verticalPassesThrough = makeFilterAny(_.verticalPassesThrough);
     PS.horizontalPassesThrough = makeFilterAny(_.horizontalPassesThrough);
+
+    /** Returns a new method that returns the first path where method(x, y) is true */
+    function makeFilterFind(method) {
+        return function (x, y) {
+            for (var i = 0; i < this._pathArray.length; ++i) {
+                if (method.call(this._pathArray[i], x, y)) { return this._pathArray[i]; }
+            }
+            return null;
+        }
+    }
+
+    PS.findUpEndsAt = makeFilterFind(_.upEndsAt);
+    PS.findDownEndsAt = makeFilterFind(_.downEndsAt);
+    PS.findLeftEndsAt = makeFilterFind(_.leftEndsAt);
+    PS.findRightEndsAt = makeFilterFind(_.rightEndsAt);
+    PS.findDiagonalUpEndsAt = makeFilterFind(_.diagonalUpEndsAt);
+    PS.findDiagonalDownEndsAt = makeFilterFind(_.diagonalDownEndsAt);
+    PS.findBackDiagonalUpEndsAt = makeFilterFind(_.backDiagonalUpEndsAt);
+    PS.findBackDiagonalDownEndsAt = makeFilterFind(_.backDiagonalDownEndsAt);
 
     /** Returns an SVG string */
     PS.toSVG = function () {
@@ -1284,6 +1313,19 @@ function diagramToSVG(diagramString, options) {
     function findDecorations(grid, pathSet, decorationSet) {
         function isEmptyOrVertex(c) { return (c === ' ') || /[^a-zA-Z0-9]|[ov]/.test(c); }
 
+        /** Insert an arrowhead at (px, py) if pathSet[methodName] finds a path there.
+            Marks that endpoint and records setUsed at the current grid (x, y).
+            Returns true if successful. */
+        function tryArrow(methodName, px, py, angle) {
+            var p = pathSet[methodName](px, py);
+            if (p) {
+                decorationSet.insert(px, py, '>', angle);
+                grid.setUsed(x, y);
+                p.markArrowAt(px, py);
+            }
+            return !!p;
+        }
+
         /** Is the point in the center of these values on a line? Allow points that are vertically
             adjacent but not horizontally--they wouldn't fit anyway, and might be text. */
         function onLine(up, dn, lt, rt) {
@@ -1341,89 +1383,51 @@ function diagramToSVG(diagramString, options) {
                     const BACKOFF_Y = 0.5 / ASPECT;
                     var dx = 0;
                     var dy = 0;
-                    if ((c === '>') && (pathSet.rightEndsAt(x, y) ||
-                        pathSet.horizontalPassesThrough(x, y))) {
-                        if (isPoint(grid(x + 1, y))) {
-                            // Back up if connecting to a point so as to not
-                            // overlap it
-                            dx = -BACKOFF_X;
+                    if (c === '>') {
+                        var p = pathSet.findRightEndsAt(x, y);
+                        if (p || pathSet.horizontalPassesThrough(x, y)) {
+                            if (isPoint(grid(x + 1, y))) { dx = -BACKOFF_X; }
+                            decorationSet.insert(x + dx, y, '>', 0);
+                            grid.setUsed(x, y);
+                            if (p) { p.markArrowAt(x, y); }
                         }
-                        decorationSet.insert(x + dx, y, '>', 0);
-                        grid.setUsed(x, y);
-                    } else if ((c === '<') && (pathSet.leftEndsAt(x, y) ||
-                        pathSet.horizontalPassesThrough(x, y))) {
-                        if (isPoint(grid(x - 1, y))) {
-                            // Back up if connecting to a point so as to not
-                            // overlap it
-                            dx = BACKOFF_X;
+                    } else if (c === '<') {
+                        var p = pathSet.findLeftEndsAt(x, y);
+                        if (p || pathSet.horizontalPassesThrough(x, y)) {
+                            if (isPoint(grid(x - 1, y))) { dx = BACKOFF_X; }
+                            decorationSet.insert(x + dx, y, '>', 180);
+                            grid.setUsed(x, y);
+                            if (p) { p.markArrowAt(x, y); }
                         }
-                        decorationSet.insert(x + dx, y, '>', 180);
-                        grid.setUsed(x, y);
                     } else if (c === '^') {
                         // Because of the aspect ratio, we need to look
                         // in two slots for the end of the previous line
-                        if (pathSet.upEndsAt(x, y - 0.5)) {
-                            decorationSet.insert(x, y - 0.5, '>', 270);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.upEndsAt(x, y)) {
-                            decorationSet.insert(x, y, '>', 270);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.diagonalUpEndsAt(x + 0.5, y - 0.5)) {
-                            decorationSet.insert(x + 0.5, y - 0.5, '>', 270 + DIAGONAL_ANGLE);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.diagonalUpEndsAt(x + 0.25, y - 0.25)) {
-                            decorationSet.insert(x + 0.25, y - 0.25, '>', 270 + DIAGONAL_ANGLE);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.diagonalUpEndsAt(x, y)) {
-                            decorationSet.insert(x, y, '>', 270 + DIAGONAL_ANGLE);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.backDiagonalUpEndsAt(x, y)) {
-                            decorationSet.insert(x, y, c, 270 - DIAGONAL_ANGLE);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.backDiagonalUpEndsAt(x - 0.5, y - 0.5)) {
-                            decorationSet.insert(x - 0.5, y - 0.5, c, 270 - DIAGONAL_ANGLE);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.backDiagonalUpEndsAt(x - 0.25, y - 0.25)) {
-                            decorationSet.insert(x - 0.25, y - 0.25, c, 270 - DIAGONAL_ANGLE);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.verticalPassesThrough(x, y)) {
+                        if (!tryArrow('findUpEndsAt', x, y - 0.5, 270) &&
+                            !tryArrow('findUpEndsAt', x, y, 270) &&
+                            !tryArrow('findDiagonalUpEndsAt', x + 0.5, y - 0.5, 270 + DIAGONAL_ANGLE) &&
+                            !tryArrow('findDiagonalUpEndsAt', x + 0.25, y - 0.25, 270 + DIAGONAL_ANGLE) &&
+                            !tryArrow('findDiagonalUpEndsAt', x, y, 270 + DIAGONAL_ANGLE) &&
+                            !tryArrow('findBackDiagonalUpEndsAt', x, y, 270 - DIAGONAL_ANGLE) &&
+                            !tryArrow('findBackDiagonalUpEndsAt', x - 0.5, y - 0.5, 270 - DIAGONAL_ANGLE) &&
+                            !tryArrow('findBackDiagonalUpEndsAt', x - 0.25, y - 0.25, 270 - DIAGONAL_ANGLE) &&
+                            pathSet.verticalPassesThrough(x, y)) {
                             // Only try this if all others failed
-                            if (isPoint(grid(x, y - 1))) {
-                                dy = BACKOFF_Y; // Back up if connecting to a point
-                            }
+                            if (isPoint(grid(x, y - 1))) { dy = BACKOFF_Y; }
                             decorationSet.insert(x, y - 0.5 + dy, '>', 270);
                             grid.setUsed(x, y);
                         }
                     } else if (c === 'v' || c === 'V') {
-                        if (pathSet.downEndsAt(x, y + 0.5)) {
-                            decorationSet.insert(x, y + 0.5, '>', 90);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.downEndsAt(x, y)) {
-                            decorationSet.insert(x, y, '>', 90);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.diagonalDownEndsAt(x, y)) {
-                            decorationSet.insert(x, y, '>', 90 + DIAGONAL_ANGLE);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.diagonalDownEndsAt(x - 0.5, y + 0.5)) {
-                            decorationSet.insert(x - 0.5, y + 0.5, '>', 90 + DIAGONAL_ANGLE);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.diagonalDownEndsAt(x - 0.25, y + 0.25)) {
-                            decorationSet.insert(x - 0.25, y + 0.25, '>', 90 + DIAGONAL_ANGLE);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.backDiagonalDownEndsAt(x, y)) {
-                            decorationSet.insert(x, y, '>', 90 - DIAGONAL_ANGLE);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.backDiagonalDownEndsAt(x + 0.5, y + 0.5)) {
-                            decorationSet.insert(x + 0.5, y + 0.5, '>', 90 - DIAGONAL_ANGLE);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.backDiagonalDownEndsAt(x + 0.25, y + 0.25)) {
-                            decorationSet.insert(x + 0.25, y + 0.25, '>', 90 - DIAGONAL_ANGLE);
-                            grid.setUsed(x, y);
-                        } else if (pathSet.verticalPassesThrough(x, y)) {
+                        if (!tryArrow('findDownEndsAt', x, y + 0.5, 90) &&
+                            !tryArrow('findDownEndsAt', x, y, 90) &&
+                            !tryArrow('findDiagonalDownEndsAt', x, y, 90 + DIAGONAL_ANGLE) &&
+                            !tryArrow('findDiagonalDownEndsAt', x - 0.5, y + 0.5, 90 + DIAGONAL_ANGLE) &&
+                            !tryArrow('findDiagonalDownEndsAt', x - 0.25, y + 0.25, 90 + DIAGONAL_ANGLE) &&
+                            !tryArrow('findBackDiagonalDownEndsAt', x, y, 90 - DIAGONAL_ANGLE) &&
+                            !tryArrow('findBackDiagonalDownEndsAt', x + 0.5, y + 0.5, 90 - DIAGONAL_ANGLE) &&
+                            !tryArrow('findBackDiagonalDownEndsAt', x + 0.25, y + 0.25, 90 - DIAGONAL_ANGLE) &&
+                            pathSet.verticalPassesThrough(x, y)) {
                             // Only try this if all others failed
-                            if (isPoint(grid(x, y + 1))) {
-                                dy = -BACKOFF_Y; // Back up if connecting to a point
-                            }
+                            if (isPoint(grid(x, y + 1))) { dy = -BACKOFF_Y; }
                             decorationSet.insert(x, y + 0.5 + dy, '>', 90);
                             grid.setUsed(x, y);
                         }

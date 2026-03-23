@@ -494,6 +494,8 @@ function diagramToSVG(diagramString, options) {
 
         this.arrowAtA = null;
         this.arrowAtB = null;
+        this.arrowTipAtA = null;
+        this.arrowTipAtB = null;
     }
 
     var _ = Path.prototype;
@@ -613,12 +615,15 @@ function diagramToSVG(diagramString, options) {
             (max(this.A.x, this.B.x) >= x);
     }
 
-    /** Mark that an arrowhead terminates the path at endpoint A or B matching (x, y) */
-    _.markArrowAt = function (x, y) {
+    /** Mark that an arrowhead terminates the path at endpoint A or B matching (x, y).
+     *  tip is the Vec2 position of the arrowhead tip (accounting for arrow center and rotation). */
+    _.markArrowAt = function (x, y, tip) {
         if (this.A.x === x && this.A.y === y) {
             this.arrowAtA = 'end';
+            this.arrowTipAtA = tip;
         } else if (this.B.x === x && this.B.y === y) {
             this.arrowAtB = 'end';
+            this.arrowTipAtB = tip;
         }
     };
 
@@ -662,20 +667,23 @@ function diagramToSVG(diagramString, options) {
     const LINE_WIDTH_ADJUST = STROKE_WIDTH / 2 * (1 + Math.sqrt(1 + (ARROWHEAD_HALF_BASE * ASPECT / ARROWHEAD_LENGTH) ** 2));
 
     _.offsetLine = function (dx, dy) {
+        // Unit vector in SVG pixel space, normalized by SVG-space distance (accounts for aspect ratio).
+        // ux, uy are the per-SVG-pixel step in grid coordinates.
         let vx = this.B.x - this.A.x;
         let vy = this.B.y - this.A.y;
-        let s = Math.sqrt(vx * vx + vy * vy);
-        vx /= s * SCALE;
-        vy /= s * SCALE;
-        let adjust = LINE_WIDTH_ADJUST;
-        if (this.double) {
-            // The sizeways adjustment is two pixels, with no accounting for aspect.
-            adjust += 2 * ARROWHEAD_LENGTH / ARROWHEAD_HALF_BASE;
-        }
+        let s_asp = Math.sqrt(vx ** 2 + (vy * ASPECT) ** 2);
+        let ux = vx / (s_asp * SCALE);
+        let uy = vy / (s_asp * SCALE);
+
         let a = this.A.offset(dx, dy);
-        if (this.arrowAtA) {
-            let extend = (this.arrowAtA === 'end') ? ARROWHEAD_LENGTH : 0;
-            a = a.offset(vx * (adjust - extend), vy * (adjust - extend));
+        if (this.arrowAtA === 'end' && this.arrowTipAtA) {
+            // End the stroke at the tip plus LINE_WIDTH_ADJUST (toward B) so the round
+            // cap is tangent to the arrowhead sides (hidden inside the arrowhead body).
+            // The stroke approaches A from B, so "into the arrowhead" is the +ux direction.
+            a = this.arrowTipAtA.offset(dx + ux * LINE_WIDTH_ADJUST, dy + uy * LINE_WIDTH_ADJUST);
+        } else if (this.arrowAtA === 'cont') {
+            // Arrow passes through here: pull back so round cap is inside arrowhead body.
+            a = a.offset(ux * LINE_WIDTH_ADJUST, uy * LINE_WIDTH_ADJUST);
         }
         let svg = '<path d="M ' + a.coords();
         if (this.isCurved()) {
@@ -684,9 +692,10 @@ function diagramToSVG(diagramString, options) {
             svg += 'L ';
         }
         let b = this.B.offset(dx, dy);
-        if (this.arrowAtB) {
-            let extend = (this.arrowAtA === 'end') ? ARROWHEAD_LENGTH : 0;
-            b = b.offset(-vx * (adjust + extend), -vy * (adjust + extend));
+        if (this.arrowAtB === 'end' && this.arrowTipAtB) {
+            b = this.arrowTipAtB.offset(dx - ux * LINE_WIDTH_ADJUST, dy - uy * LINE_WIDTH_ADJUST);
+        } else if (this.arrowAtB === 'cont') {
+            b = b.offset(-ux * LINE_WIDTH_ADJUST, -uy * LINE_WIDTH_ADJUST);
         }
         svg += b.coords() + '"' + STROKE_COLOR;
         if (this.dashed) {
@@ -738,7 +747,7 @@ function diagramToSVG(diagramString, options) {
         if (this.double) {
             let dx = this.B.x - this.A.x;
             let dy = this.B.y - this.A.y;
-            let s = Math.sqrt(dx * dx + dy * dy);
+            let s = Math.sqrt(dx ** 2 + dy ** 2);
             dx /= s * SCALE;
             dy /= s * SCALE / ASPECT;
             svg += this.offsetLine(dy, -dx);
@@ -1390,6 +1399,12 @@ function diagramToSVG(diagramString, options) {
     function findDecorations(grid, pathSet, decorationSet) {
         function isEmptyOrVertex(c) { return (c === ' ') || /[^a-zA-Z0-9]|[ov]/.test(c); }
 
+        /** Compute the tip position of an arrowhead with center (cx, cy) and rotation angle (degrees). */
+        function arrowTip(cx, cy, angle) {
+            let angle_rad = angle * Math.PI / 180;
+            return Vec2(cx + Math.cos(angle_rad), cy + Math.sin(angle_rad) / ASPECT);
+        }
+
         /** Insert an arrowhead at (px, py) if pathSet[methodName] finds a path there.
             Marks that endpoint and records setUsed at the current grid (x, y).
             Returns true if successful. */
@@ -1398,7 +1413,7 @@ function diagramToSVG(diagramString, options) {
             if (p) {
                 decorationSet.insert(px, py, '>', angle);
                 grid.setUsed(x, y);
-                p.markArrowAt(px, py);
+                p.markArrowAt(px, py, arrowTip(px, py, angle));
             }
             return !!p;
         }
@@ -1467,7 +1482,7 @@ function diagramToSVG(diagramString, options) {
                             if (isPoint(grid(x + 1, y))) { dx = -BACKOFF_X; }
                             decorationSet.insert(x + dx, y, '>', 0);
                             grid.setUsed(x, y);
-                            if (p) { p.markArrowAt(x, y); } else { q.markArrowContRight(); }
+                            if (p) { p.markArrowAt(x, y, arrowTip(x + dx, y, 0)); } else { q.markArrowContRight(); }
                         }
                     } else if (c === '<') {
                         var p = pathSet.findLeftEndsAt(x, y);
@@ -1476,7 +1491,7 @@ function diagramToSVG(diagramString, options) {
                             if (isPoint(grid(x - 1, y))) { dx = BACKOFF_X; }
                             decorationSet.insert(x + dx, y, '>', 180);
                             grid.setUsed(x, y);
-                            if (p) { p.markArrowAt(x, y); } else { q.markArrowContLeft(); }
+                            if (p) { p.markArrowAt(x, y, arrowTip(x + dx, y, 180)); } else { q.markArrowContLeft(); }
                         }
                     } else if (c === '^') {
                         // Because of the aspect ratio, we need to look

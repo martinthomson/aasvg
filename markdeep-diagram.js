@@ -615,36 +615,41 @@ function diagramToSVG(diagramString, options) {
             (max(this.A.x, this.B.x) >= x);
     }
 
-    /** Mark that an arrowhead terminates the path at endpoint A or B matching (x, y).
+    /** Mark that an arrowhead is at endpoint A or B matching (x, y).
+     *  type is 'end' (arrowhead terminates the path) or 'cont' (arrowhead passes through).
      *  tip is the Vec2 position of the arrowhead tip (accounting for arrow center and rotation). */
-    _.markArrowAt = function (x, y, tip) {
+    _.markArrowAt = function (x, y, type, tip) {
         if (this.A.x === x && this.A.y === y) {
-            this.arrowAtA = 'end';
+            this.arrowAtA = type;
             this.arrowTipAtA = tip;
         } else if (this.B.x === x && this.B.y === y) {
-            this.arrowAtB = 'end';
+            this.arrowAtB = type;
             this.arrowTipAtB = tip;
         }
     };
 
     /** Mark that an arrowhead passes through this path, pointing toward the right endpoint */
-    _.markArrowContRight = function () {
-        if (this.A.x >= this.B.x) { this.arrowAtA = 'cont'; } else { this.arrowAtB = 'cont'; }
+    _.markArrowContRight = function (tip) {
+        if (this.A.x >= this.B.x) { this.markArrowAt(this.A.x, this.A.y, 'cont', tip); }
+        else { this.markArrowAt(this.B.x, this.B.y, 'cont', tip); }
     };
 
     /** Mark that an arrowhead passes through this path, pointing toward the left endpoint */
-    _.markArrowContLeft = function () {
-        if (this.A.x <= this.B.x) { this.arrowAtA = 'cont'; } else { this.arrowAtB = 'cont'; }
+    _.markArrowContLeft = function (tip) {
+        if (this.A.x <= this.B.x) { this.markArrowAt(this.A.x, this.A.y, 'cont', tip); }
+        else { this.markArrowAt(this.B.x, this.B.y, 'cont', tip); }
     };
 
     /** Mark that an arrowhead passes through this path, pointing toward the upper endpoint */
-    _.markArrowContUp = function () {
-        if (this.A.y <= this.B.y) { this.arrowAtA = 'cont'; } else { this.arrowAtB = 'cont'; }
+    _.markArrowContUp = function (tip) {
+        if (this.A.y <= this.B.y) { this.markArrowAt(this.A.x, this.A.y, 'cont', tip); }
+        else { this.markArrowAt(this.B.x, this.B.y, 'cont', tip); }
     };
 
     /** Mark that an arrowhead passes through this path, pointing toward the lower endpoint */
-    _.markArrowContDown = function () {
-        if (this.A.y >= this.B.y) { this.arrowAtA = 'cont'; } else { this.arrowAtB = 'cont'; }
+    _.markArrowContDown = function (tip) {
+        if (this.A.y >= this.B.y) { this.markArrowAt(this.A.x, this.A.y, 'cont', tip); }
+        else { this.markArrowAt(this.B.x, this.B.y, 'cont', tip); }
     };
 
     // 1.5 is the length, 0.35 is the offset from the central line for an the arrowhead.
@@ -675,14 +680,11 @@ function diagramToSVG(diagramString, options) {
         let ux = vx / (s_asp * SCALE);
         let uy = vy / (s_asp * SCALE);
 
-        let a = this.A.offset(dx, dy);
-        if (this.arrowAtA === 'end' && this.arrowTipAtA) {
+        let a = (this.arrowTipAtA ?? this.A).offset(dx, dy);
+        if (this.arrowTipAtA) {
             // End the stroke at the tip plus LINE_WIDTH_ADJUST (toward B) so the round
             // cap is tangent to the arrowhead sides (hidden inside the arrowhead body).
             // The stroke approaches A from B, so "into the arrowhead" is the +ux direction.
-            a = this.arrowTipAtA.offset(dx + ux * LINE_WIDTH_ADJUST, dy + uy * LINE_WIDTH_ADJUST);
-        } else if (this.arrowAtA === 'cont') {
-            // Arrow passes through here: pull back so round cap is inside arrowhead body.
             a = a.offset(ux * LINE_WIDTH_ADJUST, uy * LINE_WIDTH_ADJUST);
         }
         let svg = '<path d="M ' + a.coords();
@@ -691,10 +693,8 @@ function diagramToSVG(diagramString, options) {
         } else {
             svg += 'L ';
         }
-        let b = this.B.offset(dx, dy);
-        if (this.arrowAtB === 'end' && this.arrowTipAtB) {
-            b = this.arrowTipAtB.offset(dx - ux * LINE_WIDTH_ADJUST, dy - uy * LINE_WIDTH_ADJUST);
-        } else if (this.arrowAtB === 'cont') {
+        let b = (this.arrowTipAtB ?? this.B).offset(dx, dy);
+        if (this.arrowTipAtB) {
             b = b.offset(-ux * LINE_WIDTH_ADJUST, -uy * LINE_WIDTH_ADJUST);
         }
         svg += b.coords() + '"' + STROKE_COLOR;
@@ -1413,7 +1413,7 @@ function diagramToSVG(diagramString, options) {
             if (p) {
                 decorationSet.insert(px, py, '>', angle);
                 grid.setUsed(x, y);
-                p.markArrowAt(px, py, arrowTip(px, py, angle));
+                p.markArrowAt(px, py, 'end', arrowTip(px, py, angle));
             }
             return !!p;
         }
@@ -1482,7 +1482,7 @@ function diagramToSVG(diagramString, options) {
                             if (isPoint(grid(x + 1, y))) { dx = -BACKOFF_X; }
                             decorationSet.insert(x + dx, y, '>', 0);
                             grid.setUsed(x, y);
-                            if (p) { p.markArrowAt(x, y, arrowTip(x + dx, y, 0)); } else { q.markArrowContRight(); }
+                            if (p) { p.markArrowAt(x, y, 'end', arrowTip(x + dx, y, 0)); } else { q.markArrowContRight(arrowTip(x + dx, y, 0)); }
                         }
                     } else if (c === '<') {
                         var p = pathSet.findLeftEndsAt(x, y);
@@ -1491,7 +1491,7 @@ function diagramToSVG(diagramString, options) {
                             if (isPoint(grid(x - 1, y))) { dx = BACKOFF_X; }
                             decorationSet.insert(x + dx, y, '>', 180);
                             grid.setUsed(x, y);
-                            if (p) { p.markArrowAt(x, y, arrowTip(x + dx, y, 180)); } else { q.markArrowContLeft(); }
+                            if (p) { p.markArrowAt(x, y, 'end', arrowTip(x + dx, y, 180)); } else { q.markArrowContLeft(arrowTip(x + dx, y, 180)); }
                         }
                     } else if (c === '^') {
                         // Because of the aspect ratio, we need to look
@@ -1510,7 +1510,7 @@ function diagramToSVG(diagramString, options) {
                             decorationSet.insert(x, y - 0.5 + dy, '>', 270);
                             grid.setUsed(x, y);
                             var q = pathSet.findVerticalPassesThrough(x, y);
-                            if (q) { q.markArrowContUp(); }
+                            if (q) { q.markArrowContUp(arrowTip(x, y - 0.5 + dy, 270)); }
                         }
                     } else if (c === 'v' || c === 'V') {
                         if (!tryArrow('findDownEndsAt', x, y + 0.5, 90) &&
@@ -1527,7 +1527,7 @@ function diagramToSVG(diagramString, options) {
                             decorationSet.insert(x, y + 0.5 + dy, '>', 90);
                             grid.setUsed(x, y);
                             var q = pathSet.findVerticalPassesThrough(x, y);
-                            if (q) { q.markArrowContDown(); }
+                            if (q) { q.markArrowContDown(arrowTip(x, y + 0.5 + dy, 90)); }
                         }
                     } // arrow heads
                 } // decoration type

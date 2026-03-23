@@ -676,6 +676,20 @@ function diagramToSVG(diagramString, options) {
             svg = this.offsetLine(0, 0);
         }
 
+        if (options.grid) {
+            if (this.arrowAtA) {
+                svg += '<circle cx="' + ((this.A.x + 1) * SCALE) + '" cy="' + ((this.A.y + 1) * SCALE * ASPECT) +
+                    '" r="' + ((SCALE - STROKE_WIDTH) / 2) + '" class="end"' +
+                    ' fill="red"/>\n';
+            }
+
+            if (this.arrowAtB) {
+                svg += '<circle cx="' + ((this.B.x + 1) * SCALE) + '" cy="' + ((this.B.y + 1) * SCALE * ASPECT) +
+                    '" r="' + ((SCALE - STROKE_WIDTH) / 2) + '" class="end"' +
+                    ' fill="red"/>\n';
+            }
+        }
+
         return svg;
     };
 

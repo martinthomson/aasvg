@@ -492,8 +492,8 @@ function diagramToSVG(diagramString, options) {
         this.double = style === 'double' || false;
         this.squiggle = style === 'squiggle' || false;
 
-        this.arrowAtA = false;
-        this.arrowAtB = false;
+        this.arrowAtA = null;
+        this.arrowAtB = null;
     }
 
     var _ = Path.prototype;
@@ -613,13 +613,33 @@ function diagramToSVG(diagramString, options) {
             (max(this.A.x, this.B.x) >= x);
     }
 
-    /** Mark that there is an arrowhead at endpoint A or B matching (x, y) */
+    /** Mark that an arrowhead terminates the path at endpoint A or B matching (x, y) */
     _.markArrowAt = function (x, y) {
         if (this.A.x === x && this.A.y === y) {
-            this.arrowAtA = true;
+            this.arrowAtA = 'end';
         } else if (this.B.x === x && this.B.y === y) {
-            this.arrowAtB = true;
+            this.arrowAtB = 'end';
         }
+    };
+
+    /** Mark that an arrowhead passes through this path, pointing toward the right endpoint */
+    _.markArrowContRight = function () {
+        if (this.A.x >= this.B.x) { this.arrowAtA = 'cont'; } else { this.arrowAtB = 'cont'; }
+    };
+
+    /** Mark that an arrowhead passes through this path, pointing toward the left endpoint */
+    _.markArrowContLeft = function () {
+        if (this.A.x <= this.B.x) { this.arrowAtA = 'cont'; } else { this.arrowAtB = 'cont'; }
+    };
+
+    /** Mark that an arrowhead passes through this path, pointing toward the upper endpoint */
+    _.markArrowContUp = function () {
+        if (this.A.y <= this.B.y) { this.arrowAtA = 'cont'; } else { this.arrowAtB = 'cont'; }
+    };
+
+    /** Mark that an arrowhead passes through this path, pointing toward the lower endpoint */
+    _.markArrowContDown = function () {
+        if (this.A.y >= this.B.y) { this.arrowAtA = 'cont'; } else { this.arrowAtB = 'cont'; }
     };
 
     _.offsetLine = function (dx, dy) {
@@ -750,6 +770,8 @@ function diagramToSVG(diagramString, options) {
     PS.findDiagonalDownEndsAt = makeFilterFind(_.diagonalDownEndsAt);
     PS.findBackDiagonalUpEndsAt = makeFilterFind(_.backDiagonalUpEndsAt);
     PS.findBackDiagonalDownEndsAt = makeFilterFind(_.backDiagonalDownEndsAt);
+    PS.findHorizontalPassesThrough = makeFilterFind(_.horizontalPassesThrough);
+    PS.findVerticalPassesThrough = makeFilterFind(_.verticalPassesThrough);
 
     /** Returns an SVG string */
     PS.toSVG = function () {
@@ -1399,19 +1421,21 @@ function diagramToSVG(diagramString, options) {
                     var dy = 0;
                     if (c === '>') {
                         var p = pathSet.findRightEndsAt(x, y);
-                        if (p || pathSet.horizontalPassesThrough(x, y)) {
+                        var q = !p ? pathSet.findHorizontalPassesThrough(x, y) : null;
+                        if (p || q) {
                             if (isPoint(grid(x + 1, y))) { dx = -BACKOFF_X; }
                             decorationSet.insert(x + dx, y, '>', 0);
                             grid.setUsed(x, y);
-                            if (p) { p.markArrowAt(x, y); }
+                            if (p) { p.markArrowAt(x, y); } else { q.markArrowContRight(); }
                         }
                     } else if (c === '<') {
                         var p = pathSet.findLeftEndsAt(x, y);
-                        if (p || pathSet.horizontalPassesThrough(x, y)) {
+                        var q = !p ? pathSet.findHorizontalPassesThrough(x, y) : null;
+                        if (p || q) {
                             if (isPoint(grid(x - 1, y))) { dx = BACKOFF_X; }
                             decorationSet.insert(x + dx, y, '>', 180);
                             grid.setUsed(x, y);
-                            if (p) { p.markArrowAt(x, y); }
+                            if (p) { p.markArrowAt(x, y); } else { q.markArrowContLeft(); }
                         }
                     } else if (c === '^') {
                         // Because of the aspect ratio, we need to look
@@ -1429,6 +1453,8 @@ function diagramToSVG(diagramString, options) {
                             if (isPoint(grid(x, y - 1))) { dy = BACKOFF_Y; }
                             decorationSet.insert(x, y - 0.5 + dy, '>', 270);
                             grid.setUsed(x, y);
+                            var q = pathSet.findVerticalPassesThrough(x, y);
+                            if (q) { q.markArrowContUp(); }
                         }
                     } else if (c === 'v' || c === 'V') {
                         if (!tryArrow('findDownEndsAt', x, y + 0.5, 90) &&
@@ -1444,6 +1470,8 @@ function diagramToSVG(diagramString, options) {
                             if (isPoint(grid(x, y + 1))) { dy = -BACKOFF_Y; }
                             decorationSet.insert(x, y + 0.5 + dy, '>', 90);
                             grid.setUsed(x, y);
+                            var q = pathSet.findVerticalPassesThrough(x, y);
+                            if (q) { q.markArrowContDown(); }
                         }
                     } // arrow heads
                 } // decoration type

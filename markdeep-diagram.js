@@ -1312,17 +1312,32 @@ function diagramToSVG(diagramString, options) {
                 //   .  .   .  .
                 //  (  o     )  o
                 //   '  .   '  '
-                if (((c === ')') || isPoint(c)) && (grid(x - 1, y - 1) === '.') && (grid(x - 1, y + 1) === "\'")) {
+                // Left curve:
+                if ((c === '(') && (grid(x + 1, y - 1) === '.') && (grid(x + 1, y + 1) === "\'")) {
+                    grid.setUsed(x, y); grid.setUsed(x + 1, y - 1); grid.setUsed(x + 1, y + 1);
+                    pathSet.insert(new Path(Vec2(x + 2, y - 1), Vec2(x + 2, y + 1),
+                        Vec2(x - 0.6, y - 1), Vec2(x - 0.6, y + 1)));
+                }
+                if (isPoint(c) && (grid(x + 1, y - 1) === '.') && (grid(x + 1, y + 1) === "\'") &&
+                    !grid.isUsed(x + 1, y - 1) && !grid.isUsed(x + 1, y + 1)) {
+                    grid.setUsed(x, y); grid.setUsed(x + 1, y - 1); grid.setUsed(x + 1, y + 1);
+                    pathSet.insert(new Path(Vec2(x + 2, y - 1), Vec2(x + 2, y + 1),
+                        Vec2(x - 0.6, y - 1), Vec2(x - 0.6, y + 1)));
+                }
+
+                // Right curve:
+                if ((c === ')') && (grid(x - 1, y - 1) === '.') && (grid(x - 1, y + 1) === "\'")) {
+                    grid.setUsed(x, y); grid.setUsed(x - 1, y - 1); grid.setUsed(x - 1, y + 1);
+                    pathSet.insert(new Path(Vec2(x - 2, y - 1), Vec2(x - 2, y + 1),
+                        Vec2(x + 0.6, y - 1), Vec2(x + 0.6, y + 1)));
+                }
+                if (isPoint(c) && (grid(x - 1, y - 1) === '.') && (grid(x - 1, y + 1) === "\'") &&
+                    !grid.isUsed(x - 1, y - 1) && !grid.isUsed(x - 1, y + 1)) {
                     grid.setUsed(x, y); grid.setUsed(x - 1, y - 1); grid.setUsed(x - 1, y + 1);
                     pathSet.insert(new Path(Vec2(x - 2, y - 1), Vec2(x - 2, y + 1),
                         Vec2(x + 0.6, y - 1), Vec2(x + 0.6, y + 1)));
                 }
 
-                if (((c === '(') || isPoint(c)) && (grid(x + 1, y - 1) === '.') && (grid(x + 1, y + 1) === "\'")) {
-                    grid.setUsed(x, y); grid.setUsed(x + 1, y - 1); grid.setUsed(x + 1, y + 1);
-                    pathSet.insert(new Path(Vec2(x + 2, y - 1), Vec2(x + 2, y + 1),
-                        Vec2(x - 0.6, y - 1), Vec2(x - 0.6, y + 1)));
-                }
 
                 if (isBottomVertex(c)) {
                     //   |

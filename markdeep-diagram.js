@@ -720,9 +720,9 @@ function diagramToSVG(diagramString, options) {
 
         let svg = '<path d="M '
         let skip = false;
-        let start = this.A.offset(0, 0);
-        if (this.arrowAtA) {
-            let a_prime = this.A.offset(LINE_WIDTH_ADJUST / SCALE, 0);
+        let start = (this.arrowTipAtA ?? this.A).offset(0, 0);
+        if (this.arrowTipAtA && this.arrowAtA !== 'none') {
+            let a_prime = this.arrowTipAtA.offset(LINE_WIDTH_ADJUST / SCALE, 0);
             svg += a_prime.coords() + ' h ' + H_LEN + ' ';
             skip = true;
         } else {
@@ -931,8 +931,13 @@ function diagramToSVG(diagramString, options) {
                 var tip = Vec2(C.x + 1, C.y);
                 var up = Vec2(C.x - 0.5, C.y - 0.35);
                 var dn = Vec2(C.x - 0.5, C.y + 0.35);
-                svg += '<polygon class="arrowhead" points="' + tip + up + dn.coords() + '"' + ARROW_COLOR +
-                    ' transform="rotate(' + decoration.angle + ',' + C.coords() + ')"/>\n';
+                if (options.arrow === 'line') {
+                    svg += '<path class="arrowhead" d="M ' + up + 'L ' + tip + 'L ' + dn.coords() + '"' + STROKE_COLOR +
+                        ' transform="rotate(' + decoration.angle + ',' + C.coords() + ')"/>\n';
+                } else {
+                    svg += '<polygon class="arrowhead" points="' + tip + up + dn.coords() + '"' + ARROW_COLOR +
+                        ' transform="rotate(' + decoration.angle + ',' + C.coords() + ')"/>\n';
+                }
             }
         }
         return svg;

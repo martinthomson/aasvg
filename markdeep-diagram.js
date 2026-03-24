@@ -624,11 +624,15 @@ function diagramToSVG(diagramString, options) {
      *  tip is the Vec2 position of the arrowhead tip (accounting for arrow center and rotation). */
     _.markArrowAt = function (x, y, type, tip) {
         if (this.A.x === x && this.A.y === y) {
-            this.arrowAtA = type;
-            this.arrowTipAtA = tip;
+            if (type !== 'cont' || this.arrowAtA !== 'end') {
+                this.arrowAtA = type;
+                this.arrowTipAtA = tip;
+            }
         } else if (this.B.x === x && this.B.y === y) {
-            this.arrowAtB = type;
-            this.arrowTipAtB = tip;
+            if (type !== 'cont' || this.arrowAtB !== 'end') {
+                this.arrowAtB = type;
+                this.arrowTipAtB = tip;
+            }
         }
     };
 

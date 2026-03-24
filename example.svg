@@ -3,14 +3,14 @@
 :root { --aasvg-b: black; --aasvg-w: white; }
 @media (prefers-color-scheme: dark) { :root { --aasvg-b: white; --aasvg-w: black; } }
 * { fill: none; stroke: var(--aasvg-b); stroke-linecap: round; }
+.dashed { stroke-dasharray: 3,6; }
 text { font: 13px monospace; text-anchor: middle; fill: var(--aasvg-b); stroke: none; }
-path.dashed { stroke-dasharray: 3,6; }
+polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }
 .dot.closed { fill: var(--aasvg-b); }
 .dot.open { fill: var(--aasvg-w); }
 .dot.dotted { fill: var(--aasvg-w); stroke-dasharray: 0,1.8; }
 .dot.shaded { fill: #666; }
 .dot.xor { fill: var(--aasvg-w); }
-polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }
 </style>
 <path d="M 8,16L 8,64"/>
 <path d="M 16,112L 16,144"/>

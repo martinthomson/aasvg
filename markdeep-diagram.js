@@ -143,6 +143,7 @@ function diagramToSVG(diagramString, options) {
     const originalString = diagramString;
     options = options || {};
     if (!Number.isInteger(options.spaces)) { options.spaces = 2; } // 0 is valid so falsy tests fail.
+    options.arrow ??= 'solid';
 
     // Temporarily replace 'o', 'v', and 'V' if they are surrounded by other
     // text. Use another character to avoid processing them as decorations.
@@ -256,6 +257,10 @@ function diagramToSVG(diagramString, options) {
         str = strToArray(str);
         grid.width = str.indexOf('\n');
 
+        grid.hasText = function () {
+            return str.some((x, i) => !(x === ' ' || x === '\n') && !grid._used[i]);
+        }
+
         grid.v = function (x, y) {
             return ((x >= 0) && (x < grid.width) && (y >= 0) && (y < grid.height)) ?
                 str[y * (grid.width + 1) + x] : ' ';
@@ -278,7 +283,7 @@ function diagramToSVG(diagramString, options) {
                 if (x instanceof Vec2) { y = x.y; x = x.x; }
                 else { throw new Error('grid requires either a Vec2 or (x, y)'); }
             }
-            return (this._used[y * (this.width + 1) + x] === true);
+            return !!this._used[y * (this.width + 1) + x];
         };
 
         /** Returns the x offset of the next run of text on the line;
@@ -841,13 +846,18 @@ function diagramToSVG(diagramString, options) {
 
     function DecorationSet() {
         this._decorationArray = [];
+        this._types = new Set();
     }
 
     var DS = DecorationSet.prototype;
 
+    DS.has = function (typelist) {
+        return Array.prototype.some.call(typelist, t => this._types.has(t));
+    }
+
     /** insert(x, y, type, <angle>)
         insert(vec, type, <angle>)
-
+ 
         angle is the angle in degrees to rotate the result */
     DS.insert = function (x, y, type, angle) {
         if (type === undefined) { type = y; y = x.y; x = x.x; }
@@ -864,6 +874,7 @@ function diagramToSVG(diagramString, options) {
         } else {
             this._decorationArray.unshift(d);
         }
+        this._types.add(type);
     };
 
     // Compute offsets for line arrows.
@@ -1611,6 +1622,7 @@ function diagramToSVG(diagramString, options) {
     Object.keys(DEFAULT_ATTRS).forEach(k => {
         if (!attrs[k]) { attrs[k] = DEFAULT_ATTRS[k]; }
     });
+    const hasText = !options.disableText && grid.hasText();
     let svg = '<svg ' + Object.keys(attrs)
         .filter(k => typeof attrs[k] === 'string')
         .map(k => k + '="' + escapeHTMLEntities(attrs[k]) + '"').join(' ') + '>\n';
@@ -1619,15 +1631,21 @@ function diagramToSVG(diagramString, options) {
         ':root { --aasvg-b: black; --aasvg-w: white; }\n' +
         '@media (prefers-color-scheme: dark) { :root { --aasvg-b: white; --aasvg-w: black; } }\n' +
         '* { fill: none; stroke: var(--aasvg-b); stroke-linecap: round; }\n' +
-        'text { font: ' + (SCALE * 13 / 8).toString() + 'px monospace;' +
-        ' text-anchor: middle; fill: var(--aasvg-b); stroke: none; }\n' +
-        'path.dashed { stroke-dasharray: 3,6; }\n' +
-        '.dot.closed { fill: var(--aasvg-b); }\n' +
-        '.dot.open { fill: var(--aasvg-w); }\n' +
-        '.dot.dotted { fill: var(--aasvg-w); stroke-dasharray: 0,1.8; }\n' +
-        '.dot.shaded { fill: #666; }\n' +
-        '.dot.xor { fill: var(--aasvg-w); }\n' +
-        'polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }\n';
+        '.dashed { stroke-dasharray: 3,6; }\n';
+    if (hasText || options.source) {
+        svg += 'text { font: ' + (SCALE * 13 / 8).toString() + 'px monospace;' +
+            ' text-anchor: middle; fill: var(--aasvg-b); stroke: none; }\n';
+    }
+    if ((decorationSet.has('>') && options.arrow === 'solid') || decorationSet.has(TRI_CHARACTERS)) {
+        svg += 'polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }\n';
+    }
+    if (decorationSet.has(POINT_CHARACTERS)) {
+        svg += '.dot.closed { fill: var(--aasvg-b); }\n' +
+            '.dot.open { fill: var(--aasvg-w); }\n' +
+            '.dot.dotted { fill: var(--aasvg-w); stroke-dasharray: 0,1.8; }\n' +
+            '.dot.shaded { fill: #666; }\n' +
+            '.dot.xor { fill: var(--aasvg-w); }\n';
+    }
     if (options.backdrop) {
         svg += '.backdrop { fill: var(--aasvg-w); stroke: none; opacity: 0.9; }\n';
     }
@@ -1676,7 +1694,7 @@ function diagramToSVG(diagramString, options) {
     svg += decorationSet.toSVG();
 
     // Convert any remaining characters
-    if (!options.disableText) {
+    if (hasText) {
         svg += '<g class="text">\n';
         // Enlarge hexagons so that they fill a grid
         for (var y = 0; y < grid.height; ++y) {
@@ -1684,9 +1702,8 @@ function diagramToSVG(diagramString, options) {
                 var c = grid(x, y);
                 if (/[\u2B22\u2B21]/.test(c)) {
                     svg += '<text x="' + ((x + 1) * SCALE) +
-                        '" y="' + (4 + (y + 1) * SCALE * ASPECT) +
-                        '">' +
-                        escapeHTMLEntities(c) + '</text>\n';
+                        '" y="' + (4 + (y + 1) * SCALE * ASPECT) + '">' +
+                        escapeHTMLEntities(unhideMarkers(c)) + '</text>\n';
                     grid.setUsed(x, y);
                 }
             } // x
@@ -1699,13 +1716,13 @@ function diagramToSVG(diagramString, options) {
                 svg += '<text x="' + ((x + (t.length / 2) + 0.5) * SCALE) +
                     '" y="' + (4 + (y + 1) * SCALE * ASPECT);
                 if (options.spaces > 2 && s.indexOf('  ') >= 0) {
-                    svg += '" xml:space="preserve'
+                    svg += '" xml:space="preserve';
                 }
                 if (options.stretch) {
                     svg += '" textLength="' + (t.length * SCALE) +
                         '" lengthAdjust="spacingAndGlyphs';
                 }
-                svg += '">' + escapeHTMLEntities(s) + '</text>\n';
+                svg += '">' + escapeHTMLEntities(unhideMarkers(s)) + '</text>\n';
                 x = grid.textStart(x + t.length, y);
             }
         } // y
@@ -1720,8 +1737,8 @@ function diagramToSVG(diagramString, options) {
                 if (c !== ' ') {
                     // Offset the characters by 2 for easier viewing
                     svg += '<text x="' + ((x + 1) * SCALE + 2) +
-                        '" y="' + (6 + (y + 1) * SCALE * ASPECT) +
-                        '">' + escapeHTMLEntities(c) + '</text>';
+                        '" y="' + (6 + (y + 1) * SCALE * ASPECT) + '">' +
+                        escapeHTMLEntities(unhideMarkers(c)) + '</text>';
                 } // if
             } // x
         } // y
@@ -1730,7 +1747,7 @@ function diagramToSVG(diagramString, options) {
 
     svg += '</svg>';
 
-    return unhideMarkers(svg);
+    return svg;
 }
 
 module.exports = { diagramToSVG };

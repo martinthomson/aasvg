@@ -869,6 +869,19 @@ function diagramToSVG(diagramString, options) {
         }
     };
 
+    // Compute offsets for line arrows.
+    // Shift each side inward by W=STROKE_WIDTH/2 SVG px (perpendicular to the side)
+    // so the outer edge of the stroke aligns with the solid polygon boundary.
+    // H_SVG/L_SVG: half-base/length in SVG px; SL_SVG: side length in SVG px.
+    const W = STROKE_WIDTH / 2;
+    const H_SVG = ARROWHEAD_HALF_BASE * SCALE * ASPECT;
+    const L_SVG = ARROWHEAD_LENGTH * SCALE;
+    const SL_SVG = Math.sqrt(L_SVG ** 2 + H_SVG ** 2);
+    // dx_base/dy_base: grid-coord displacement of base corners toward the axis.
+    // dx_tip: grid-x pullback of the tip (intersection of the two inset sides).
+    const ARROWHEAD_LINE_BASE_DX = W * H_SVG / (SL_SVG * SCALE);
+    const ARROWHEAD_LINE_BASE_DY = W * L_SVG / (SL_SVG * SCALE * ASPECT);
+    const ARROWHEAD_LINE_TIP_DX = W * SL_SVG / (H_SVG * SCALE);
 
     DS.toSVG = function () {
         var svg = '';
@@ -929,9 +942,12 @@ function diagramToSVG(diagramString, options) {
                 svg += '<polygon class="triangle" points="' + tip + up + dn.coords(4) + '"' + ARROW_COLOR + '/>\n';
             } else { // Arrow head
                 var tip = Vec2(C.x + 1, C.y);
-                var up = Vec2(C.x - 0.5, C.y - 0.35);
-                var dn = Vec2(C.x - 0.5, C.y + 0.35);
+                var up = Vec2(C.x + 1 - ARROWHEAD_LENGTH, C.y - ARROWHEAD_HALF_BASE);
+                var dn = Vec2(C.x + 1 - ARROWHEAD_LENGTH, C.y + ARROWHEAD_HALF_BASE);
                 if (options.arrow === 'line') {
+                    tip = tip.offset(-ARROWHEAD_LINE_TIP_DX, 0);
+                    up = up.offset(-ARROWHEAD_LINE_BASE_DX, ARROWHEAD_LINE_BASE_DY);
+                    dn = dn.offset(-ARROWHEAD_LINE_BASE_DX, -ARROWHEAD_LINE_BASE_DY);
                     svg += '<path class="arrowhead" d="M ' + up + 'L ' + tip + 'L ' + dn.coords() + '"' + STROKE_COLOR +
                         ' transform="rotate(' + decoration.angle + ',' + C.coords() + ')"/>\n';
                 } else {

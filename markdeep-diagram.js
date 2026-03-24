@@ -1536,7 +1536,7 @@ function diagramToSVG(diagramString, options) {
                         var p = pathSet.findRightEndsAt(x, y);
                         var q = !p ? pathSet.findHorizontalPassesThrough(x, y) : null;
                         if (p || q) {
-                            if (isPoint(grid(x + 1, y))) { dx = -BACKOFF_X; }
+                            if (isPoint(grid(x + 1, y)) || grid(x + 1, y) === '<' || grid(x + 1, y) === '>') { dx = -BACKOFF_X; }
                             decorationSet.insert(x + dx, y, '>', 0);
                             grid.setUsed(x, y);
                             if (p) { p.markArrowAt(x, y, 'end', arrowTip(x + dx, y, 0)); } else { q.markArrowContRight(arrowTip(x + dx, y, 0)); }
@@ -1545,7 +1545,7 @@ function diagramToSVG(diagramString, options) {
                         var p = pathSet.findLeftEndsAt(x, y);
                         var q = !p ? pathSet.findHorizontalPassesThrough(x, y) : null;
                         if (p || q) {
-                            if (isPoint(grid(x - 1, y))) { dx = BACKOFF_X; }
+                            if (isPoint(grid(x - 1, y)) || grid(x - 1, y) === '>' || grid(x - 1, y) === '<') { dx = BACKOFF_X; }
                             decorationSet.insert(x + dx, y, '>', 180);
                             grid.setUsed(x, y);
                             if (p) { p.markArrowAt(x, y, 'end', arrowTip(x + dx, y, 180)); } else { q.markArrowContLeft(arrowTip(x + dx, y, 180)); }

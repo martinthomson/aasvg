@@ -10,7 +10,9 @@ polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }
 .dot:is(.open, .xor) { fill: var(--aasvg-w); }
 .dot.dotted { fill: var(--aasvg-w); stroke-dasharray: 0,1.8; }
 .dot.shaded { fill: #666; }
+.backdrop { fill: var(--aasvg-w); stroke: none; opacity: 0.9; }
 </style>
+<rect class="backdrop" x="0" y="0" width="760" height="432" rx="3px" ry="3px"/>
 <path d="M 8,16L 8,64"/>
 <path d="M 16,112L 16,144"/>
 <path d="M 16,208L 16,256"/>

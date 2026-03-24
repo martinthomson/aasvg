@@ -1079,7 +1079,7 @@ function diagramToSVG(diagramString, options) {
         for (var y = 0; y < grid.height; ++y) {
             for (var x = 0; x < grid.width; ++x) {
                 function hline(p, boxl, boxr, style) {
-                    if (grid[p](x, y) || (grid(x, y) === '<' && grid(x - 1, y) === '>')) {
+                    if (grid[p](x, y) || (grid(x, y) === '<' && grid(x - 1, y) === '>' && grid[p](x + 1, y))) {
                         // Begins a line...find the end
                         var A = Vec2(x, y);
                         do { grid.setUsed(x, y); ++x; } while (grid[p](x, y));

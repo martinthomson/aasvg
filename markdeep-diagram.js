@@ -669,7 +669,8 @@ function diagramToSVG(diagramString, options) {
     // The stroke end is a circle that is tangential to the arrowhead.
     const ARROWHEAD_HALF_BASE = 0.35;
     const ARROWHEAD_LENGTH = 1.5;
-    const LINE_WIDTH_ADJUST = STROKE_WIDTH / 2 * (1 + Math.sqrt(1 + (ARROWHEAD_HALF_BASE * ASPECT / ARROWHEAD_LENGTH) ** 2));
+    const ARROWHEAD_SCALE = ARROWHEAD_LENGTH / ARROWHEAD_HALF_BASE;
+    const LINE_WIDTH_ADJUST = STROKE_WIDTH / 2 * (1 + Math.sqrt(1 + (ASPECT / ARROWHEAD_SCALE) ** 2));
 
     _.offsetLine = function (dx, dy) {
         // Unit vector in SVG pixel space, normalized by SVG-space distance (accounts for aspect ratio).
@@ -681,11 +682,16 @@ function diagramToSVG(diagramString, options) {
         let uy = vy / (s_asp * SCALE);
 
         let a = (this.arrowTipAtA ?? this.A).offset(dx, dy);
-        if (this.arrowTipAtA) {
+        if (this.arrowTipAtA && this.arrowAtA !== 'none') {
             // End the stroke at the tip plus LINE_WIDTH_ADJUST (toward B) so the round
             // cap is tangent to the arrowhead sides (hidden inside the arrowhead body).
             // The stroke approaches A from B, so "into the arrowhead" is the +ux direction.
             a = a.offset(ux * LINE_WIDTH_ADJUST, uy * LINE_WIDTH_ADJUST);
+            if (this.double) {
+                // Take the sideways nudge (dx, dy), scale it for the arrowhead length,
+                // then rotate it along the axis of the line.
+                a = a.offset(Math.abs(dy) * ARROWHEAD_SCALE, Math.abs(dx) * ARROWHEAD_SCALE);
+            }
         }
         let svg = '<path d="M ' + a.coords();
         if (this.isCurved()) {
@@ -694,8 +700,11 @@ function diagramToSVG(diagramString, options) {
             svg += 'L ';
         }
         let b = (this.arrowTipAtB ?? this.B).offset(dx, dy);
-        if (this.arrowTipAtB) {
+        if (this.arrowTipAtB && this.arrowAtA !== 'none') {
             b = b.offset(-ux * LINE_WIDTH_ADJUST, -uy * LINE_WIDTH_ADJUST);
+            if (this.double) {
+                b = b.offset(-Math.abs(dy) * ARROWHEAD_SCALE, -Math.abs(dx) * ARROWHEAD_SCALE);
+            }
         }
         svg += b.coords() + '"' + STROKE_COLOR;
         if (this.dashed) {
@@ -1420,7 +1429,7 @@ function diagramToSVG(diagramString, options) {
                 p.markArrowAt(px, py, 'end', tip);
                 if (companionMethod) {
                     var q = pathSet[companionMethod](px, py);
-                    if (q) q.markArrowAt(px, py, 'end', tip);
+                    if (q) q.markArrowAt(px, py, 'none', tip);
                 }
             }
             return !!p;

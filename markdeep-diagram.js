@@ -344,7 +344,8 @@ function diagramToSVG(diagramString, options) {
 
             } else if (isTopVertex(c) || (c === '^')) {
                 // May be the top of a vertical line
-                return f(dn) || (isJump(dn) && (c !== '.'));
+                return (f(dn) || (isJump(dn) && (c !== '.'))) &&
+                    (c !== '^' || (up !== 'v' && up !== 'V'));
             } else if (isBottomVertex(c) || (c === 'v' || c === 'V')) {
                 return f(up) || (isJump(up) && (c !== "'"));
             } else if (isPoint(c)) {
@@ -382,7 +383,7 @@ function diagramToSVG(diagramString, options) {
                 }
 
             } else if (c === '<') {
-                return f(rt) && f(rtrt);
+                return f(rt) && f(rtrt) && (lt !== '>');
             } else if (c === '>') {
                 return f(lt) && f(ltlt);
             } else if (isVertex(c)) {
@@ -978,7 +979,8 @@ function diagramToSVG(diagramString, options) {
         for (var x = 0; x < grid.width; ++x) {
             for (var y = 0; y < grid.height; ++y) {
                 function vline(p, alt, boxt, boxb, style) {
-                    if (grid[p](x, y)) {
+                    if (grid[p](x, y) ||
+                        (grid(x, y) === '^' && (grid(x, y - 1) === 'v' || grid(x, y - 1) === 'V'))) {
                         // This character begins a vertical line...now, find the end
                         var A = Vec2(x, y);
                         do { grid.setUsed(x, y); ++y; } while (grid[p](x, y));
@@ -1068,7 +1070,7 @@ function diagramToSVG(diagramString, options) {
         for (var y = 0; y < grid.height; ++y) {
             for (var x = 0; x < grid.width; ++x) {
                 function hline(p, boxl, boxr, style) {
-                    if (grid[p](x, y)) {
+                    if (grid[p](x, y) || (grid(x, y) === '<' && grid(x - 1, y) === '>')) {
                         // Begins a line...find the end
                         var A = Vec2(x, y);
                         do { grid.setUsed(x, y); ++x; } while (grid[p](x, y));

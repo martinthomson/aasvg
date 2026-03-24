@@ -989,7 +989,7 @@ function diagramToSVG(diagramString, options) {
             for (var y = 0; y < grid.height; ++y) {
                 function vline(p, alt, boxt, boxb, style) {
                     if (grid[p](x, y) ||
-                        (grid(x, y) === '^' && (grid(x, y - 1) === 'v' || grid(x, y - 1) === 'V'))) {
+                        (grid(x, y) === '^' && (grid(x, y - 1) === 'v' || grid(x, y - 1) === 'V') && grid[p](x, y + 1))) {
                         // This character begins a vertical line...now, find the end
                         var A = Vec2(x, y);
                         do { grid.setUsed(x, y); ++y; } while (grid[p](x, y));

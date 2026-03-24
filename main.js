@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const { diagramToSVG } = require("./markdeep-diagram.js");
-const VERSION = "aasvg 0.5.0";
+const VERSION = "aasvg 0.5.1";
 
 function usage(help) {
     console.warn(VERSION + ": Turn ASCII art into SVG");

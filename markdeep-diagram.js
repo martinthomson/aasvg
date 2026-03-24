@@ -672,13 +672,17 @@ function diagramToSVG(diagramString, options) {
     //         |      .-'
     //         :
     //         |<---- 1.5 ---->|
-    // That means moving the dot back from the end by STROKE_WIDTH/2.
-    // Plus the extra needed to account for the curvature of the round end.
-    // The stroke end is a circle that is tangential to the arrowhead.
+    // That means moving the dot back from the end.
+    // Based on similar triangles, we need to scale STROKE_WIDTH/2 
+    // (the perpendicular distance from our target point to the edge of the arrowhead)
+    // by the ratio of the hypotenuse (√...BASE² + ...LENGTH²)
+    // divided by the length of the matching side (...BASE=0.35).
+    // The ...BASE value being set to ...HALF_BASE * ASPECT, 
+    // to account for the distortion in SVG space.
     const ARROWHEAD_HALF_BASE = 0.35;
     const ARROWHEAD_LENGTH = 1.5;
-    const ARROWHEAD_SCALE = ARROWHEAD_LENGTH / ARROWHEAD_HALF_BASE;
-    const LINE_WIDTH_ADJUST = STROKE_WIDTH / 2 * (1 + Math.sqrt(1 + (ASPECT / ARROWHEAD_SCALE) ** 2));
+    const ARROWHEAD_HYPOT = Math.sqrt((ASPECT * ARROWHEAD_HALF_BASE) ** 2 + ARROWHEAD_LENGTH ** 2);
+    const ARROWHEAD_TIP_ADJUST = STROKE_WIDTH / 2 * ARROWHEAD_HYPOT / (ARROWHEAD_HALF_BASE * ASPECT);
 
     _.offsetLine = function (dx, dy) {
         // Unit vector in SVG pixel space, normalized by SVG-space distance (accounts for aspect ratio).
@@ -691,12 +695,12 @@ function diagramToSVG(diagramString, options) {
 
         // SVG-space perpendicular offset of this stroke from the path centre.
         // For an offset (double-line) stroke the outer edge must fit inside the arrowhead,
-        // requiring extra pullback of d_SVG * ARROWHEAD_SCALE / ASPECT SVG pixels
+        // requiring extra pullback of d_SVG * ARROWHEAD_LEN / ARROWHEAD_HALF_BASE / ASPECT SVG pixels
         // (= d_SVG / tan(half-angle) in SVG space, where half-angle is the arrowhead slope).
         // Applying via ux/uy (which carry the inverse ASPECT factor) keeps the result correct
         // for both horizontal and vertical paths without any special-casing.
         const d_SVG = SCALE * Math.sqrt(dx ** 2 + (dy * ASPECT) ** 2);
-        const adjust = LINE_WIDTH_ADJUST + d_SVG * ARROWHEAD_SCALE / ASPECT;
+        const adjust = ARROWHEAD_TIP_ADJUST + d_SVG * ARROWHEAD_LENGTH / ARROWHEAD_HALF_BASE / ASPECT;
 
         let a = (this.arrowTipAtA ?? this.A).offset(dx, dy);
         if (this.arrowTipAtA && this.arrowAtA !== 'none') {
@@ -724,13 +728,13 @@ function diagramToSVG(diagramString, options) {
 
     _.horizontalSquiggle = function (x0, x1, y) {
         const SQUIGGLE_AMPLITUDE = 0.2;
-        const H_LEN = 0.5 * SCALE - LINE_WIDTH_ADJUST;
+        const H_LEN = 0.5 * SCALE - ARROWHEAD_TIP_ADJUST;
 
         let svg = '<path d="M '
         let skip = false;
         let start = (this.arrowTipAtA ?? this.A).offset(0, 0);
         if (this.arrowTipAtA && this.arrowAtA !== 'none') {
-            let a_prime = this.arrowTipAtA.offset(LINE_WIDTH_ADJUST / SCALE, 0);
+            let a_prime = this.arrowTipAtA.offset(ARROWHEAD_TIP_ADJUST / SCALE, 0);
             svg += a_prime.coords() + ' h ' + H_LEN + ' ';
             skip = true;
         } else {

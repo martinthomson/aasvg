@@ -2,10 +2,12 @@
   "name": "aasvg",
   "version": "0.5.0",
   "description": "Turn ASCII art diagrams into SVG",
-  "bin": "./main.js",
+  "bin": {
+    "aasvg": "main.js"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/martinthomson/aasvg"
+    "url": "git+https://github.com/martinthomson/aasvg.git"
   },
   "keywords": [
     "ascii",

@@ -15,9 +15,6 @@
 
 // Mappings and constants used by markdeep.
 const STROKE_WIDTH = 1; // SVG default
-const ARROW_COLOR = ' fill="black"'; // + ' stroke="none"', but xml2rfc doesn't like that.
-const STROKE_COLOR = ' fill="none" stroke="black"';
-const TEXT_COLOR = ' stroke="black"';
 ['min', 'max', 'abs', 'sign'].forEach(f => {
     global[f] = Math[f];
 });
@@ -706,9 +703,9 @@ function diagramToSVG(diagramString, options) {
         if (this.arrowTipAtB && this.arrowAtB !== 'none') {
             b = b.offset(-ux * adjust, -uy * adjust);
         }
-        svg += b.coords() + '"' + STROKE_COLOR;
+        svg += b.coords() + '"';
         if (this.dashed) {
-            svg += ' stroke-dasharray="3,6"';
+            svg += ' class="dashed"';
         }
         svg += '/>';
         return svg;
@@ -746,7 +743,7 @@ function diagramToSVG(diagramString, options) {
             }
             start = end;
         }
-        svg += '"' + STROKE_COLOR + '/>';
+        svg += '"/>';
         return svg;
     }
 
@@ -897,33 +894,22 @@ function diagramToSVG(diagramString, options) {
                 var cup = Vec2(C.x + dx, C.y - 0.5);
                 var cdn = Vec2(C.x + dx, C.y + 0.5);
 
-                svg += '<path class="jump" d="M ' + dn + 'C ' + cdn + cup + up.coords() + '"' + STROKE_COLOR + '/>';
+                svg += '<path class="jump" d="M ' + dn + 'C ' + cdn + cup + up.coords() + '"/>';
 
             } else if (isPoint(decoration.type)) {
                 const CLASSES = { '*': 'closed', 'o': 'open', '◌': 'dotted', '○': 'open', '◍': 'shaded', '●': 'closed', '⊕': 'xor' };
-                const FILL = { 'closed': 'black', 'open': 'white', 'dotted': 'white', 'shaded': '#666', 'xor': 'white' };
-                const STROKE = {
-                    'closed': '',
-                    'open': ' stroke="black"',
-                    'dotted': ' stroke="black" stroke-dasharray="0,1.8"',
-                    'shaded': ' stroke="black"',
-                    'xor': ' stroke="black"',
-                };
                 var cls = CLASSES[decoration.type];
                 svg += '<circle cx="' + ((C.x + 1) * SCALE) + '" cy="' + ((C.y + 1) * SCALE * ASPECT) +
-                    '" r="' + (SCALE - STROKE_WIDTH) + '" class="' + cls + 'dot"' +
-                    ' fill="' + FILL[cls] + '"' + STROKE[cls] + '/>\n';
+                    '" r="' + (SCALE - STROKE_WIDTH) + '" class="dot ' + cls + '"/>\n';
                 if (decoration.type === '⊕') {
                     svg += '<line x1="' + ((C.x) * SCALE + STROKE_WIDTH) +
                         '" y1="' + ((C.y + 1) * SCALE * ASPECT) +
                         '" x2="' + ((C.x + 2) * SCALE - STROKE_WIDTH) +
-                        '" y2="' + ((C.y + 1) * SCALE * ASPECT) +
-                        '" stroke="black"/>';
+                        '" y2="' + ((C.y + 1) * SCALE * ASPECT) + '"/>';
                     svg += '<line x1="' + ((C.x + 1) * SCALE) +
                         '" y1="' + ((C.y + 1) * SCALE * ASPECT - SCALE + STROKE_WIDTH) +
                         '" x2="' + ((C.x + 1) * SCALE) +
-                        '" y2="' + ((C.y + 1) * SCALE * ASPECT + SCALE - STROKE_WIDTH) +
-                        '" stroke="black"/>';
+                        '" y2="' + ((C.y + 1) * SCALE * ASPECT + SCALE - STROKE_WIDTH) + '"/>';
                 }
             } else if (isGray(decoration.type)) {
                 var shade = Math.round((3 - GRAY_CHARACTERS.indexOf(decoration.type)) * 63.75);
@@ -939,7 +925,7 @@ function diagramToSVG(diagramString, options) {
                 var tip = Vec2(C.x + xs, C.y - ys);
                 var up = Vec2(C.x + xs, C.y + ys);
                 var dn = Vec2(C.x - xs, C.y + ys);
-                svg += '<polygon class="triangle" points="' + tip + up + dn.coords(4) + '"' + ARROW_COLOR + '/>\n';
+                svg += '<polygon class="triangle" points="' + tip + up + dn.coords(4) + '"/>\n';
             } else { // Arrow head
                 var tip = Vec2(C.x + 1, C.y);
                 var up = Vec2(C.x + 1 - ARROWHEAD_LENGTH, C.y - ARROWHEAD_HALF_BASE);
@@ -948,11 +934,11 @@ function diagramToSVG(diagramString, options) {
                     tip = tip.offset(-ARROWHEAD_LINE_TIP_DX, 0);
                     up = up.offset(-ARROWHEAD_LINE_BASE_DX, ARROWHEAD_LINE_BASE_DY);
                     dn = dn.offset(-ARROWHEAD_LINE_BASE_DX, -ARROWHEAD_LINE_BASE_DY);
-                    svg += '<path class="arrowhead" d="M ' + up + 'L ' + tip + 'L ' + dn.coords() + '"' + STROKE_COLOR +
-                        ' transform="rotate(' + decoration.angle + ',' + C.coords() + ')"/>\n';
+                    svg += '<path class="arrowhead" d="M ' + up + 'L ' + tip + 'L ' + dn.coords() +
+                        '" transform="rotate(' + decoration.angle + ',' + C.coords() + ')"/>\n';
                 } else {
-                    svg += '<polygon class="arrowhead" points="' + tip + up + dn.coords() + '"' + ARROW_COLOR +
-                        ' transform="rotate(' + decoration.angle + ',' + C.coords() + ')"/>\n';
+                    svg += '<polygon class="arrowhead" points="' + tip + up + dn.coords() +
+                        '" transform="rotate(' + decoration.angle + ',' + C.coords() + ')"/>\n';
                 }
             }
         }
@@ -1622,9 +1608,6 @@ function diagramToSVG(diagramString, options) {
     const DEFAULT_ATTRS = {
         'class': 'diagram',
         'text-anchor': 'middle',
-        'font-family': 'monospace',
-        'font-size': (SCALE * 13 / 8).toString() + 'px',
-        'stroke-linecap': 'round',
     };
     Object.keys(DEFAULT_ATTRS).forEach(k => {
         if (!attrs[k]) { attrs[k] = DEFAULT_ATTRS[k]; }
@@ -1632,6 +1615,33 @@ function diagramToSVG(diagramString, options) {
     let svg = '<svg ' + Object.keys(attrs)
         .filter(k => typeof attrs[k] === 'string')
         .map(k => k + '="' + escapeHTMLEntities(attrs[k]) + '"').join(' ') + '>\n';
+
+    svg += '<style>\n' +
+        '* { fill: none; stroke: black; stroke-linecap: round; }\n' +
+        'text { font: ' + (SCALE * 13 / 8).toString() + 'px monospace;' +
+        ' text-anchor: middle; fill: black; stroke: none; }\n' +
+        'path.dashed { stroke-dasharray: 3,6; }\n' +
+        '.dot.closed { fill: black; }\n' +
+        '.dot.open { fill: white; stroke: black; }\n' +
+        '.dot.dotted { fill: white; stroke: black; stroke-dasharray: 0,1.8; }\n' +
+        '.dot.shaded { fill: #666; stroke: black; }\n' +
+        '.dot.xor { fill: white; stroke: black; }\n' +
+        'polygon.arrowhead { fill: black; }\n' +
+        '.triangle { fill: black; }\n';
+    if (options.backdrop) {
+        svg += '.backdrop { fill: white; stroke: none; opacity: 0.9; }\n';
+    }
+    if (options.grid) {
+        svg += '.grid rect { stroke: none; fill: grey; opacity: 0.1; }\n' +
+            '.grid rect.t { fill: blue; }\n' +
+            '.grid rect.l { fill: red; }\n';
+    }
+    if (options.source) {
+        svg += 'text { opacity: 0.8; }\n' +
+            '.source { fill: red; font - size: 12px; } \n' +
+            '.source text { font-size: 90%; }\n';
+    }
+    svg += '</style>\n';
 
     if (options.embed) {
         svg += '<text class="ascii" display="none"><![CDATA[\n'
@@ -1642,25 +1652,21 @@ function diagramToSVG(diagramString, options) {
     if (options.backdrop) {
         svg += '<rect class="backdrop" x="0" y="0" width="' + ((grid.width + 1) * SCALE)
             + '" height="' + ((grid.height + 1) * SCALE * ASPECT)
-            + '" rx="3px" ry="3px" fill="white" opacity="0.9"/>\n';
+            + '" rx="3px" ry="3px"/>\n';
     }
     if (options.grid) {
-        svg += '<style>* { opacity: 0.7; }</style>'; // TODO - remove
-        svg += '<g class="grid" opacity="0.1">\n';
+        svg += '<g class="grid">\n';
         for (var x = 0; x < grid.width; ++x) {
             for (var y = 0; y < grid.height; ++y) {
                 svg += '<rect x="' + ((x + 0.5) * SCALE + 1) +
                     '" y="' + ((y + 0.5) * SCALE * ASPECT + 2) +
-                    '" width="' + (SCALE - 2) + '" height="' + (SCALE * ASPECT - 2) +
-                    '" fill="';
+                    '" width="' + (SCALE - 2) + '" height="' + (SCALE * ASPECT - 2) + '"';
                 if (grid.isUsed(x, y)) {
-                    svg += 'red';
-                } else if (grid(x, y) === ' ') {
-                    svg += 'gray" opacity="0.05';
-                } else {
-                    svg += 'blue';
+                    svg += ' class="l"';
+                } else if (grid(x, y) !== ' ') {
+                    svg += ' class="t"';
                 }
-                svg += '"/>\n';
+                svg += '/>\n';
             }
         }
         svg += '</g>\n';
@@ -1679,7 +1685,7 @@ function diagramToSVG(diagramString, options) {
                 if (/[\u2B22\u2B21]/.test(c)) {
                     svg += '<text x="' + ((x + 1) * SCALE) +
                         '" y="' + (4 + (y + 1) * SCALE * ASPECT) +
-                        '"' + TEXT_COLOR + ' font-size="20.5px">' +
+                        '">' +
                         escapeHTMLEntities(c) + '</text>\n';
                     grid.setUsed(x, y);
                 }
@@ -1707,7 +1713,7 @@ function diagramToSVG(diagramString, options) {
     }
 
     if (options.source) {
-        svg += '<g class="source" fill="red" font-size="12px">\n';
+        svg += '<g class="source">\n';
         for (var y = 0; y < grid.height; ++y) {
             for (var x = 0; x < grid.width; ++x) {
                 var c = grid(x, y);

@@ -347,7 +347,8 @@ function diagramToSVG(diagramString, options) {
                 return (f(dn) || (isJump(dn) && (c !== '.'))) &&
                     (c !== '^' || (up !== 'v' && up !== 'V'));
             } else if (isBottomVertex(c) || (c === 'v' || c === 'V')) {
-                return f(up) || (isJump(up) && (c !== "'"));
+                return f(up) || (isJump(up) && (c !== "'")) ||
+                    ((up === 'v' || up === 'V') && f(grid(x, y - 2)));
             } else if (isPoint(c)) {
                 return f(up) || f(dn);
             }
@@ -385,7 +386,7 @@ function diagramToSVG(diagramString, options) {
             } else if (c === '<') {
                 return f(rt) && f(rtrt) && (lt !== '>');
             } else if (c === '>') {
-                return f(lt) && f(ltlt);
+                return f(ltlt) && (f(lt) || (lt === '>'));
             } else if (isVertex(c)) {
                 return ((f(lt) && f(ltlt)) || (f(rt) && f(rtrt)));
             }

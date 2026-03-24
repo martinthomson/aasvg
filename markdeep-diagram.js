@@ -681,17 +681,20 @@ function diagramToSVG(diagramString, options) {
         let ux = vx / (s_asp * SCALE);
         let uy = vy / (s_asp * SCALE);
 
+        // SVG-space perpendicular offset of this stroke from the path centre.
+        // For an offset (double-line) stroke the outer edge must fit inside the arrowhead,
+        // requiring extra pullback of d_SVG * ARROWHEAD_SCALE / ASPECT SVG pixels
+        // (= d_SVG / tan(half-angle) in SVG space, where half-angle is the arrowhead slope).
+        // Applying via ux/uy (which carry the inverse ASPECT factor) keeps the result correct
+        // for both horizontal and vertical paths without any special-casing.
+        const d_SVG = SCALE * Math.sqrt(dx ** 2 + (dy * ASPECT) ** 2);
+        const adjust = LINE_WIDTH_ADJUST + d_SVG * ARROWHEAD_SCALE / ASPECT;
+
         let a = (this.arrowTipAtA ?? this.A).offset(dx, dy);
         if (this.arrowTipAtA && this.arrowAtA !== 'none') {
-            // End the stroke at the tip plus LINE_WIDTH_ADJUST (toward B) so the round
-            // cap is tangent to the arrowhead sides (hidden inside the arrowhead body).
-            // The stroke approaches A from B, so "into the arrowhead" is the +ux direction.
-            a = a.offset(ux * LINE_WIDTH_ADJUST, uy * LINE_WIDTH_ADJUST);
-            if (this.double) {
-                // Take the sideways nudge (dx, dy), scale it for the arrowhead length,
-                // then rotate it along the axis of the line.
-                a = a.offset(Math.abs(dy) * ARROWHEAD_SCALE, Math.abs(dx) * ARROWHEAD_SCALE);
-            }
+            // Move the stroke endpoint toward B by adjust SVG pixels so the round cap
+            // is tangent to (and hidden inside) the arrowhead body.
+            a = a.offset(ux * adjust, uy * adjust);
         }
         let svg = '<path d="M ' + a.coords();
         if (this.isCurved()) {
@@ -700,11 +703,8 @@ function diagramToSVG(diagramString, options) {
             svg += 'L ';
         }
         let b = (this.arrowTipAtB ?? this.B).offset(dx, dy);
-        if (this.arrowTipAtB && this.arrowAtA !== 'none') {
-            b = b.offset(-ux * LINE_WIDTH_ADJUST, -uy * LINE_WIDTH_ADJUST);
-            if (this.double) {
-                b = b.offset(-Math.abs(dy) * ARROWHEAD_SCALE, -Math.abs(dx) * ARROWHEAD_SCALE);
-            }
+        if (this.arrowTipAtB && this.arrowAtB !== 'none') {
+            b = b.offset(-ux * adjust, -uy * adjust);
         }
         svg += b.coords() + '"' + STROKE_COLOR;
         if (this.dashed) {

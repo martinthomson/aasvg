@@ -7,10 +7,9 @@
 text { font: 13px monospace; text-anchor: middle; fill: var(--aasvg-b); stroke: none; }
 polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }
 .dot.closed { fill: var(--aasvg-b); }
-.dot.open { fill: var(--aasvg-w); }
+.dot:is(.open, .xor) { fill: var(--aasvg-w); }
 .dot.dotted { fill: var(--aasvg-w); stroke-dasharray: 0,1.8; }
 .dot.shaded { fill: #666; }
-.dot.xor { fill: var(--aasvg-w); }
 </style>
 <path d="M 8,16L 8,64"/>
 <path d="M 16,112L 16,144"/>
@@ -246,7 +245,7 @@ polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }
 <polygon class="arrowhead" points="400,16 388,10.4 388,21.6" transform="rotate(270,392,16)"/>
 <polygon class="arrowhead" points="392,368 380,362.4 380,373.6" transform="rotate(180,384,368)"/>
 <polygon class="arrowhead" points="360,264 348,258.4 348,269.6" transform="rotate(270,352,264)"/>
-<polygon class="arrowhead" points="364,184 352,178.4 352,189.6" transform="rotate(63.43494882292201,356,184)"/>
+<polygon class="arrowhead" points="364,184 352,178.4 352,189.6" transform="rotate(63.43495,356,184)"/>
 <polygon class="arrowhead" points="328,368 316,362.4 316,373.6" transform="rotate(180,320,368)"/>
 <polygon class="arrowhead" points="320,32 308,26.4 308,37.6" transform="rotate(0,312,32)"/>
 <polygon class="arrowhead" points="296,224 284,218.4 284,229.6" transform="rotate(0,288,224)"/>
@@ -257,7 +256,7 @@ polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }
 <polygon class="arrowhead" points="144,176 132,170.4 132,181.6" transform="rotate(0,136,176)"/>
 <polygon class="arrowhead" points="136,416 124,410.4 124,421.6" transform="rotate(0,128,416)"/>
 <polygon class="arrowhead" points="104,416 92,410.4 92,421.6" transform="rotate(0,96,416)"/>
-<polygon class="arrowhead" points="92,328 80,322.4 80,333.6" transform="rotate(243.43494882292202,84,328)"/>
+<polygon class="arrowhead" points="92,328 80,322.4 80,333.6" transform="rotate(243.43495,84,328)"/>
 <polygon class="arrowhead" points="72,416 60,410.4 60,421.6" transform="rotate(0,64,416)"/>
 <polygon class="arrowhead" points="56,176 44,170.4 44,181.6" transform="rotate(180,48,176)"/>
 <polygon class="arrowhead" points="40,416 28,410.4 28,421.6" transform="rotate(0,32,416)"/>

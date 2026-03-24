@@ -19,6 +19,7 @@ function usage(help) {
     console.warn("    backdrop        Draw a backdrop");
     console.warn("    source          Draw an overlay with source text");
     console.warn("    arrow=<style>   Arrowhead style: solid (default) or line");
+    console.warn("    compatible      Disable dark mode for compatibility");
     console.warn("    embed           Embed input in the SVG");
     console.warn("    extract         Extract embedded input from the SVG (requires xmllint)");
     console.warn("    <attr>=<value>  Set SVG attribute <attr> to <value>");
@@ -88,6 +89,8 @@ function i(o, a) {
             options.source = true;
         } else if (a === "fill") {
             options.fill = true;
+        } else if (a === "compatible") {
+            options.compatible = true;
         } else if (a.startsWith("arrow=")) {
             let v = a.substring("arrow=".length);
             if (v !== 'solid' && v !== 'line') {

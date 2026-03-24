@@ -203,6 +203,7 @@ function diagramToSVG(diagramString, options) {
 
     ///////////////////////////////////////////////////////////////////////////////
     // Math library
+    function fivePlaces(x) { return x.toFixed(5).replace(/\.?0*$/, ''); }
 
     /** Invoke as new Vec2(v) to clone or new Vec2(x, y) to create from coordinates.
         Can also invoke without new for brevity. */
@@ -222,8 +223,7 @@ function diagramToSVG(diagramString, options) {
 
     /** Returns coordinates */
     Vec2.prototype.coords = function () {
-        function s(x) { return x.toFixed(5).replace(/\.?0*$/, ''); }
-        return s((this.x + 1) * SCALE) + ',' + s((this.y + 1) * SCALE * ASPECT);
+        return fivePlaces((this.x + 1) * SCALE) + ',' + fivePlaces((this.y + 1) * SCALE * ASPECT);
     }
     /** Returns an SVG representation, with a trailing space */
     Vec2.prototype.toString = Vec2.prototype.toSVG =
@@ -946,10 +946,10 @@ function diagramToSVG(diagramString, options) {
                     up = up.offset(-ARROWHEAD_LINE_BASE_DX, ARROWHEAD_LINE_BASE_DY);
                     dn = dn.offset(-ARROWHEAD_LINE_BASE_DX, -ARROWHEAD_LINE_BASE_DY);
                     svg += '<path class="arrowhead" d="M ' + up + 'L ' + tip + 'L ' + dn.coords() +
-                        '" transform="rotate(' + decoration.angle + ',' + C.coords() + ')"/>\n';
+                        '" transform="rotate(' + fivePlaces(decoration.angle) + ',' + C.coords() + ')"/>\n';
                 } else {
                     svg += '<polygon class="arrowhead" points="' + tip + up + dn.coords() +
-                        '" transform="rotate(' + decoration.angle + ',' + C.coords() + ')"/>\n';
+                        '" transform="rotate(' + fivePlaces(decoration.angle) + ',' + C.coords() + ')"/>\n';
                 }
             }
         }
@@ -1627,27 +1627,33 @@ function diagramToSVG(diagramString, options) {
         .filter(k => typeof attrs[k] === 'string')
         .map(k => k + '="' + escapeHTMLEntities(attrs[k]) + '"').join(' ') + '>\n';
 
-    svg += '<style>\n' +
-        ':root { --aasvg-b: black; --aasvg-w: white; }\n' +
-        '@media (prefers-color-scheme: dark) { :root { --aasvg-b: white; --aasvg-w: black; } }\n' +
-        '* { fill: none; stroke: var(--aasvg-b); stroke-linecap: round; }\n' +
+    svg += '<style>\n';
+    let black = 'black';
+    let white = 'white';
+    if (!options.compatible) {
+        svg +=
+            ':root { --aasvg-b: black; --aasvg-w: white; }\n' +
+            '@media (prefers-color-scheme: dark) { :root { --aasvg-b: white; --aasvg-w: black; } }\n';
+        black = 'var(--aasvg-b)';
+        white = 'var(--aasvg-w)';
+    }
+    svg += `* { fill: none; stroke: ${black}; stroke-linecap: round; }\n` +
         '.dashed { stroke-dasharray: 3,6; }\n';
     if (hasText || options.source) {
-        svg += 'text { font: ' + (SCALE * 13 / 8).toString() + 'px monospace;' +
-            ' text-anchor: middle; fill: var(--aasvg-b); stroke: none; }\n';
+        svg += `text { font: ${SCALE * 13 / 8}px monospace;` +
+            ` text-anchor: middle; fill: ${black}; stroke: none; }\n`;
     }
     if ((decorationSet.has('>') && options.arrow === 'solid') || decorationSet.has(TRI_CHARACTERS)) {
-        svg += 'polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }\n';
+        svg += `polygon.arrowhead, .triangle { fill: ${black}; stroke: none; }\n`;
     }
     if (decorationSet.has(POINT_CHARACTERS)) {
-        svg += '.dot.closed { fill: var(--aasvg-b); }\n' +
-            '.dot.open { fill: var(--aasvg-w); }\n' +
-            '.dot.dotted { fill: var(--aasvg-w); stroke-dasharray: 0,1.8; }\n' +
-            '.dot.shaded { fill: #666; }\n' +
-            '.dot.xor { fill: var(--aasvg-w); }\n';
+        svg += `.dot.closed { fill: ${black}; }\n` +
+            `.dot:is(.open, .xor) { fill: ${white}; }\n` +
+            `.dot.dotted { fill: ${white}; stroke-dasharray: 0,1.8; }\n` +
+            '.dot.shaded { fill: #666; }\n';
     }
     if (options.backdrop) {
-        svg += '.backdrop { fill: var(--aasvg-w); stroke: none; opacity: 0.9; }\n';
+        svg += `.backdrop { fill: ${white}; stroke: none; opacity: 0.9; }\n`;
     }
     if (options.grid) {
         svg += '.grid rect { stroke: none; fill: grey; opacity: 0.1; }\n' +
@@ -1656,8 +1662,7 @@ function diagramToSVG(diagramString, options) {
     }
     if (options.source) {
         svg += 'text { opacity: 0.8; }\n' +
-            '.source { fill: red; font - size: 12px; } \n' +
-            '.source text { font-size: 90%; }\n';
+            '.source { fill: red; font-size: 90%; }\n';
     }
     svg += '</style>\n';
 

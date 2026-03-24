@@ -2,8 +2,8 @@
 const { diagramToSVG } = require("./markdeep-diagram.js");
 const VERSION = "aasvg 0.5.0";
 
-function usage() {
-    console.warn("Turn ASCII art into SVG");
+function usage(help) {
+    console.warn(VERSION + ": Turn ASCII art into SVG");
     console.warn();
     console.warn("Usage: aasvg [options] < <text> > <svg>");
     console.warn();
@@ -22,8 +22,9 @@ function usage() {
     console.warn("    embed           Embed input in the SVG");
     console.warn("    extract         Extract embedded input from the SVG (requires xmllint)");
     console.warn("    <attr>=<value>  Set SVG attribute <attr> to <value>");
-    console.warn("    version         Show the version and exit");
-    process.exit(2);
+    console.warn("    version         Display version information and exit");
+    console.warn("    help            Show this message and exit");
+    process.exit(help ? 0 : 2);
 }
 
 async function read() {
@@ -65,7 +66,7 @@ function extract(txt) {
 function i(o, a) {
     let v = parseInt(a.substring(o.length + 1), 10);
     if (isNaN(v)) {
-        console.warn(`Invalid value for --${o} option`);
+        console.warn(`Invalid value for ${o} option`);
         process.exit(2);
     }
     return v;
@@ -90,7 +91,7 @@ function i(o, a) {
         } else if (a.startsWith("arrow=")) {
             let v = a.substring("arrow=".length);
             if (v !== 'solid' && v !== 'line') {
-                console.warn(`Invalid value for --arrow option (must be solid or line)`);
+                console.warn(`Invalid value for arrow option (must be solid or line)`);
                 process.exit(2);
             }
             options.arrow = v;
@@ -107,6 +108,8 @@ function i(o, a) {
         } else if (a === "version") {
             console.log(VERSION);
             process.exit();
+        } else if (a === "help") {
+            usage(true);
         } else {
             let s = a.split("=");
             if (s.length === 2) {

@@ -1623,12 +1623,11 @@ function diagramToSVG(diagramString, options) {
         ' text-anchor: middle; fill: var(--aasvg-b); stroke: none; }\n' +
         'path.dashed { stroke-dasharray: 3,6; }\n' +
         '.dot.closed { fill: var(--aasvg-b); }\n' +
-        '.dot.open { fill: var(--aasvg-w); stroke: var(--aasvg-b); }\n' +
-        '.dot.dotted { fill: var(--aasvg-w); stroke: var(--aasvg-b); stroke-dasharray: 0,1.8; }\n' +
-        '.dot.shaded { fill: #666; stroke: var(--aasvg-b); }\n' +
-        '.dot.xor { fill: var(--aasvg-w); stroke: var(--aasvg-b); }\n' +
-        'polygon.arrowhead { fill: var(--aasvg-b); }\n' +
-        '.triangle { fill: var(--aasvg-b); }\n';
+        '.dot.open { fill: var(--aasvg-w); }\n' +
+        '.dot.dotted { fill: var(--aasvg-w); stroke-dasharray: 0,1.8; }\n' +
+        '.dot.shaded { fill: #666; }\n' +
+        '.dot.xor { fill: var(--aasvg-w); }\n' +
+        'polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }\n';
     if (options.backdrop) {
         svg += '.backdrop { fill: var(--aasvg-w); stroke: none; opacity: 0.9; }\n';
     }

@@ -1606,8 +1606,7 @@ function diagramToSVG(diagramString, options) {
     attrs.viewBox = '0 0 ' + width + ' ' + height;
     // These attributes can be overridden:
     const DEFAULT_ATTRS = {
-        'class': 'diagram',
-        'text-anchor': 'middle',
+        'class': 'aasvg',
     };
     Object.keys(DEFAULT_ATTRS).forEach(k => {
         if (!attrs[k]) { attrs[k] = DEFAULT_ATTRS[k]; }
@@ -1617,19 +1616,21 @@ function diagramToSVG(diagramString, options) {
         .map(k => k + '="' + escapeHTMLEntities(attrs[k]) + '"').join(' ') + '>\n';
 
     svg += '<style>\n' +
-        '* { fill: none; stroke: black; stroke-linecap: round; }\n' +
+        ':root { --aasvg-b: black; --aasvg-w: white; }\n' +
+        '@media (prefers-color-scheme: dark) { :root { --aasvg-b: white; --aasvg-w: black; } }\n' +
+        '* { fill: none; stroke: var(--aasvg-b); stroke-linecap: round; }\n' +
         'text { font: ' + (SCALE * 13 / 8).toString() + 'px monospace;' +
-        ' text-anchor: middle; fill: black; stroke: none; }\n' +
+        ' text-anchor: middle; fill: var(--aasvg-b); stroke: none; }\n' +
         'path.dashed { stroke-dasharray: 3,6; }\n' +
-        '.dot.closed { fill: black; }\n' +
-        '.dot.open { fill: white; stroke: black; }\n' +
-        '.dot.dotted { fill: white; stroke: black; stroke-dasharray: 0,1.8; }\n' +
-        '.dot.shaded { fill: #666; stroke: black; }\n' +
-        '.dot.xor { fill: white; stroke: black; }\n' +
-        'polygon.arrowhead { fill: black; }\n' +
-        '.triangle { fill: black; }\n';
+        '.dot.closed { fill: var(--aasvg-b); }\n' +
+        '.dot.open { fill: var(--aasvg-w); stroke: var(--aasvg-b); }\n' +
+        '.dot.dotted { fill: var(--aasvg-w); stroke: var(--aasvg-b); stroke-dasharray: 0,1.8; }\n' +
+        '.dot.shaded { fill: #666; stroke: var(--aasvg-b); }\n' +
+        '.dot.xor { fill: var(--aasvg-w); stroke: var(--aasvg-b); }\n' +
+        'polygon.arrowhead { fill: var(--aasvg-b); }\n' +
+        '.triangle { fill: var(--aasvg-b); }\n';
     if (options.backdrop) {
-        svg += '.backdrop { fill: white; stroke: none; opacity: 0.9; }\n';
+        svg += '.backdrop { fill: var(--aasvg-w); stroke: none; opacity: 0.9; }\n';
     }
     if (options.grid) {
         svg += '.grid rect { stroke: none; fill: grey; opacity: 0.1; }\n' +

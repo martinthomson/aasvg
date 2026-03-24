@@ -1,18 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="432" width="760" viewBox="0 0 760 432" class="diagram" text-anchor="middle">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="432" width="760" viewBox="0 0 760 432" class="aasvg">
 <style>
-* { fill: none; stroke: black; stroke-linecap: round; }
-text { font: 13px monospace; text-anchor: middle; fill: black; stroke: none; }
+:root { --aasvg-b: black; --aasvg-w: white; }
+@media (prefers-color-scheme: dark) { :root { --aasvg-b: white; --aasvg-w: black; } }
+* { fill: none; stroke: var(--aasvg-b); stroke-linecap: round; }
+text { font: 13px monospace; text-anchor: middle; fill: var(--aasvg-b); stroke: none; }
 path.dashed { stroke-dasharray: 3,6; }
-.dot.closed { fill: black; }
-.dot.open { fill: white; stroke: black; }
-.dot.dotted { fill: white; stroke: black; stroke-dasharray: 0,1.8; }
-.dot.shaded { fill: #666; stroke: black; }
-.dot.xor { fill: white; stroke: black; }
-polygon.arrowhead { fill: black; }
-.triangle { fill: black; }
-.backdrop { fill: white; stroke: none; opacity: 0.9; }
+.dot.closed { fill: var(--aasvg-b); }
+.dot.open { fill: var(--aasvg-w); stroke: var(--aasvg-b); }
+.dot.dotted { fill: var(--aasvg-w); stroke: var(--aasvg-b); stroke-dasharray: 0,1.8; }
+.dot.shaded { fill: #666; stroke: var(--aasvg-b); }
+.dot.xor { fill: var(--aasvg-w); stroke: var(--aasvg-b); }
+polygon.arrowhead { fill: var(--aasvg-b); }
+.triangle { fill: var(--aasvg-b); }
 </style>
-<rect class="backdrop" x="0" y="0" width="760" height="432" rx="3px" ry="3px"/>
 <path d="M 8,16L 8,64"/>
 <path d="M 16,112L 16,144"/>
 <path d="M 16,208L 16,256"/>

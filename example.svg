@@ -1,7 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="432" width="760" viewBox="0 0 760 432" class="aasvg">
 <style>
-:root { --aasvg-b: black; --aasvg-w: white; }
-@media (prefers-color-scheme: dark) { :root { --aasvg-b: white; --aasvg-w: black; } }
+:root { color-scheme: light dark; --aasvg-b: light-dark(black, white); --aasvg-w: light-dark(white, black); }
 * { fill: none; stroke: var(--aasvg-b); stroke-linecap: round; }
 .dashed { stroke-dasharray: 3,6; }
 text { font: 13px monospace; text-anchor: middle; fill: var(--aasvg-b); stroke: none; }

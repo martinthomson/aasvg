@@ -666,18 +666,18 @@ function diagramToSVG(diagramString, options) {
     //  ---    .
     //   ^     | `-._
     //  0.35   |     `-._
-    //   v  ---+---------`-._ 
+    //   v  ---+---------`-._
     //  ---      line  •  )  _>
-    //      ---+---------.-' 
+    //      ---+---------.-'
     //         |      .-'
     //         :
     //         |<---- 1.5 ---->|
     // That means moving the dot back from the end.
-    // Based on similar triangles, we need to scale STROKE_WIDTH/2 
+    // Based on similar triangles, we need to scale STROKE_WIDTH/2
     // (the perpendicular distance from our target point to the edge of the arrowhead)
     // by the ratio of the hypotenuse (√...BASE² + ...LENGTH²)
     // divided by the length of the matching side (...BASE=0.35).
-    // The ...BASE value being set to ...HALF_BASE * ASPECT, 
+    // The ...BASE value being set to ...HALF_BASE * ASPECT,
     // to account for the distortion in SVG space.
     const ARROWHEAD_HALF_BASE = 0.35;
     const ARROWHEAD_LENGTH = 1.5;
@@ -867,7 +867,7 @@ function diagramToSVG(diagramString, options) {
 
     /** insert(x, y, type, <angle>)
         insert(vec, type, <angle>)
- 
+
         angle is the angle in degrees to rotate the result */
     DS.insert = function (x, y, type, angle) {
         if (type === undefined) { type = y; y = x.y; x = x.x; }
@@ -1657,9 +1657,8 @@ function diagramToSVG(diagramString, options) {
     let black = 'black';
     let white = 'white';
     if (!options.compatible) {
-        svg +=
-            ':root { --aasvg-b: black; --aasvg-w: white; }\n' +
-            '@media (prefers-color-scheme: dark) { :root { --aasvg-b: white; --aasvg-w: black; } }\n';
+        svg += ':root { color-scheme: light dark; ' +
+            '--aasvg-b: light-dark(black, white); --aasvg-w: light-dark(white, black); }\n';
         black = 'var(--aasvg-b)';
         white = 'var(--aasvg-w)';
     }

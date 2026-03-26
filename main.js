@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { diagramToSVG } = require("./markdeep-diagram.js");
+import { diagramToSVG } from "./text2svg.js";
 const VERSION = "aasvg 0.5.1";
 
 function usage(help) {

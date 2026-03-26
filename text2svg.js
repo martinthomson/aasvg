@@ -11,14 +11,10 @@
   You may use, extend, and redistribute this code under the terms of
   the BSD license at https://opensource.org/licenses/BSD-2-Clause.
 */
-'use strict';
-
 // Mappings and constants used by markdeep.
 // STROKE_WIDTH is set per-call inside diagramToSVG via options.strokeWidth
 const DEFAULT_SCALE = 8;
-['min', 'max', 'abs', 'sign'].forEach(f => {
-    global[f] = Math[f];
-});
+const { min, max, abs, sign } = Math;
 String.prototype.ss = String.prototype.substring;
 String.prototype.rp = String.prototype.replace;
 
@@ -927,8 +923,11 @@ function diagramToSVG(diagramString, options) {
             } else if (isPoint(decoration.type)) {
                 const CLASSES = { '*': 'closed', 'o': 'open', '◌': 'dotted', '○': 'open', '◍': 'shaded', '●': 'closed', '⊕': 'xor' };
                 const cls = CLASSES[decoration.type];
-                svg += '<circle cx="' + ((C.x + 1) * SCALE) + '" cy="' + ((C.y + 1) * SCALE * ASPECT) +
-                    '" r="' + (SCALE - STROKE_WIDTH) + '" class="dot ' + cls + '"/>\n';
+                const cx = (C.x + 1) * SCALE, cy = (C.y + 1) * SCALE * ASPECT, rx = SCALE - STROKE_WIDTH;
+                const [tag, radii] = ASPECT === 2
+                    ? ['circle', 'r="' + rx + '"']
+                    : ['ellipse', 'rx="' + rx + '" ry="' + (rx * ASPECT / 2) + '"'];
+                svg += '<' + tag + ' cx="' + cx + '" cy="' + cy + '" ' + radii + ' class="dot ' + cls + '"/>\n';
                 if (decoration.type === '⊕') {
                     svg += '<line x1="' + ((C.x) * SCALE + STROKE_WIDTH) +
                         '" y1="' + ((C.y + 1) * SCALE * ASPECT) +
@@ -1781,4 +1780,4 @@ function diagramToSVG(diagramString, options) {
     return svg;
 }
 
-module.exports = { diagramToSVG };
+export { diagramToSVG };

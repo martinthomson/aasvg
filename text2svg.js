@@ -1706,7 +1706,9 @@ function diagramToSVG(diagramString, options) {
         black = 'var(--aasvg-b)';
         white = 'var(--aasvg-w)';
     }
-    svg += `* { fill: none; stroke: ${black}; stroke-linecap: round; }\n` +
+    svg += `* { fill: none; stroke: ${black}; stroke-linecap: round;` +
+        ((STROKE_WIDTH !== 1) ? ` stroke-width: ${STROKE_WIDTH};` : '') +
+        ' }\n' +
         '.dashed { stroke-dasharray: 3,6; }\n';
     if (hasText || options.source) {
         svg += `text { font: ${fp(SCALE * 13 / 8)}px monospace;` +

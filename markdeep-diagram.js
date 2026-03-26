@@ -14,7 +14,8 @@
 'use strict';
 
 // Mappings and constants used by markdeep.
-const STROKE_WIDTH = 1; // SVG default
+// STROKE_WIDTH is set per-call inside diagramToSVG via options.strokeWidth
+const DEFAULT_SCALE = 8;
 ['min', 'max', 'abs', 'sign'].forEach(f => {
     global[f] = Math[f];
 });
@@ -151,7 +152,12 @@ function diagramToSVG(diagramString, options) {
     diagramString = hideMarkers(diagramString);
 
     /** Pixels per character */
-    var SCALE = options.scale ?? 8;
+    var SCALE = options.scale ?? DEFAULT_SCALE;
+
+    /** SVG pixels from center to each line of a double line */
+    const DOUBLE_LINE_GAP = SCALE / 4;
+
+    var STROKE_WIDTH = options.strokeWidth ?? 1;
 
     /** Multiply Y coordinates by this when generating the final SVG
         result to account for the aspect ratio of text files. */
@@ -769,8 +775,9 @@ function diagramToSVG(diagramString, options) {
             let dx = this.B.x - this.A.x;
             let dy = this.B.y - this.A.y;
             let s = Math.sqrt(dx ** 2 + dy ** 2);
-            dx /= s * SCALE;
-            dy /= s * SCALE / ASPECT;
+            // Nudges each line DOUBLE_LINE_GAP SVG pixels away from the center.
+            dx /= s * SCALE * ASPECT / DOUBLE_LINE_GAP;
+            dy /= s * SCALE / DOUBLE_LINE_GAP;
             svg += this.offsetLine(dy, -dx);
             svg += this.offsetLine(-dy, dx);
         } else if (this.squiggle) {
@@ -1665,7 +1672,7 @@ function diagramToSVG(diagramString, options) {
     svg += `* { fill: none; stroke: ${black}; stroke-linecap: round; }\n` +
         '.dashed { stroke-dasharray: 3,6; }\n';
     if (hasText || options.source) {
-        svg += `text { font: ${SCALE * 13 / 8}px monospace;` +
+        svg += `text { font: ${fivePlaces(SCALE * 13 / 8)}px monospace;` +
             ` text-anchor: middle; fill: ${black}; stroke: none; }\n`;
     }
     if ((decorationSet.has('>') && options.arrow === 'solid') || decorationSet.has(TRI_CHARACTERS)) {

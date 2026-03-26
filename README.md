@@ -51,6 +51,8 @@ These options change how things are displayed in various ways.
 * **aspect=\<ratio>** sets the vertical scale multiplier (default: 2.0), which
   accounts for the fact that character cells are taller than they are wide.
 
+* **stroke=\<n>** sets the line stroke width in SVG pixels (default: 1.0).
+
 * **fill** drops the `width` and `height` attributes on the output SVG.
   This will cause it to expand to fit available space.
 

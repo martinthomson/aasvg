@@ -1719,6 +1719,10 @@ function diagramToSVG(diagramString, options) {
         svg += `text { font: ${fp(SCALE * 13 / 8)}px monospace;` +
             ` text-anchor: middle; fill: ${black}; stroke: none; }\n`;
     }
+    if (hasText) {
+        svg += 'text.b { font-weight: 700; }\n' +
+            'text.i { font-style: italic; }\n';
+    }
     if ((decorationSet.has('>') && options.arrow === 'solid') || decorationSet.has(TRI_CHARACTERS)) {
         svg += `polygon.arrowhead, .triangle { fill: ${black}; stroke: none; }\n`;
     }
@@ -1794,16 +1798,25 @@ function diagramToSVG(diagramString, options) {
             while (x < grid.width) {
                 const t = grid.text(x, y);
                 const s = t.join('');
+                let displayText = s;
+                let textClass = '';
+                if (s.length >= 2 && s[0] === '*' && s[s.length - 1] === '*') {
+                    displayText = s.slice(1, -1);
+                    textClass = ' class="b"';
+                } else if (s.length >= 2 && s[0] === '/' && s[s.length - 1] === '/') {
+                    displayText = s.slice(1, -1);
+                    textClass = ' class="i"';
+                }
                 svg += '<text x="' + ((x + (t.length / 2) + 0.5) * SCALE) +
                     '" y="' + (4 + (y + 1) * SCALE * ASPECT);
                 if (options.spaces > 2 && s.indexOf('  ') >= 0) {
                     svg += '" xml:space="preserve';
                 }
                 if (options.stretch) {
-                    svg += '" textLength="' + (t.length * SCALE) +
+                    svg += '" textLength="' + ((t.length - (textClass ? 2 : 0)) * SCALE) +
                         '" lengthAdjust="spacingAndGlyphs';
                 }
-                svg += '">' + escapeHTMLEntities(unhideMarkers(s)) + '</text>\n';
+                svg += '"' + textClass + '>' + escapeHTMLEntities(unhideMarkers(displayText)) + '</text>\n';
                 x = grid.textStart(x + t.length, y);
             }
         } // y

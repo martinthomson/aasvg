@@ -752,8 +752,8 @@ function diagramToSVG(diagramString, options) {
         if (hasArrowB) { pathEnd = pathEnd.offset(-g_dx * ATT, -g_dy * ATT); }
 
         // L: path length in grid units, projected along the line direction.
-        // Picks up the arrowhead extension automatically (e.g. +1 for horizontal,
-        // +0.5 for vertical with ASPECT=2, per arrowTip() geometry), minus ATT pullback.
+        // Picks up the arrowhead extension automatically (+1 for horizontal,
+        // +0.5 for vertical, regardless of ASPECT, per arrowTip() geometry), minus ATT pullback.
         const len = (pathEnd.x - pathStart.x) * dx + (pathEnd.y - pathStart.y) * dy;
 
         // At each arrowhead end a half squiggle (0.5 units) replaces the straight margin.
@@ -990,18 +990,21 @@ function diagramToSVG(diagramString, options) {
                 const dn = Vec2(C.x - xs, C.y + ys);
                 svg += '<polygon class="triangle" points="' + tip + up + dn.coords(4) + '"/>\n';
             } else { // Arrow head
-                let tip = Vec2(C.x + 1, C.y);
-                let up = Vec2(C.x + 1 - ARROWHEAD_LENGTH, C.y - ARROWHEAD_HALF_BASE);
-                let dn = Vec2(C.x + 1 - ARROWHEAD_LENGTH, C.y + ARROWHEAD_HALF_BASE);
+                // C stores the tip position; back-compute the rotation centre RC.
+                const angle_rad = decoration.angle * Math.PI / 180;
+                const RC = Vec2(C.x - Math.cos(angle_rad), C.y - Math.sin(angle_rad) / ASPECT);
+                let tip = Vec2(RC.x + 1, RC.y);
+                let up = Vec2(RC.x + 1 - ARROWHEAD_LENGTH, RC.y - ARROWHEAD_HALF_BASE);
+                let dn = Vec2(RC.x + 1 - ARROWHEAD_LENGTH, RC.y + ARROWHEAD_HALF_BASE);
                 if (options.arrow === 'line') {
                     tip = tip.offset(-ARROWHEAD_LINE_TIP_DX, 0);
                     up = up.offset(-ARROWHEAD_LINE_BASE_DX, ARROWHEAD_LINE_BASE_DY);
                     dn = dn.offset(-ARROWHEAD_LINE_BASE_DX, -ARROWHEAD_LINE_BASE_DY);
                     svg += '<path class="arrowhead" d="M ' + up + 'L ' + tip + 'L ' + dn.coords() +
-                        '" transform="rotate(' + fp(decoration.angle) + ',' + C.coords() + ')"/>\n';
+                        '" transform="rotate(' + fp(decoration.angle) + ',' + RC.coords() + ')"/>\n';
                 } else {
                     svg += '<polygon class="arrowhead" points="' + tip + up + dn.coords() +
-                        '" transform="rotate(' + fp(decoration.angle) + ',' + C.coords() + ')"/>\n';
+                        '" transform="rotate(' + fp(decoration.angle) + ',' + RC.coords() + ')"/>\n';
                 }
             }
         }
@@ -1498,7 +1501,7 @@ function diagramToSVG(diagramString, options) {
         /** Compute the tip position of an arrowhead with center (cx, cy) and rotation angle (degrees). */
         function arrowTip(cx, cy, angle) {
             const angle_rad = angle * Math.PI / 180;
-            return Vec2(cx + Math.cos(angle_rad), cy + Math.sin(angle_rad) / ASPECT);
+            return Vec2(cx + Math.cos(angle_rad), cy + Math.sin(angle_rad) / DEFAULT_ASPECT);
         }
 
         /** Is the point in the center of these values on a line? Allow points that are vertically
@@ -1518,9 +1521,9 @@ function diagramToSVG(diagramString, options) {
                 function tryArrow(methodName, px, py, angle, companionMethod) {
                     const p = pathSet[methodName](px, py);
                     if (p) {
-                        decorationSet.insert(px, py, '>', angle);
-                        grid.setUsed(x, y);
                         const tip = arrowTip(px, py, angle);
+                        decorationSet.insert(tip.x, tip.y, '>', angle);
+                        grid.setUsed(x, y);
                         p.markArrowAt(px, py, 'end', tip);
                         if (companionMethod) {
                             const q = pathSet[companionMethod](px, py);
@@ -1578,18 +1581,20 @@ function diagramToSVG(diagramString, options) {
                         const q = !p ? pathSet.findHorizontalPassesThrough(x, y) : null;
                         if (p || q) {
                             if (isPoint(grid(x + 1, y)) || grid(x + 1, y) === '<' || grid(x + 1, y) === '>') { dx = -BACKOFF_X; }
-                            decorationSet.insert(x + dx, y, '>', 0);
+                            const tip = arrowTip(x + dx, y, 0);
+                            decorationSet.insert(tip.x, tip.y, '>', 0);
                             grid.setUsed(x, y);
-                            if (p) { p.markArrowAt(x, y, 'end', arrowTip(x + dx, y, 0)); } else { q.markArrowContRight(arrowTip(x + dx, y, 0)); }
+                            if (p) { p.markArrowAt(x, y, 'end', tip); } else { q.markArrowContRight(tip); }
                         }
                     } else if (c === '<') {
                         const p = pathSet.findLeftEndsAt(x, y);
                         const q = !p ? pathSet.findHorizontalPassesThrough(x, y) : null;
                         if (p || q) {
                             if (isPoint(grid(x - 1, y)) || grid(x - 1, y) === '>' || grid(x - 1, y) === '<') { dx = BACKOFF_X; }
-                            decorationSet.insert(x + dx, y, '>', 180);
+                            const tip = arrowTip(x + dx, y, 180);
+                            decorationSet.insert(tip.x, tip.y, '>', 180);
                             grid.setUsed(x, y);
-                            if (p) { p.markArrowAt(x, y, 'end', arrowTip(x + dx, y, 180)); } else { q.markArrowContLeft(arrowTip(x + dx, y, 180)); }
+                            if (p) { p.markArrowAt(x, y, 'end', tip); } else { q.markArrowContLeft(tip); }
                         }
                     } else if (c === '^') {
                         // Because of the aspect ratio, we need to look
@@ -1605,10 +1610,11 @@ function diagramToSVG(diagramString, options) {
                             pathSet.verticalPassesThrough(x, y)) {
                             // Only try this if all others failed
                             if (isPoint(grid(x, y - 1))) { dy = BACKOFF_Y; }
-                            decorationSet.insert(x, y - 0.5 + dy, '>', 270);
+                            const tip270 = arrowTip(x, y - 0.5 + dy, 270);
+                            decorationSet.insert(tip270.x, tip270.y, '>', 270);
                             grid.setUsed(x, y);
                             const q = pathSet.findVerticalPassesThrough(x, y);
-                            if (q) { q.markArrowContUp(arrowTip(x, y - 0.5 + dy, 270)); }
+                            if (q) { q.markArrowContUp(tip270); }
                         }
                     } else if (c === 'v' || c === 'V') {
                         if (!tryArrow('findDownEndsAt', x, y + 0.5, 90, 'findUpEndsAt') &&
@@ -1622,10 +1628,11 @@ function diagramToSVG(diagramString, options) {
                             pathSet.verticalPassesThrough(x, y)) {
                             // Only try this if all others failed
                             if (isPoint(grid(x, y + 1))) { dy = -BACKOFF_Y; }
-                            decorationSet.insert(x, y + 0.5 + dy, '>', 90);
+                            const tip90 = arrowTip(x, y + 0.5 + dy, 90);
+                            decorationSet.insert(tip90.x, tip90.y, '>', 90);
                             grid.setUsed(x, y);
                             const q = pathSet.findVerticalPassesThrough(x, y);
-                            if (q) { q.markArrowContDown(arrowTip(x, y + 0.5 + dy, 90)); }
+                            if (q) { q.markArrowContDown(tip90); }
                         }
                     } // arrow heads
                 } // decoration type

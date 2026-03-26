@@ -930,15 +930,14 @@ function diagramToSVG(diagramString, options) {
     // Shift each side inward by W=STROKE_WIDTH/2 SVG px (perpendicular to the side)
     // so the outer edge of the stroke aligns with the solid polygon boundary.
     // H_SVG/L_SVG: half-base/length in SVG px; SL_SVG: side length in SVG px.
-    const W = STROKE_WIDTH / 2;
-    const H_SVG = ARROWHEAD_HALF_BASE * SCALE * ASPECT;
-    const L_SVG = ARROWHEAD_LENGTH * SCALE;
-    const SL_SVG = Math.sqrt(L_SVG ** 2 + H_SVG ** 2);
-    // dx_base/dy_base: grid-coord displacement of base corners toward the axis.
-    // dx_tip: grid-x pullback of the tip (intersection of the two inset sides).
-    const ARROWHEAD_LINE_BASE_DX = W * H_SVG / (SL_SVG * SCALE);
-    const ARROWHEAD_LINE_BASE_DY = W * L_SVG / (SL_SVG * SCALE * ASPECT);
-    const ARROWHEAD_LINE_TIP_DX = W * SL_SVG / (H_SVG * SCALE);
+    const AH_B_SVG = ARROWHEAD_HALF_BASE * SCALE * ASPECT;
+    const AH_L_SVG = ARROWHEAD_LENGTH * SCALE;
+    const AH_LEN_SVG = Math.sqrt(AH_L_SVG ** 2 + AH_B_SVG ** 2);
+    // ..._BASE_DX/DY: grid-coord displacement of base corners toward the axis.
+    // ...TIP_DX: grid-x pullback of the tip (intersection of the two inset sides).
+    const ARROWHEAD_LINE_BASE_DX = STROKE_WIDTH / 2 * AH_B_SVG / (AH_LEN_SVG * SCALE);
+    const ARROWHEAD_LINE_BASE_DY = STROKE_WIDTH / 2 * AH_L_SVG / (AH_LEN_SVG * SCALE * ASPECT);
+    const ARROWHEAD_LINE_TIP_DX = STROKE_WIDTH / 2 * AH_LEN_SVG / (AH_B_SVG * SCALE);
 
     DS.toSVG = function () {
         let svg = '';
@@ -960,9 +959,9 @@ function diagramToSVG(diagramString, options) {
                 const CLASSES = { '*': 'closed', 'o': 'open', '◌': 'dotted', '○': 'open', '◍': 'shaded', '●': 'closed', '⊕': 'xor' };
                 const cls = CLASSES[decoration.type];
                 const cx = (C.x + 1) * SCALE, cy = (C.y + 1) * SCALE * ASPECT, rx = SCALE - STROKE_WIDTH;
-                const [tag, radii] = ASPECT === 2
+                const [tag, radii] = (ASPECT === DEFAULT_ASPECT)
                     ? ['circle', 'r="' + rx + '"']
-                    : ['ellipse', 'rx="' + rx + '" ry="' + (rx * ASPECT / 2) + '"'];
+                    : ['ellipse', 'rx="' + rx + '" ry="' + (rx * ASPECT / DEFAULT_ASPECT) + '"'];
                 svg += '<' + tag + ' cx="' + cx + '" cy="' + cy + '" ' + radii + ' class="dot ' + cls + '"/>\n';
                 if (decoration.type === '⊕') {
                     svg += '<line x1="' + ((C.x) * SCALE + STROKE_WIDTH) +

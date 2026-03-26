@@ -731,68 +731,70 @@ function diagramToSVG(diagramString, options) {
     _.squigglePath = function () {
         const vx = this.B.x - this.A.x;
         const vy = this.B.y - this.A.y;
-        // SVG-space length per grid unit along the line (mirrors offsetLine)
-        const s_asp = Math.sqrt(vx ** 2 + (vy * ASPECT) ** 2);
-        // Unit vector: grid coords per SVG pixel along the line
-        const ux = vx / (s_asp * SCALE);
-        const uy = vy / (s_asp * SCALE);
+        // Unit vector.
+        const base_len = Math.sqrt(vx ** 2 + vy ** 2);
+        const dx = vx / base_len;
+        const dy = vy / base_len;
 
-        // Number of squiggle cells
-        const n = Math.round(Math.abs(vx) + Math.abs(vy));
+        // Grid-space unit vector.
+        const g_len = Math.sqrt(vx ** 2 + (vy * ASPECT) ** 2);
+        const g_dx = vx / (g_len * SCALE);
+        const g_dy = vy / (g_len * SCALE);
 
-        // SVG-pixel offsets for one quarter-cell step along the line
-        const ax = vx / n * 0.25 * SCALE;
-        const ay = vy / n * 0.25 * SCALE * ASPECT;
-
-        // SVG-pixel amplitude perpendicular to the line.
-        // Uses the SVG-space perpendicular of (ux, uy): (-uy*SCALE*ASPECT, ux*SCALE),
-        // scaled so horizontal and vertical squiggles have equal visual weight.
-        const AMP = 0.2 * SCALE * ASPECT;
-        const px = -(vy * ASPECT / s_asp) * AMP;
-        const py =  (vx / s_asp) * AMP;
-
-        // Relative q commands — identical for every cell, so built once outside the loop
-        const q1 = 'q ' + fp(ax - px) + ',' + fp(ay - py) + ' ' + fp(2*ax) + ',' + fp(2*ay) + ' ';
-        const q2 = 'q ' + fp(ax + px) + ',' + fp(ay + py) + ' ' + fp(2*ax) + ',' + fp(2*ay) + ' ';
-
-        // Snap a grid coordinate to the nearest 0.5 multiple in the direction of travel (d),
-        // always moving strictly forward/backward so the squiggle begins and ends on a
-        // consistent half-grid boundary regardless of arrowhead size.
-        const snapFwd = (v, d) => d > 0 ? (Math.floor(v * 2) + 1) / 2
-                                : d < 0 ? (Math.ceil(v  * 2) - 1) / 2 : v;
-        const snapBwd = (v, d) => d > 0 ? (Math.ceil(v  * 2) - 1) / 2
-                                : d < 0 ? (Math.floor(v * 2) + 1) / 2 : v;
+        const hasArrowA = !!(this.arrowTipAtA && this.arrowAtA !== 'none');
+        const hasArrowB = !!(this.arrowTipAtB && this.arrowAtB !== 'none');
 
         const ATT = ARROWHEAD_TIP_ADJUST;
+        let pathStart = this.arrowTipAtA ?? this.A;
+        let pathEnd = this.arrowTipAtB ?? this.B;
+        if (hasArrowA) { pathStart = pathStart.offset(g_dx * ATT, g_dy * ATT); }
+        if (hasArrowB) { pathEnd = pathEnd.offset(-g_dx * ATT, -g_dy * ATT); }
 
-        let svg = '<path d="M ';
-        let skip = false;
-        if (this.arrowTipAtA && this.arrowAtA !== 'none') {
-            const tip = this.arrowTipAtA;
-            const a_prime = tip.offset(ux * ATT, uy * ATT);
-            const sx = snapFwd(tip.x, ux);
-            const sy = snapFwd(tip.y, uy);
-            svg += a_prime.coords() + 'l ' + fp((sx - a_prime.x) * SCALE) + ',' +
-                                             fp((sy - a_prime.y) * SCALE * ASPECT) + ' ';
-            skip = true;
+        // L: path length in grid units, projected along the line direction.
+        // Picks up the arrowhead extension automatically (e.g. +1 for horizontal,
+        // +0.5 for vertical with ASPECT=2, per arrowTip() geometry), minus ATT pullback.
+        const len = (pathEnd.x - pathStart.x) * dx + (pathEnd.y - pathStart.y) * dy;
+
+        // At each arrowhead end a half squiggle (0.5 units) replaces the straight margin.
+        const halfA = hasArrowA ? 0.5 : 0;
+        const halfB = hasArrowB ? 0.5 : 0;
+        const n = Math.floor(Math.max(0, len - halfA - halfB));
+
+        // Compute margins, which will be straight lines.
+        // Place margins at the arrow end(s), not the free end.
+        // With no arrows, split the margin to either end.
+        const margin = len - halfA - n - halfB;
+        let margin_a, margin_b;
+        if (hasArrowA && !hasArrowB) {
+            margin_a = margin;
+            margin_b = 0;
+        } else if (hasArrowB && !hasArrowA) {
+            margin_a = 0;
+            margin_b = margin;
         } else {
-            svg += this.A.coords() + ' ';
+            margin_a = margin / 2;
+            margin_b = margin / 2;
         }
 
-        for (let i = 0; i < n; i++) {
-            if (skip) {
-                skip = false;
-            } else {
-                svg += q1;
-            }
-            if (i === n - 1 && this.arrowAtB) {
-                const sx = snapBwd(this.B.x, ux);
-                const sy = snapBwd(this.B.y, uy);
-                svg += 'l ' + fp((this.B.x - ux * ATT - sx) * SCALE) + ',' +
-                              fp((this.B.y - uy * ATT - sy) * SCALE * ASPECT);
-            } else {
-                svg += q2;
-            }
+        // SVG-pixel offsets: quarter-cell along the line, and perpendicular amplitude
+        const ax = dx * 0.25 * SCALE;
+        const ay = dy * 0.25 * SCALE * ASPECT;
+        const SQUIGGLE_AMPLITUDE = 0.2 * SCALE * ASPECT;
+        const px = vy * ASPECT / g_len * SQUIGGLE_AMPLITUDE;
+        const py = vx / g_len * SQUIGGLE_AMPLITUDE;
+
+        const q1 = 'q ' + fp(ax + px) + ',' + fp(ay - py) + ' ' + fp(2 * ax) + ',' + fp(2 * ay) + ' ';
+        const q2 = 'q ' + fp(ax - px) + ',' + fp(ay + py) + ' ' + fp(2 * ax) + ',' + fp(2 * ay) + ' ';
+
+        let svg = '<path d="M ' + pathStart.coords();
+        if (margin_a > 0) {
+            svg += ' l ' + fp(margin_a * dx * SCALE) + ',' + fp(margin_a * dy * SCALE * ASPECT) + ' ';
+        }
+        if (hasArrowA) svg += q2;
+        for (let i = 0; i < n; i++) svg += q1 + q2;
+        if (hasArrowB) svg += q1;
+        if (margin_b > 0) {
+            svg += 'l ' + fp(margin_b * dx * SCALE) + ',' + fp(margin_b * dy * SCALE * ASPECT);
         }
         svg += '"/>';
         return svg;

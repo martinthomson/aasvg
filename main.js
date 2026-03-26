@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { diagramToSVG } from "./text2svg.js";
-const VERSION = "aasvg 0.5.1";
+const VERSION = "aasvg 0.5.2";
 
 function usage(help) {
     console.warn(VERSION + ": Turn ASCII art into SVG");

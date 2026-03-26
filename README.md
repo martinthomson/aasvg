@@ -45,10 +45,16 @@ but the main reason not to use it is the small distortion to the text.
 
 These options change how things are displayed in various ways.
 
+* **scale=\<pixels>** sets the number of pixels per character cell (default: 8.0).
+  Increase this for a larger output image, decrease for a smaller one.
+
+* **aspect=\<ratio>** sets the vertical scale multiplier (default: 2.0), which
+  accounts for the fact that character cells are taller than they are wide.
+
 * **fill** drops the `width` and `height` attributes on the output SVG.
   This will cause it to expand to fit available space.
 
-* **width=n** and **height=n** directly set `width` and `height`
+* **width=\<ch>** and **height=\<ch>** directly set `width` and `height`
   on the SVG, specified in characters.
   If the value you set smaller than the input, the SVG will overflow.
   If large, padding will be added to the right or bottom of the image.

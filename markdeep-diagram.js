@@ -151,11 +151,11 @@ function diagramToSVG(diagramString, options) {
     diagramString = hideMarkers(diagramString);
 
     /** Pixels per character */
-    var SCALE = 8;
+    var SCALE = options.scale ?? 8;
 
     /** Multiply Y coordinates by this when generating the final SVG
         result to account for the aspect ratio of text files. */
-    var ASPECT = 2;
+    var ASPECT = options.aspect ?? 2;
 
     var DIAGONAL_ANGLE = Math.atan(1.0 / ASPECT) * 180 / Math.PI;
 

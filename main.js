@@ -9,6 +9,8 @@ function usage(help) {
     console.warn();
     console.warn("    spaces=<n>      Split text after <n> spaces [default: 2]");
     console.warn("                    (0 means place every character separately)");
+    console.warn("    scale=<n>       Pixels per character [default: 8]");
+    console.warn("    aspect=<n>      Vertical scale multiplier [default: 2]");
     console.warn("    stretch         Stretch text to better fit it")
     console.warn("                    (use with spaces > 0; uses advanced SVG)");
     console.warn("    fill            Omit width and height attributes");
@@ -76,6 +78,15 @@ function i(o, a) {
     return v;
 }
 
+function f(o, a) {
+    let v = parseFloat(a.substring(o.length + 1));
+    if (isNaN(v) || v <= 0) {
+        console.warn(`Invalid value for ${o} option (must be a positive number)`);
+        process.exit(2);
+    }
+    return v;
+}
+
 (async function main() {
     let options = { style: {} };
     process.argv.slice(2).forEach(arg => {
@@ -111,6 +122,10 @@ function i(o, a) {
             options.height = i("height", a);
         } else if (a.startsWith("spaces=")) {
             options.spaces = i("spaces", a);
+        } else if (a.startsWith("scale=")) {
+            options.scale = f("scale", a);
+        } else if (a.startsWith("aspect=")) {
+            options.aspect = f("aspect", a);
         } else if (a === "version") {
             console.log(VERSION);
             process.exit();

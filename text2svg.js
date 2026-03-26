@@ -954,7 +954,7 @@ function diagramToSVG(diagramString, options) {
                 const cup = Vec2(C.x + dx, C.y - 0.5);
                 const cdn = Vec2(C.x + dx, C.y + 0.5);
 
-                svg += '<path class="jump" d="M ' + dn + 'C ' + cdn + cup + up.coords() + '"/>';
+                svg += '<path class="jump" d="M ' + dn + 'C ' + cdn + cup + up.coords() + '"/>\n';
 
             } else if (isPoint(decoration.type)) {
                 const CLASSES = { '*': 'closed', 'o': 'open', '◌': 'dotted', '○': 'open', '◍': 'shaded', '●': 'closed', '⊕': 'xor' };
@@ -990,21 +990,27 @@ function diagramToSVG(diagramString, options) {
                 const dn = Vec2(C.x - xs, C.y + ys);
                 svg += '<polygon class="triangle" points="' + tip + up + dn.coords(4) + '"/>\n';
             } else { // Arrow head
-                // C stores the tip position; back-compute the rotation centre RC.
+                let ah_len = ARROWHEAD_LENGTH, ah_hbase = ARROWHEAD_HALF_BASE;
                 const angle_rad = decoration.angle * Math.PI / 180;
-                const RC = Vec2(C.x - Math.cos(angle_rad), C.y - Math.sin(angle_rad) / ASPECT);
-                let tip = Vec2(RC.x + 1, RC.y);
-                let up = Vec2(RC.x + 1 - ARROWHEAD_LENGTH, RC.y - ARROWHEAD_HALF_BASE);
-                let dn = Vec2(RC.x + 1 - ARROWHEAD_LENGTH, RC.y + ARROWHEAD_HALF_BASE);
+                const cos_a = Math.cos(angle_rad), sin_a = Math.sin(angle_rad);
+                let tip = C;
+                let up = Vec2(C.x - ah_len * cos_a + ah_hbase * ASPECT * sin_a,
+                    C.y - ah_len * sin_a / ASPECT - ah_hbase * cos_a);
+                let dn = Vec2(C.x - ah_len * cos_a - ah_hbase * ASPECT * sin_a,
+                    C.y - ah_len * sin_a / ASPECT + ah_hbase * cos_a);
                 if (options.arrow === 'line') {
-                    tip = tip.offset(-ARROWHEAD_LINE_TIP_DX, 0);
-                    up = up.offset(-ARROWHEAD_LINE_BASE_DX, ARROWHEAD_LINE_BASE_DY);
-                    dn = dn.offset(-ARROWHEAD_LINE_BASE_DX, -ARROWHEAD_LINE_BASE_DY);
-                    svg += '<path class="arrowhead" d="M ' + up + 'L ' + tip + 'L ' + dn.coords() +
-                        '" transform="rotate(' + fp(decoration.angle) + ',' + RC.coords() + ')"/>\n';
+                    const tip_dx = ARROWHEAD_LINE_TIP_DX;
+                    const base_dx = ARROWHEAD_LINE_BASE_DX, base_dy = ARROWHEAD_LINE_BASE_DY;
+                    // Vectors for forward and perpendicular adjustment to the line,
+                    // so that the outer edge of the line matches the outer edge of the polygon.
+                    const adj_fx = -base_dx * cos_a, adj_fy = -base_dx * sin_a / ASPECT;
+                    const adj_px = base_dy * ASPECT * sin_a, adj_py = base_dy * cos_a;
+                    tip = tip.offset(-tip_dx * cos_a, -tip_dx * sin_a / ASPECT);
+                    up = up.offset(adj_fx - adj_px, adj_fy + adj_py);
+                    dn = dn.offset(adj_fx + adj_px, adj_fy - adj_py);
+                    svg += '<path class="arrowhead" d="M ' + up + 'L ' + tip + 'L ' + dn.coords() + '"/>\n';
                 } else {
-                    svg += '<polygon class="arrowhead" points="' + tip + up + dn.coords() +
-                        '" transform="rotate(' + fp(decoration.angle) + ',' + RC.coords() + ')"/>\n';
+                    svg += '<polygon class="arrowhead" points="' + tip + up + dn.coords() + '"/>\n';
                 }
             }
         }

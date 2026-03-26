@@ -223,43 +223,45 @@ polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }
 <path d="M 264,40L 288,40"/>
 <path d="M 328,424L 352,424"/>
 <path d="M 392,424L 416,424"/>
-<polygon class="arrowhead" points="760,64 748,58.4 748,69.6" transform="rotate(0,752,64)"/>
-<polygon class="arrowhead" points="744,72 732,66.4 732,77.6" transform="rotate(270,736,72)"/>
-<polygon class="arrowhead" points="728,168 716,162.4 716,173.6" transform="rotate(270,720,168)"/>
-<polygon class="arrowhead" points="720,416 708,410.4 708,421.6" transform="rotate(180,712,416)"/>
-<polygon class="arrowhead" points="720,344 708,338.4 708,349.6" transform="rotate(270,712,344)"/>
-<polygon class="arrowhead" points="712,56 700,50.4 700,61.6" transform="rotate(90,704,56)"/>
-<polygon class="arrowhead" points="688,416 676,410.4 676,421.6" transform="rotate(180,680,416)"/>
-<polygon class="arrowhead" points="680,200 668,194.4 668,205.6" transform="rotate(90,672,200)"/>
-<polygon class="arrowhead" points="680,72 668,66.4 668,77.6" transform="rotate(270,672,72)"/>
-<polygon class="arrowhead" points="680,56 668,50.4 668,61.6" transform="rotate(90,672,56)"/>
-<polygon class="arrowhead" points="656,416 644,410.4 644,421.6" transform="rotate(180,648,416)"/>
-<polygon class="arrowhead" points="656,64 644,58.4 644,69.6" transform="rotate(180,648,64)"/>
-<polygon class="arrowhead" points="648,376 636,370.4 636,381.6" transform="rotate(90,640,376)"/>
-<polygon class="arrowhead" points="624,416 612,410.4 612,421.6" transform="rotate(180,616,416)"/>
-<path class="jump" d="M 592,136 C 598,136 598,120 592,120"/><polygon class="arrowhead" points="592,416 580,410.4 580,421.6" transform="rotate(180,584,416)"/>
-<path class="jump" d="M 576,88 C 570,88 570,72 576,72"/><polygon class="arrowhead" points="488,48 476,42.4 476,53.6" transform="rotate(180,480,48)"/>
-<polygon class="arrowhead" points="408,240 396,234.4 396,245.6" transform="rotate(180,400,240)"/>
-<polygon class="arrowhead" points="400,48 388,42.4 388,53.6" transform="rotate(90,392,48)"/>
-<polygon class="arrowhead" points="400,16 388,10.4 388,21.6" transform="rotate(270,392,16)"/>
-<polygon class="arrowhead" points="392,368 380,362.4 380,373.6" transform="rotate(180,384,368)"/>
-<polygon class="arrowhead" points="360,264 348,258.4 348,269.6" transform="rotate(270,352,264)"/>
-<polygon class="arrowhead" points="364,184 352,178.4 352,189.6" transform="rotate(63.43495,356,184)"/>
-<polygon class="arrowhead" points="328,368 316,362.4 316,373.6" transform="rotate(180,320,368)"/>
-<polygon class="arrowhead" points="320,32 308,26.4 308,37.6" transform="rotate(0,312,32)"/>
-<polygon class="arrowhead" points="296,224 284,218.4 284,229.6" transform="rotate(0,288,224)"/>
-<polygon class="arrowhead" points="192,344 180,338.4 180,349.6" transform="rotate(90,184,344)"/>
-<polygon class="arrowhead" points="168,416 156,410.4 156,421.6" transform="rotate(0,160,416)"/>
-<polygon class="arrowhead" points="168,304 156,298.4 156,309.6" transform="rotate(0,160,304)"/>
-<polygon class="arrowhead" points="144,192 132,186.4 132,197.6" transform="rotate(180,136,192)"/>
-<polygon class="arrowhead" points="144,176 132,170.4 132,181.6" transform="rotate(0,136,176)"/>
-<polygon class="arrowhead" points="136,416 124,410.4 124,421.6" transform="rotate(0,128,416)"/>
-<polygon class="arrowhead" points="104,416 92,410.4 92,421.6" transform="rotate(0,96,416)"/>
-<polygon class="arrowhead" points="92,328 80,322.4 80,333.6" transform="rotate(243.43495,84,328)"/>
-<polygon class="arrowhead" points="72,416 60,410.4 60,421.6" transform="rotate(0,64,416)"/>
-<polygon class="arrowhead" points="56,176 44,170.4 44,181.6" transform="rotate(180,48,176)"/>
-<polygon class="arrowhead" points="40,416 28,410.4 28,421.6" transform="rotate(0,32,416)"/>
-<polygon class="arrowhead" points="24,320 12,314.4 12,325.6" transform="rotate(180,16,320)"/>
+<polygon class="arrowhead" points="760,64 748,58.4 748,69.6"/>
+<polygon class="arrowhead" points="736,64 730.4,76 741.6,76"/>
+<polygon class="arrowhead" points="720,160 714.4,172 725.6,172"/>
+<polygon class="arrowhead" points="704,416 716,421.6 716,410.4"/>
+<polygon class="arrowhead" points="712,336 706.4,348 717.6,348"/>
+<polygon class="arrowhead" points="704,64 709.6,52 698.4,52"/>
+<polygon class="arrowhead" points="672,416 684,421.6 684,410.4"/>
+<polygon class="arrowhead" points="672,208 677.6,196 666.4,196"/>
+<polygon class="arrowhead" points="672,64 666.4,76 677.6,76"/>
+<polygon class="arrowhead" points="672,64 677.6,52 666.4,52"/>
+<polygon class="arrowhead" points="640,416 652,421.6 652,410.4"/>
+<polygon class="arrowhead" points="640,64 652,69.6 652,58.4"/>
+<polygon class="arrowhead" points="640,384 645.6,372 634.4,372"/>
+<polygon class="arrowhead" points="608,416 620,421.6 620,410.4"/>
+<path class="jump" d="M 592,136 C 598,136 598,120 592,120"/>
+<polygon class="arrowhead" points="576,416 588,421.6 588,410.4"/>
+<path class="jump" d="M 576,88 C 570,88 570,72 576,72"/>
+<polygon class="arrowhead" points="472,48 484,53.6 484,42.4"/>
+<polygon class="arrowhead" points="392,240 404,245.6 404,234.4"/>
+<polygon class="arrowhead" points="392,56 397.6,44 386.4,44"/>
+<polygon class="arrowhead" points="392,8 386.4,20 397.6,20"/>
+<polygon class="arrowhead" points="376,368 388,373.6 388,362.4"/>
+<polygon class="arrowhead" points="352,256 346.4,268 357.6,268"/>
+<polygon class="arrowhead" points="359.57771,191.15542 359.21994,177.9179 349.20235,182.92669"/>
+<polygon class="arrowhead" points="312,368 324,373.6 324,362.4"/>
+<polygon class="arrowhead" points="320,32 308,26.4 308,37.6"/>
+<polygon class="arrowhead" points="296,224 284,218.4 284,229.6"/>
+<polygon class="arrowhead" points="184,352 189.6,340 178.4,340"/>
+<polygon class="arrowhead" points="168,416 156,410.4 156,421.6"/>
+<polygon class="arrowhead" points="168,304 156,298.4 156,309.6"/>
+<polygon class="arrowhead" points="128,192 140,197.6 140,186.4"/>
+<polygon class="arrowhead" points="144,176 132,170.4 132,181.6"/>
+<polygon class="arrowhead" points="136,416 124,410.4 124,421.6"/>
+<polygon class="arrowhead" points="104,416 92,410.4 92,421.6"/>
+<polygon class="arrowhead" points="80.42229,320.84458 80.78006,334.0821 90.79765,329.07331"/>
+<polygon class="arrowhead" points="72,416 60,410.4 60,421.6"/>
+<polygon class="arrowhead" points="40,176 52,181.6 52,170.4"/>
+<polygon class="arrowhead" points="40,416 28,410.4 28,421.6"/>
+<polygon class="arrowhead" points="8,320 20,325.6 20,314.4"/>
 <circle cx="184" cy="304" r="7" class="dot dotted"/>
 <circle cx="240" cy="304" r="7" class="dot shaded"/>
 <circle cx="456" cy="48" r="7" class="dot closed"/>

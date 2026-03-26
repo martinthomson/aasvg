@@ -110,7 +110,7 @@ function unhideMarkers(s) {
 
 function hideMarkers(s) {
     const n = Object.keys(MARKERS).length;
-    s = Array.from({length: n}, (_, i) => i).reduce((acc, i) => hideChar(acc, i), s);
+    s = Array.from({ length: n }, (_, i) => i).reduce((acc, i) => hideChar(acc, i), s);
     // Unhide strings that only contain 'o' or 'v'.
     // Note: Using \B as \ue00? is a non-word character.
     const allHidden = '\\B[' + Object.values(MARKERS).join('') + ']{' + n + ',}\\B';
@@ -192,6 +192,7 @@ function diagramToSVG(diagramString, options) {
     function isDoubleHLine(c) { return (c === '=') || (c === '\u2550') || isUndirectedVertex(c) || isJump(c); }
     function isSolidVLineOrJumpOrPoint(c) { return isSolidVLine(c) || isJump(c) || isPoint(c); }
     function isSolidVLine(c) { return (c === '|') || (c === '\u2503') || isUndirectedVertex(c); }
+    function isSquiggleVLine(c) { return (c === '\u2307') || isUndirectedVertex(c); }
     function isDoubleVLine(c) { return (c === '\u2551') || (c === '\u2016') || isUndirectedVertex(c); }
     function isSolidDLine(c) { return (c === '/') || isUndirectedVertex(c) }
     function isSolidBLine(c) { return (c === '\\') || isUndirectedVertex(c); }
@@ -201,7 +202,7 @@ function diagramToSVG(diagramString, options) {
 
     ///////////////////////////////////////////////////////////////////////////////
     // Math library
-    function fivePlaces(x) { return x.toFixed(5).replace(/\.?0*$/, ''); }
+    function fp(x) { return x.toFixed(5).replace(/\.?0*$/, ''); }
 
     /** Invoke as new Vec2(v) to clone or new Vec2(x, y) to create from coordinates.
         Can also invoke without new for brevity. */
@@ -221,7 +222,7 @@ function diagramToSVG(diagramString, options) {
 
     /** Returns coordinates */
     Vec2.prototype.coords = function () {
-        return fivePlaces((this.x + 1) * SCALE) + ',' + fivePlaces((this.y + 1) * SCALE * ASPECT);
+        return fp((this.x + 1) * SCALE) + ',' + fp((this.y + 1) * SCALE * ASPECT);
     }
     /** Returns an SVG representation, with a trailing space */
     Vec2.prototype.toString = Vec2.prototype.toSVG =
@@ -355,6 +356,9 @@ function diagramToSVG(diagramString, options) {
         };
         grid.isSolidVLineAt = function (x, y) {
             return grid.isVLineAt(x, y, isSolidVLine, true);
+        };
+        grid.isSquiggleVLineAt = function (x, y) {
+            return grid.isVLineAt(x, y, isSquiggleVLine, false);
         };
         grid.isDoubleVLineAt = function (x, y) {
             return grid.isVLineAt(x, y, isDoubleVLine, false);
@@ -724,37 +728,71 @@ function diagramToSVG(diagramString, options) {
         return svg;
     }
 
-    _.horizontalSquiggle = function (x0, x1, y) {
-        const SQUIGGLE_AMPLITUDE = 0.2;
-        const H_LEN = 0.5 * SCALE - ARROWHEAD_TIP_ADJUST;
+    _.squigglePath = function () {
+        const vx = this.B.x - this.A.x;
+        const vy = this.B.y - this.A.y;
+        // SVG-space length per grid unit along the line (mirrors offsetLine)
+        const s_asp = Math.sqrt(vx ** 2 + (vy * ASPECT) ** 2);
+        // Unit vector: grid coords per SVG pixel along the line
+        const ux = vx / (s_asp * SCALE);
+        const uy = vy / (s_asp * SCALE);
 
-        let svg = '<path d="M '
+        // Number of squiggle cells
+        const n = Math.round(Math.abs(vx) + Math.abs(vy));
+
+        // SVG-pixel offsets for one quarter-cell step along the line
+        const ax = vx / n * 0.25 * SCALE;
+        const ay = vy / n * 0.25 * SCALE * ASPECT;
+
+        // SVG-pixel amplitude perpendicular to the line.
+        // Uses the SVG-space perpendicular of (ux, uy): (-uy*SCALE*ASPECT, ux*SCALE),
+        // scaled so horizontal and vertical squiggles have equal visual weight.
+        const AMP = 0.2 * SCALE * ASPECT;
+        const px = -(vy * ASPECT / s_asp) * AMP;
+        const py =  (vx / s_asp) * AMP;
+
+        // Relative q commands — identical for every cell, so built once outside the loop
+        const q1 = 'q ' + fp(ax - px) + ',' + fp(ay - py) + ' ' + fp(2*ax) + ',' + fp(2*ay) + ' ';
+        const q2 = 'q ' + fp(ax + px) + ',' + fp(ay + py) + ' ' + fp(2*ax) + ',' + fp(2*ay) + ' ';
+
+        // Snap a grid coordinate to the nearest 0.5 multiple in the direction of travel (d),
+        // always moving strictly forward/backward so the squiggle begins and ends on a
+        // consistent half-grid boundary regardless of arrowhead size.
+        const snapFwd = (v, d) => d > 0 ? (Math.floor(v * 2) + 1) / 2
+                                : d < 0 ? (Math.ceil(v  * 2) - 1) / 2 : v;
+        const snapBwd = (v, d) => d > 0 ? (Math.ceil(v  * 2) - 1) / 2
+                                : d < 0 ? (Math.floor(v * 2) + 1) / 2 : v;
+
+        const ATT = ARROWHEAD_TIP_ADJUST;
+
+        let svg = '<path d="M ';
         let skip = false;
-        let start = (this.arrowTipAtA ?? this.A).offset(0, 0);
         if (this.arrowTipAtA && this.arrowAtA !== 'none') {
-            const a_prime = this.arrowTipAtA.offset(ARROWHEAD_TIP_ADJUST / SCALE, 0);
-            svg += a_prime.coords() + ' h ' + H_LEN + ' ';
+            const tip = this.arrowTipAtA;
+            const a_prime = tip.offset(ux * ATT, uy * ATT);
+            const sx = snapFwd(tip.x, ux);
+            const sy = snapFwd(tip.y, uy);
+            svg += a_prime.coords() + 'l ' + fp((sx - a_prime.x) * SCALE) + ',' +
+                                             fp((sy - a_prime.y) * SCALE * ASPECT) + ' ';
             skip = true;
         } else {
             svg += this.A.coords() + ' ';
         }
-        for (let x = x0; x < x1; x++) {
-            const up = start.offset(0.25, -SQUIGGLE_AMPLITUDE);
-            const mid = up.offset(0.25, SQUIGGLE_AMPLITUDE);
-            const down = mid.offset(0.25, SQUIGGLE_AMPLITUDE);
-            const end = down.offset(0.25, -SQUIGGLE_AMPLITUDE);
 
+        for (let i = 0; i < n; i++) {
             if (skip) {
                 skip = false;
             } else {
-                svg += 'Q ' + up + mid;
+                svg += q1;
             }
-            if (end.x >= this.B.x && this.arrowAtB) {
-                svg += 'h ' + H_LEN;
+            if (i === n - 1 && this.arrowAtB) {
+                const sx = snapBwd(this.B.x, ux);
+                const sy = snapBwd(this.B.y, uy);
+                svg += 'l ' + fp((this.B.x - ux * ATT - sx) * SCALE) + ',' +
+                              fp((this.B.y - uy * ATT - sy) * SCALE * ASPECT);
             } else {
-                svg += 'Q ' + down + end;
+                svg += q2;
             }
-            start = end;
         }
         svg += '"/>';
         return svg;
@@ -773,10 +811,7 @@ function diagramToSVG(diagramString, options) {
             svg += this.offsetLine(dy, -dx);
             svg += this.offsetLine(-dy, dx);
         } else if (this.squiggle) {
-            if (this.B.y !== this.A.y) {
-                console.warn("warning: squiggle requested for non-horizontal line");
-            }
-            svg = this.horizontalSquiggle(this.A.x, this.B.x, this.A.y);
+            svg = this.squigglePath();
         } else {
             svg = this.offsetLine(0, 0);
         }
@@ -958,10 +993,10 @@ function diagramToSVG(diagramString, options) {
                     up = up.offset(-ARROWHEAD_LINE_BASE_DX, ARROWHEAD_LINE_BASE_DY);
                     dn = dn.offset(-ARROWHEAD_LINE_BASE_DX, -ARROWHEAD_LINE_BASE_DY);
                     svg += '<path class="arrowhead" d="M ' + up + 'L ' + tip + 'L ' + dn.coords() +
-                        '" transform="rotate(' + fivePlaces(decoration.angle) + ',' + C.coords() + ')"/>\n';
+                        '" transform="rotate(' + fp(decoration.angle) + ',' + C.coords() + ')"/>\n';
                 } else {
                     svg += '<polygon class="arrowhead" points="' + tip + up + dn.coords() +
-                        '" transform="rotate(' + fivePlaces(decoration.angle) + ',' + C.coords() + ')"/>\n';
+                        '" transform="rotate(' + fp(decoration.angle) + ',' + C.coords() + ')"/>\n';
                 }
             }
         }
@@ -1034,6 +1069,7 @@ function diagramToSVG(diagramString, options) {
                 }
 
                 if (vline("isSolidVLineAt", "isDoubleVLineAt", '\u2564', '\u2567') ||
+                    vline("isSquiggleVLineAt", "isSolidVLineAt", '', '', "squiggle") ||
                     vline("isDoubleVLineAt", "isSolidVLineAt", '\u2565\u2566', '\u2568\u2569', "double")) {
                     continue;
                 }
@@ -1661,7 +1697,7 @@ function diagramToSVG(diagramString, options) {
     svg += `* { fill: none; stroke: ${black}; stroke-linecap: round; }\n` +
         '.dashed { stroke-dasharray: 3,6; }\n';
     if (hasText || options.source) {
-        svg += `text { font: ${fivePlaces(SCALE * 13 / 8)}px monospace;` +
+        svg += `text { font: ${fp(SCALE * 13 / 8)}px monospace;` +
             ` text-anchor: middle; fill: ${black}; stroke: none; }\n`;
     }
     if ((decorationSet.has('>') && options.arrow === 'solid') || decorationSet.has(TRI_CHARACTERS)) {

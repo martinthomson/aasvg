@@ -97,27 +97,23 @@ function isASCIILetter(c) {
 const MARKERS = { 'o': '\ue004', 'v': '\ue005', 'V': '\ue006' };
 
 function hideChar(s, i) {
-    const r = new Array(3);
-    r.fill('[a-zA-Z' + Object.values(MARKERS).join('') + ']');
+    const n = Object.keys(MARKERS).length;
+    const r = new Array(n).fill('[a-zA-Z' + Object.values(MARKERS).join('') + ']');
     r[i] = '[' + Object.keys(MARKERS).join('') + ']';
     return s.replace(new RegExp(r.join(''), 'g'),
         v => v.substring(0, i) + MARKERS[v.charAt(i)] + v.substring(i + 1));
 }
 
 function unhideMarkers(s) {
-    Object.keys(MARKERS).forEach(k => {
-        s = s.rp(new RegExp(MARKERS[k], 'g'), k);
-    });
-    return s;
+    return Object.keys(MARKERS).reduce((acc, k) => acc.rp(new RegExp(MARKERS[k], 'g'), k), s);
 }
 
 function hideMarkers(s) {
-    s = hideChar(s, 0);
-    s = hideChar(s, 1);
-    s = hideChar(s, 2);
+    const n = Object.keys(MARKERS).length;
+    s = Array.from({length: n}, (_, i) => i).reduce((acc, i) => hideChar(acc, i), s);
     // Unhide strings that only contain 'o' or 'v'.
     // Note: Using \B as \ue00? is a non-word character.
-    const allHidden = '\\B[' + Object.values(MARKERS).join('') + ']{3,}\\B';
+    const allHidden = '\\B[' + Object.values(MARKERS).join('') + ']{' + n + ',}\\B';
     return s.replace(new RegExp(allHidden, 'g'), unhideMarkers);
 }
 

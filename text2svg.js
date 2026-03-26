@@ -153,7 +153,8 @@ function diagramToSVG(diagramString, options) {
 
     /** Multiply Y coordinates by this when generating the final SVG
         result to account for the aspect ratio of text files. */
-    const ASPECT = options.aspect ?? 2;
+    const DEFAULT_ASPECT = 2;
+    const ASPECT = options.aspect ?? DEFAULT_ASPECT;
 
     const DIAGONAL_ANGLE = Math.atan(1.0 / ASPECT) * 180 / Math.PI;
 
@@ -808,7 +809,9 @@ function diagramToSVG(diagramString, options) {
             let dy = this.B.y - this.A.y;
             const s = Math.sqrt(dx ** 2 + dy ** 2);
             // Nudges each line DOUBLE_LINE_GAP SVG pixels away from the center.
-            dx /= s * SCALE * ASPECT / DOUBLE_LINE_GAP;
+            // Scale the y coordinate by the geo-mean of ASPECT and its default,
+            // which makes the spread less problematic for odd aspect ratios.
+            dx /= s * SCALE * Math.sqrt(ASPECT * DEFAULT_ASPECT) / DOUBLE_LINE_GAP;
             dy /= s * SCALE / DOUBLE_LINE_GAP;
             svg += this.offsetLine(dy, -dx);
             svg += this.offsetLine(-dy, dx);

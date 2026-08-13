@@ -130,7 +130,7 @@ function hideMarkers(s) {
     spaces (default: 2) the number of spaces between different strings
     style (default: {}) a dictionary of attributes to attach to the <svg> element
  */
-function diagramToSVG(diagramString, options) {
+export default function text2svg(diagramString, options) {
     // Clean up diagramString
     diagramString = equalizeLineLengths(removeLeadingSpace(diagramString));
     const originalString = diagramString;
@@ -1851,5 +1851,3 @@ function diagramToSVG(diagramString, options) {
 
     return svg;
 }
-
-export { diagramToSVG };

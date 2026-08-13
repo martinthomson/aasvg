@@ -12,6 +12,7 @@ function usage(help) {
     console.warn("    scale=<n>       Pixels per character [default: 8]");
     console.warn("    aspect=<n>      Vertical scale multiplier [default: 2]");
     console.warn("    stroke=<n>      Line stroke width in SVG pixels [default: 1]");
+    console.warn("    dot=<n>         Point radius in characters [default: 0.5]");
     console.warn("    stretch         Stretch text to better fit it")
     console.warn("                    (use with spaces > 0; uses advanced SVG)");
     console.warn("    fill            Omit width and height attributes");
@@ -129,6 +130,8 @@ function f(o, a) {
             options.aspect = f("aspect", a);
         } else if (a.startsWith("stroke=")) {
             options.strokeWidth = f("stroke", a);
+        } else if (a.startsWith("dot=")) {
+            options.dot = f("dot", a);
         } else if (a === "version") {
             console.log(VERSION);
             process.exit();

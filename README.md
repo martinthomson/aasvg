@@ -53,6 +53,11 @@ These options change how things are displayed in various ways.
 
 * **stroke=\<n>** sets the line stroke width in SVG pixels (default: 1.0).
 
+* **dot=\<n>** sets the diameter of the dot that is drawn for a point character
+  (`o`, `*`, and friends), in proportion to the character grid (default: 0.5).
+  This measures to the outer edge of the stroke, so that thicker strokes fill
+  circles inwards.
+
 * **fill** drops the `width` and `height` attributes on the output SVG.
   This will cause it to expand to fit available space.
 

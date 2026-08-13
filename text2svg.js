@@ -149,6 +149,25 @@ export default function text2svg(diagramString, options) {
 
     const DIAGONAL_ANGLE = Math.atan(1.0 / ASPECT) * 180 / Math.PI;
 
+    /** Radius of a point, in characters, to the outer edge of the stroke */
+    const DOT = options.dot ?? 0.5;
+
+    /** Radii of a point in SVG pixels, along the center of the stroke */
+    const POINT_RX = DOT * SCALE - STROKE_WIDTH / 2;
+    const POINT_RY = POINT_RX * ASPECT / DEFAULT_ASPECT;
+
+    /** How far to go, in grid units, from the center of a point to the edge
+        of the dot that is drawn for it, along the direction (dx, dy).
+        Multiply (dx, dy) by the result.  This solves the ellipse equation;
+        POINT_RY carries the ASPECT scaling, hence DEFAULT_ASPECT here. */
+    function dotEdge(dx, dy) {
+        return POINT_RX / (SCALE * Math.sqrt(dx ** 2 + (dy * DEFAULT_ASPECT) ** 2));
+    }
+
+    /** dotEdge() along a diagonal, which is needed both when extending
+        diagonals toward a point and when looking those ends up again. */
+    const DOT_DIAGONAL = dotEdge(1, 1);
+
     const EPSILON = 1e-6;
 
     // The order of the following is based on rotation angles
@@ -951,20 +970,20 @@ export default function text2svg(diagramString, options) {
             } else if (isPoint(decoration.type)) {
                 const CLASSES = { '*': 'closed', 'o': 'open', '◌': 'dotted', '○': 'open', '◍': 'shaded', '●': 'closed', '⊕': 'xor' };
                 const cls = CLASSES[decoration.type];
-                const cx = (C.x + 1) * SCALE, cy = (C.y + 1) * SCALE * ASPECT, rx = SCALE - STROKE_WIDTH;
+                const cx = (C.x + 1) * SCALE, cy = (C.y + 1) * SCALE * ASPECT;
                 const [tag, radii] = (ASPECT === DEFAULT_ASPECT)
-                    ? ['circle', 'r="' + rx + '"']
-                    : ['ellipse', 'rx="' + rx + '" ry="' + (rx * ASPECT / DEFAULT_ASPECT) + '"'];
-                svg += '<' + tag + ' cx="' + cx + '" cy="' + cy + '" ' + radii + ' class="dot ' + cls + '"/>\n';
+                    ? ['circle', 'r="' + fp(POINT_RX) + '"']
+                    : ['ellipse', 'rx="' + fp(POINT_RX) + '" ry="' + fp(POINT_RY) + '"'];
+                svg += '<' + tag + ' cx="' + fp(cx) + '" cy="' + fp(cy) + '" ' + radii + ' class="dot ' + cls + '"/>\n';
                 if (decoration.type === '⊕') {
-                    svg += '<line x1="' + ((C.x) * SCALE + STROKE_WIDTH) +
-                        '" y1="' + ((C.y + 1) * SCALE * ASPECT) +
-                        '" x2="' + ((C.x + 2) * SCALE - STROKE_WIDTH) +
-                        '" y2="' + ((C.y + 1) * SCALE * ASPECT) + '"/>';
-                    svg += '<line x1="' + ((C.x + 1) * SCALE) +
-                        '" y1="' + ((C.y + 1) * SCALE * ASPECT - SCALE + STROKE_WIDTH) +
-                        '" x2="' + ((C.x + 1) * SCALE) +
-                        '" y2="' + ((C.y + 1) * SCALE * ASPECT + SCALE - STROKE_WIDTH) + '"/>';
+                    svg += '<line x1="' + fp(cx - POINT_RX) +
+                        '" y1="' + fp(cy) +
+                        '" x2="' + fp(cx + POINT_RX) +
+                        '" y2="' + fp(cy) + '"/>';
+                    svg += '<line x1="' + fp(cx) +
+                        '" y1="' + fp(cy - POINT_RY) +
+                        '" x2="' + fp(cx) +
+                        '" y2="' + fp(cy + POINT_RY) + '"/>';
                 }
             } else if (isGray(decoration.type)) {
                 const shade = Math.round((3 - GRAY_CHARACTERS.indexOf(decoration.type)) * 63.75);
@@ -1159,6 +1178,9 @@ export default function text2svg(diagramString, options) {
                             !isVertexOrRightDecoration(grid(A.x - 1, A.y)) &&
                             !isVertex(grid(A))) {
                             A.x -= 0.5;
+                        } else if (isPoint(grid(A.x - 1, A.y))) {
+                            // Reach across to the edge of the dot:  --o
+                            A.x -= 1 - dotEdge(1, 0);
                         }
 
                         if (!isVertex(grid(B.x + 1, B.y)) &&
@@ -1169,6 +1191,9 @@ export default function text2svg(diagramString, options) {
                             !isVertexOrLeftDecoration(grid(B.x + 1, B.y)) &&
                             !isVertex(grid(B))) {
                             B.x += 0.5;
+                        } else if (isPoint(grid(B.x + 1, B.y))) {
+                            // Reach across to the edge of the dot:  o--
+                            B.x += 1 - dotEdge(1, 0);
                         }
 
                         // Only insert non-degenerate lines
@@ -1222,7 +1247,7 @@ export default function text2svg(diagramString, options) {
                             //  o
                             //   ^
                             //    \
-                            A.x -= 0.25; A.y -= 0.25;
+                            A.x -= DOT_DIAGONAL; A.y -= DOT_DIAGONAL;
                         } else if (top === '\\' && grid.isSolidDLineAt(A.x - 1, A.y)) {
                             // Cap a sharp vertex:
                             //   \  /   \  _
@@ -1249,7 +1274,7 @@ export default function text2svg(diagramString, options) {
                             //     v
                             //      o
 
-                            B.x += 0.25; B.y += 0.25;
+                            B.x += DOT_DIAGONAL; B.y += DOT_DIAGONAL;
                         } else if (bottom === '\\' && grid.isSolidDLineAt(B.x + 1, B.y)) {
                             // Cap a sharp vertex:
                             //     /\   _/\
@@ -1301,7 +1326,7 @@ export default function text2svg(diagramString, options) {
                             //      ^
                             //     /
 
-                            B.x += 0.25; B.y -= 0.25;
+                            B.x += DOT_DIAGONAL; B.y -= DOT_DIAGONAL;
                         } if (bottom === '/' && grid.isSolidBLineAt(B.x + 1, B.y)) {
                             // Cap a sharp vertex:
                             //   \  /   \  _
@@ -1331,7 +1356,7 @@ export default function text2svg(diagramString, options) {
                             //      v
                             //     o
 
-                            A.x -= 0.25; A.y += 0.25;
+                            A.x -= DOT_DIAGONAL; A.y += DOT_DIAGONAL;
                         } else if (top === '/' && grid.isSolidBLineAt(A.x - 1, A.y)) {
                             // Cap a sharp vertex:
                             //    \  /    _  /
@@ -1530,10 +1555,19 @@ export default function text2svg(diagramString, options) {
                 const c = grid(x, j);
                 const y = j;
 
-                function tryArrow(methodName, px, py, angle, companionMethod) {
+                /** If the arrow head at (x, y) points squarely at a point in the
+                    direction (dx, dy), the tip belongs on the edge of the dot that
+                    is drawn for it, not at the end of the line it terminates. */
+                function dotTipAt(dx, dy) {
+                    if (!isPoint(grid(x + dx, y + dy))) { return null; }
+                    const e = 1 - dotEdge(dx, dy);
+                    return Vec2(x + dx * e, y + dy * e);
+                }
+
+                function tryArrow(methodName, px, py, angle, companionMethod, tipOverride) {
                     const p = pathSet[methodName](px, py);
                     if (p) {
-                        const tip = arrowTip(px, py, angle);
+                        const tip = tipOverride ?? arrowTip(px, py, angle);
                         decorationSet.insert(tip.x, tip.y, '>', angle);
                         grid.setUsed(x, y);
                         p.markArrowAt(px, py, 'end', tip);
@@ -1584,16 +1618,17 @@ export default function text2svg(diagramString, options) {
                     // If we find one, ensure that it is really an
                     // arrow head and not a stray character by looking
                     // for a connecting line.
-                    const BACKOFF_X = 0.5;
-                    const BACKOFF_Y = 0.5 / ASPECT;
+
+                    // Where two arrow heads meet, each stops at the cell boundary.
+                    const BACKOFF = 0.5;
                     let dx = 0;
-                    let dy = 0;
                     if (c === '>') {
                         const p = pathSet.findRightEndsAt(x, y);
                         const q = !p ? pathSet.findHorizontalPassesThrough(x, y) : null;
                         if (p || q) {
-                            if (isPoint(grid(x + 1, y)) || grid(x + 1, y) === '<' || grid(x + 1, y) === '>') { dx = -BACKOFF_X; }
-                            const tip = arrowTip(x + dx, y, 0);
+                            const rt = grid(x + 1, y);
+                            if (rt === '<' || rt === '>') { dx = -BACKOFF; }
+                            const tip = dotTipAt(1, 0) ?? arrowTip(x + dx, y, 0);
                             decorationSet.insert(tip.x, tip.y, '>', 0);
                             grid.setUsed(x, y);
                             if (p) { p.markArrowAt(x, y, 'end', tip); } else { q.markArrowContRight(tip); }
@@ -1602,8 +1637,9 @@ export default function text2svg(diagramString, options) {
                         const p = pathSet.findLeftEndsAt(x, y);
                         const q = !p ? pathSet.findHorizontalPassesThrough(x, y) : null;
                         if (p || q) {
-                            if (isPoint(grid(x - 1, y)) || grid(x - 1, y) === '>' || grid(x - 1, y) === '<') { dx = BACKOFF_X; }
-                            const tip = arrowTip(x + dx, y, 180);
+                            const lt = grid(x - 1, y);
+                            if (lt === '>' || lt === '<') { dx = BACKOFF; }
+                            const tip = dotTipAt(-1, 0) ?? arrowTip(x + dx, y, 180);
                             decorationSet.insert(tip.x, tip.y, '>', 180);
                             grid.setUsed(x, y);
                             if (p) { p.markArrowAt(x, y, 'end', tip); } else { q.markArrowContLeft(tip); }
@@ -1611,36 +1647,36 @@ export default function text2svg(diagramString, options) {
                     } else if (c === '^') {
                         // Because of the aspect ratio, we need to look
                         // in two slots for the end of the previous line
-                        if (!tryArrow('findUpEndsAt', x, y - 0.5, 270, 'findDownEndsAt') &&
-                            !tryArrow('findUpEndsAt', x, y, 270, 'findDownEndsAt') &&
+                        const dotTip = dotTipAt(0, -1);
+                        if (!tryArrow('findUpEndsAt', x, y - 0.5, 270, 'findDownEndsAt', dotTip) &&
+                            !tryArrow('findUpEndsAt', x, y, 270, 'findDownEndsAt', dotTip) &&
                             !tryArrow('findDiagonalUpEndsAt', x + 0.5, y - 0.5, 270 + DIAGONAL_ANGLE) &&
-                            !tryArrow('findDiagonalUpEndsAt', x + 0.25, y - 0.25, 270 + DIAGONAL_ANGLE) &&
+                            !tryArrow('findDiagonalUpEndsAt', x + DOT_DIAGONAL, y - DOT_DIAGONAL, 270 + DIAGONAL_ANGLE) &&
                             !tryArrow('findDiagonalUpEndsAt', x, y, 270 + DIAGONAL_ANGLE) &&
                             !tryArrow('findBackDiagonalUpEndsAt', x, y, 270 - DIAGONAL_ANGLE) &&
                             !tryArrow('findBackDiagonalUpEndsAt', x - 0.5, y - 0.5, 270 - DIAGONAL_ANGLE) &&
-                            !tryArrow('findBackDiagonalUpEndsAt', x - 0.25, y - 0.25, 270 - DIAGONAL_ANGLE) &&
+                            !tryArrow('findBackDiagonalUpEndsAt', x - DOT_DIAGONAL, y - DOT_DIAGONAL, 270 - DIAGONAL_ANGLE) &&
                             pathSet.verticalPassesThrough(x, y)) {
                             // Only try this if all others failed
-                            if (isPoint(grid(x, y - 1))) { dy = BACKOFF_Y; }
-                            const tip270 = arrowTip(x, y - 0.5 + dy, 270);
+                            const tip270 = dotTip ?? arrowTip(x, y - 0.5, 270);
                             decorationSet.insert(tip270.x, tip270.y, '>', 270);
                             grid.setUsed(x, y);
                             const q = pathSet.findVerticalPassesThrough(x, y);
                             if (q) { q.markArrowContUp(tip270); }
                         }
                     } else if (c === 'v' || c === 'V') {
-                        if (!tryArrow('findDownEndsAt', x, y + 0.5, 90, 'findUpEndsAt') &&
-                            !tryArrow('findDownEndsAt', x, y, 90, 'findUpEndsAt') &&
+                        const dotTip = dotTipAt(0, 1);
+                        if (!tryArrow('findDownEndsAt', x, y + 0.5, 90, 'findUpEndsAt', dotTip) &&
+                            !tryArrow('findDownEndsAt', x, y, 90, 'findUpEndsAt', dotTip) &&
                             !tryArrow('findDiagonalDownEndsAt', x, y, 90 + DIAGONAL_ANGLE) &&
                             !tryArrow('findDiagonalDownEndsAt', x - 0.5, y + 0.5, 90 + DIAGONAL_ANGLE) &&
-                            !tryArrow('findDiagonalDownEndsAt', x - 0.25, y + 0.25, 90 + DIAGONAL_ANGLE) &&
+                            !tryArrow('findDiagonalDownEndsAt', x - DOT_DIAGONAL, y + DOT_DIAGONAL, 90 + DIAGONAL_ANGLE) &&
                             !tryArrow('findBackDiagonalDownEndsAt', x, y, 90 - DIAGONAL_ANGLE) &&
                             !tryArrow('findBackDiagonalDownEndsAt', x + 0.5, y + 0.5, 90 - DIAGONAL_ANGLE) &&
-                            !tryArrow('findBackDiagonalDownEndsAt', x + 0.25, y + 0.25, 90 - DIAGONAL_ANGLE) &&
+                            !tryArrow('findBackDiagonalDownEndsAt', x + DOT_DIAGONAL, y + DOT_DIAGONAL, 90 - DIAGONAL_ANGLE) &&
                             pathSet.verticalPassesThrough(x, y)) {
                             // Only try this if all others failed
-                            if (isPoint(grid(x, y + 1))) { dy = -BACKOFF_Y; }
-                            const tip90 = arrowTip(x, y + 0.5 + dy, 90);
+                            const tip90 = dotTip ?? arrowTip(x, y + 0.5, 90);
                             decorationSet.insert(tip90.x, tip90.y, '>', 90);
                             grid.setUsed(x, y);
                             const q = pathSet.findVerticalPassesThrough(x, y);
@@ -1718,7 +1754,7 @@ export default function text2svg(diagramString, options) {
         black = 'var(--aasvg-b)';
         white = 'var(--aasvg-w)';
     }
-    svg += `& * { fill: none; stroke: ${black}; stroke-linecap: round;` +
+    svg += `* { fill: none; stroke: ${black}; stroke-linecap: round;` +
         ((STROKE_WIDTH !== 1) ? ` stroke-width: ${STROKE_WIDTH};` : '') +
         ' }\n' +
         '.dashed { stroke-dasharray: 3,6; }\n';
@@ -1734,9 +1770,16 @@ export default function text2svg(diagramString, options) {
         svg += `polygon.arrowhead, .triangle { fill: ${black}; stroke: none; }\n`;
     }
     if (decorationSet.has(POINT_CHARACTERS)) {
+        // Space the dots of a dotted point about 2px apart, but pick a gap that
+        // divides the circumference evenly so that the ring closes neatly.
+        // Use Ramanujan's first approximation for the ellipse.
+        const a = Math.max(POINT_RX, POINT_RY);
+        const b = Math.min(POINT_RX, POINT_RY)
+        const circumference = Math.PI * ((3 * (a + b)) - Math.sqrt((3 * a + b) * (a + 3 * b)));
+        const gap = circumference / Math.max(1, Math.round(circumference / 2));
         svg += `.dot.closed { fill: ${black}; }\n` +
             `.dot:is(.open, .xor) { fill: ${white}; }\n` +
-            `.dot.dotted { fill: ${white}; stroke-dasharray: 0,2; }\n` +
+            `.dot.dotted { fill: ${white}; stroke-dasharray: 0,${fp(gap)}; }\n` +
             '.dot.shaded { fill: #666; }\n';
     }
     if (options.backdrop) {

@@ -2,7 +2,7 @@
 <style>
 .aasvg {
 color-scheme: light dark; --aasvg-b: light-dark(black, white); --aasvg-w: light-dark(white, black);
-& * { fill: none; stroke: var(--aasvg-b); stroke-linecap: round; }
+* { fill: none; stroke: var(--aasvg-b); stroke-linecap: round; }
 .dashed { stroke-dasharray: 3,6; }
 text { font: 13px monospace; text-anchor: middle; fill: var(--aasvg-b); stroke: none; }
 text.b { font-weight: 700; }
@@ -10,7 +10,7 @@ text.i { font-style: italic; }
 polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }
 .dot.closed { fill: var(--aasvg-b); }
 .dot:is(.open, .xor) { fill: var(--aasvg-w); }
-.dot.dotted { fill: var(--aasvg-w); stroke-dasharray: 0,2; }
+.dot.dotted { fill: var(--aasvg-w); stroke-dasharray: 0,1.9992; }
 .dot.shaded { fill: #666; }
 .backdrop { fill: var(--aasvg-w); stroke: none; opacity: 0.9; }
 }
@@ -89,7 +89,7 @@ polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }
 <path d="M 608,64L 640,64"/>
 <path d="M 645.46807,62L 704,62"/><path d="M 645.46807,66L 704,66"/>
 <path d="M 704,64L 758.81765,64"/>
-<path d="M 552,80L 592,80"/>
+<path d="M 547.5,80L 592,80"/>
 <path d="M 32,96L 168,96"/>
 <path d="M 200,96L 248,96"/>
 <path d="M 296,96L 384,96"/>
@@ -127,8 +127,8 @@ polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }
 <path d="M 40,272L 120,272"/>
 <path d="M 544,272L 560,272"/>
 <path d="M 120,304L 166.81765,304"/>
-<path d="M 224,304L 232,304"/>
-<path d="M 248,304L 256,304"/>
+<path d="M 224,304L 236.5,304"/>
+<path d="M 243.5,304L 256,304"/>
 <path d="M 448,304L 472,304"/>
 <path d="M 488,304L 512,304"/>
 <path d="M 544,304L 552,304"/>
@@ -266,10 +266,10 @@ polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }
 <polygon class="arrowhead" points="40,176 52,181.6 52,170.4"/>
 <polygon class="arrowhead" points="40,416 28,410.4 28,421.6"/>
 <polygon class="arrowhead" points="8,320 20,325.6 20,314.4"/>
-<circle cx="184" cy="304" r="7" class="dot dotted"/>
-<circle cx="240" cy="304" r="7" class="dot shaded"/>
-<circle cx="456" cy="48" r="7" class="dot closed"/>
-<circle cx="544" cy="80" r="7" class="dot closed"/>
+<circle cx="184" cy="304" r="3.5" class="dot dotted"/>
+<circle cx="240" cy="304" r="3.5" class="dot shaded"/>
+<circle cx="456" cy="48" r="3.5" class="dot closed"/>
+<circle cx="544" cy="80" r="3.5" class="dot closed"/>
 <g class="text">
 <text x="64" y="36">A Box</text>
 <text x="208" y="84">Round</text>

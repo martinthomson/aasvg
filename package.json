@@ -5,9 +5,7 @@
   "bin": {
     "aasvg": "main.js"
   },
-  "exports": {
-    ".": "./text2svg.js"
-  },
+  "exports": "./text2svg.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/martinthomson/aasvg.git"

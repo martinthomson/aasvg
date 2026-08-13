@@ -119,23 +119,14 @@ function hideMarkers(s) {
 
 
 /** Converts diagramString, which is a Markdeep diagram without the surrounding asterisks, to
-    SVG (HTML). Lines may have ragged lengths.
-
-    `options` is a dictionary with the following keys:
-
-    backdrop (default: false) will add a white <rect> element as a backdrop so that
-        the background of the image is not transparent
-    disableText (default: false) will disable passing text
-    showGrid (default: false) will display a debug grid
-    spaces (default: 2) the number of spaces between different strings
-    style (default: {}) a dictionary of attributes to attach to the <svg> element
+ * SVG (HTML). Lines may have ragged lengths.
  */
 export default function text2svg(diagramString, options) {
     // Clean up diagramString
     diagramString = equalizeLineLengths(removeLeadingSpace(diagramString));
     const originalString = diagramString;
-    options = options || {};
-    if (!Number.isInteger(options.spaces)) { options.spaces = 2; } // 0 is valid so falsy tests fail.
+    options = options ?? {};
+    options.spaces ??= 2;
     options.arrow ??= 'solid';
 
     // Temporarily replace 'o', 'v', and 'V' if they are surrounded by other
@@ -420,7 +411,7 @@ export default function text2svg(diagramString, options) {
             if (c === '\\') {
                 // Looks like a diagonal line...does it continue? We need two in a row.
                 return (isSolidBLine(rt) || isBottomVertex(rt) || isPoint(rt) || (rt === 'v' || rt === 'V') ||
-                    isSolidBLine(lt) || isTopVertex(lt) || isPoint(lt) || (lt === '^') ||
+                    isSolidBLine(lt) || isTopVertex(lt) || isPoint(lt) || (lt === '^') || (lt === '|') ||
                     (grid(x, y - 1) === '/') || (grid(x, y + 1) === '/') || (rt === '_') || (lt === '_') ||
                     (grid(x + 1, y) === '/' && grid(x - 1, y - 1) === '_') ||
                     (grid(x - 1, y) === '/' && grid(x + 1, y) === '_'));
@@ -456,8 +447,10 @@ export default function text2svg(diagramString, options) {
                 return true;
             } else if (isSolidDLine(c)) {
                 // Looks like a diagonal line...does it continue? We need two in a row.
-                return (isSolidDLine(rt) || isTopVertex(rt) || isPoint(rt) || (rt === '^') || (rt === '_') ||
-                    isSolidDLine(lt) || isBottomVertex(lt) || isPoint(lt) || (lt === 'v' || lt === 'V') || (lt === '_'));
+                return (isSolidDLine(rt) || isTopVertex(rt) || isPoint(rt) ||
+                    (rt === '^') || (rt === '_') || (rt === '|') ||
+                    isSolidDLine(lt) || isBottomVertex(lt) || isPoint(lt) ||
+                    (lt === 'v' || lt === 'V') || (lt === '_'));
             } else if (c === '.' || c === ',') {
                 return (lt === '/');
             } else if (c === "'") {
@@ -1318,7 +1311,9 @@ export default function text2svg(diagramString, options) {
 
                         const dnlt = grid(A.x - 1, A.y + 1);
                         const top = grid(A);
-                        if ((grid(A.x, A.y + 1) === '\\') || (grid(A.x - 1, A.y) === '_') || (grid(A.x + 1, A.y) === '_') ||
+                        if ((grid(A.x, A.y + 1) === '\\') ||
+                            (grid(A.x - 1, A.y) === '_') ||
+                            (grid(A.x + 1, A.y) === '_') ||
                             (!isVertex(grid(A)) &&
                                 (isSolidHLine(dnlt) || isSolidVLine(dnlt)))) {
 
@@ -1688,13 +1683,13 @@ export default function text2svg(diagramString, options) {
     findReplacementCharacters(grid, pathSet);
     findDecorations(grid, pathSet, decorationSet);
 
-    const width = ((options.width || grid.width) + 1) * SCALE;
-    const height = ((options.height || grid.height) + 1) * SCALE * ASPECT;
+    const width = ((options.width ?? grid.width) + 1) * SCALE;
+    const height = ((options.height ?? grid.height) + 1) * SCALE * ASPECT;
     if ((options.width && options.width < grid.width) ||
         (options.height && options.height < grid.height)) {
         console.warn("warning: diagram overflows viewbox set by width/height option");
     }
-    const attrs = options.style;
+    const attrs = options.style ?? {};
     attrs.xmlns = 'http://www.w3.org/2000/svg';
     attrs.version = '1.1';
     if (!options.fill) {
@@ -1718,12 +1713,12 @@ export default function text2svg(diagramString, options) {
     let black = 'black';
     let white = 'white';
     if (!options.compatible) {
-        svg += '.aasvg { color-scheme: light dark; ' +
-            '--aasvg-b: light-dark(black, white); --aasvg-w: light-dark(white, black); }\n';
+        svg += '.aasvg {\ncolor-scheme: light dark; ' +
+            '--aasvg-b: light-dark(black, white); --aasvg-w: light-dark(white, black);\n';
         black = 'var(--aasvg-b)';
         white = 'var(--aasvg-w)';
     }
-    svg += `* { fill: none; stroke: ${black}; stroke-linecap: round;` +
+    svg += `& * { fill: none; stroke: ${black}; stroke-linecap: round;` +
         ((STROKE_WIDTH !== 1) ? ` stroke-width: ${STROKE_WIDTH};` : '') +
         ' }\n' +
         '.dashed { stroke-dasharray: 3,6; }\n';
@@ -1755,6 +1750,9 @@ export default function text2svg(diagramString, options) {
     if (options.source) {
         svg += 'text { opacity: 0.8; }\n' +
             '.source { fill: red; font-size: 90%; }\n';
+    }
+    if (!options.compatible) {
+        svg += '}\n';
     }
     svg += '</style>\n';
 

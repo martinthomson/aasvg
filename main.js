@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import text2svg from "./text2svg.js";
-const VERSION = "aasvg 0.5.5";
+const VERSION = "aasvg 0.5.6";
 
 function usage(help) {
     console.warn(VERSION + ": Turn ASCII art into SVG");

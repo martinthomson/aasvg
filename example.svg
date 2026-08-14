@@ -8,7 +8,7 @@ text.b { font-weight: 700; }
 text.i { font-style: italic; }
 polygon.arrowhead, .triangle { fill: var(--aasvg-b); stroke: none; }
 .dot.closed { fill: var(--aasvg-b); }
-.dot:is(.open, .xor) { fill: var(--aasvg-w); }
+.dot:is(.open, .xor) { fill: none; }
 .dot.dotted { fill: var(--aasvg-w); stroke-dasharray: 0,1.92984; }
 .dot.shaded { fill: #666; }
 .backdrop { fill: var(--aasvg-w); stroke: none; opacity: 0.9; }

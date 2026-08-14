@@ -1777,7 +1777,7 @@ export default function text2svg(diagramString, options) {
         const circumference = Math.PI * ((3 * (a + b)) - Math.sqrt((3 * a + b) * (a + 3 * b)));
         const gap = circumference / Math.max(1, Math.round(circumference / 2));
         svg += `.dot.closed { fill: ${black}; }\n` +
-            `.dot:is(.open, .xor) { fill: ${white}; }\n` +
+            `.dot:is(.open, .xor) { fill: none; }\n` +
             `.dot.dotted { fill: ${white}; stroke-dasharray: 0,${fp(gap)}; }\n` +
             '.dot.shaded { fill: #666; }\n';
     }

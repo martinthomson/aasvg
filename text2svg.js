@@ -150,7 +150,7 @@ export default function text2svg(diagramString, options) {
     const DIAGONAL_ANGLE = Math.atan(1.0 / ASPECT) * 180 / Math.PI;
 
     /** Radius of a point, in characters, to the outer edge of the stroke */
-    const DOT = options.dot ?? 0.5;
+    const DOT = options.dot ?? 0.6;
 
     /** Radii of a point in SVG pixels, along the center of the stroke */
     const POINT_RX = DOT * SCALE - STROKE_WIDTH / 2;

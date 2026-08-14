@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import text2svg from "./text2svg.js";
-const VERSION = "aasvg 0.5.6";
+const VERSION = "aasvg 0.5.7";
 
 function usage(help) {
     console.warn(VERSION + ": Turn ASCII art into SVG");
@@ -12,7 +12,7 @@ function usage(help) {
     console.warn("    scale=<n>       Pixels per character [default: 8]");
     console.warn("    aspect=<n>      Vertical scale multiplier [default: 2]");
     console.warn("    stroke=<n>      Line stroke width in SVG pixels [default: 1]");
-    console.warn("    dot=<n>         Point radius in characters [default: 0.5]");
+    console.warn("    dot=<n>         Point radius in characters [default: 0.6]");
     console.warn("    stretch         Stretch text to better fit it")
     console.warn("                    (use with spaces > 0; uses advanced SVG)");
     console.warn("    fill            Omit width and height attributes");

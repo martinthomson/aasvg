@@ -1749,9 +1749,7 @@ export default function text2svg(diagramString, options) {
     let black = 'black';
     let white = 'white';
     if (!options.compatible) {
-        svg += '.aasvg {\n' +
-            '--aasvg-b: black; --aasvg-w: white;\n' +
-            '@media (prefers-color-scheme: dark) { --aasvg-b: white; --aasvg-w: black; }\n';
+        svg += '.aasvg { --aasvg-b: light-dark(black, white); --aasvg-w: light-dark(white, black);\n';
         black = 'var(--aasvg-b)';
         white = 'var(--aasvg-w)';
     }
